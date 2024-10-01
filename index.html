@@ -9,6 +9,31 @@
     .container {
       text-align: center;
     }
+    
+    /* Wiggle animation for the thumbnail */
+    .title-image {
+      display: block;
+      margin: 0 auto;
+      animation: wiggle 0.15s ease-in-out infinite;
+    }
+
+    /* Wiggle keyframes for subtle, creepy shake */
+    @keyframes wiggle {
+      0%, 100% {
+        transform: rotate(0deg);
+      }
+      25% {
+        transform: rotate(2deg);
+      }
+      50% {
+        transform: rotate(-2deg);
+      }
+      75% {
+        transform: rotate(1deg);
+      }
+    }
+
+    /* Styling for the download buttons */
     .download-button {
       border: none;
       background-color: transparent;
@@ -24,7 +49,7 @@
 </head>
 <body>
   <div class="container">
-    <!-- Header Image (The Virgin Games Thumbnail) -->
+    <!-- Header Image (The Virgin Games Thumbnail) with wiggle animation -->
     <img src="https://drive.google.com/uc?export=view&id=1KfB-xKUNMud-2pcvNTIrICH52omx_zwt" alt="The Virgin Games" class="title-image">
 
     <!-- Subheading Text -->
