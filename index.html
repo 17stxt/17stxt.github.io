@@ -5,6 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Virgin Games</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    .container {
+      text-align: center;
+    }
+    .download-button {
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+    .download-button img {
+      width: 20px;
+      height: 20px;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -19,14 +35,44 @@
       <h2>Chapters</h2>
       <table>
         <tr>
-          <td><button onclick="window.location.href='chapter1.html'">Chapter 1</button></td>
-          <td><button onclick="window.location.href='chapter2.html'">Chapter 2</button></td>
-          <td><button onclick="window.location.href='chapter3.html'">Chapter 3</button></td>
+          <td>
+            <button onclick="window.location.href='chapter1.html'">Consume Chapter 1</button>
+            <button class="download-button" onclick="window.location.href='chapter1.pdf'">
+              <img src="https://win98icons.alexmeub.com/icons/png/cable-1.png" alt="Download Chapter 1">
+            </button>
+          </td>
+          <td>
+            <button onclick="window.location.href='chapter2.html'">Consume Chapter 2</button>
+            <button class="download-button" onclick="window.location.href='chapter2.pdf'">
+              <img src="https://win98icons.alexmeub.com/icons/png/cable-1.png" alt="Download Chapter 2">
+            </button>
+          </td>
+          <td>
+            <button onclick="window.location.href='chapter3.html'">Consume Chapter 3</button>
+            <button class="download-button" onclick="window.location.href='chapter3.pdf'">
+              <img src="https://win98icons.alexmeub.com/icons/png/cable-1.png" alt="Download Chapter 3">
+            </button>
+          </td>
         </tr>
         <tr>
-          <td><button onclick="window.location.href='chapter4.html'">Chapter 4</button></td>
-          <td><button onclick="window.location.href='chapter5.html'">Chapter 5</button></td>
-          <td><button onclick="window.location.href='epilogue.html'">Epilogue</button></td>
+          <td>
+            <button onclick="window.location.href='chapter4.html'">Consume Chapter 4</button>
+            <button class="download-button" onclick="window.location.href='chapter4.pdf'">
+              <img src="https://win98icons.alexmeub.com/icons/png/cable-1.png" alt="Download Chapter 4">
+            </button>
+          </td>
+          <td>
+            <button onclick="window.location.href='chapter5.html'">Consume Chapter 5</button>
+            <button class="download-button" onclick="window.location.href='chapter5.pdf'">
+              <img src="https://win98icons.alexmeub.com/icons/png/cable-1.png" alt="Download Chapter 5">
+            </button>
+          </td>
+          <td>
+            <button onclick="window.location.href='epilogue.html'">Consume Epilogue</button>
+            <button class="download-button" onclick="window.location.href='epilogue.pdf'">
+              <img src="https://win98icons.alexmeub.com/icons/png/cable-1.png" alt="Download Epilogue">
+            </button>
+          </td>
         </tr>
       </table>
     </section>
