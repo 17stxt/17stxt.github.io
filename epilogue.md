@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/3ed186b4-f566-4d24-ada7-244d7abedaee)”The Virgin Games” Epilogue
+”The Virgin Games” Epilogue
 Copyright © 2024 Awesome Cats And Puppies. All rights reserved.
 
 No part of this publication may be reproduced, distributed, or transmitted in any form or by any means, including
