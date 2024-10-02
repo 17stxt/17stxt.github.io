@@ -9,16 +9,16 @@
   <!-- Include Firebase SDKs -->
   <script type="module">
      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-     import { getFirestore, collection, onSnapshot, updateDoc, arrayUnion, doc, arrayRemove } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+     import { getFirestore, doc, onSnapshot, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
      
      // Firebase configuration
      const firebaseConfig = {
         apiKey: "AIzaSyBCzabBMFxms9HfX0N411uJQYjEzspSnVk",
-       authDomain: "the-virgin-games.firebaseapp.com",
-       projectId: "the-virgin-games",
-       storageBucket: "the-virgin-games.appspot.com",
-       messagingSenderId: "1092738842373",
-       appId: "1:1092738842373:web:8bb210d9fb815cc5ae016c"
+        authDomain: "the-virgin-games.firebaseapp.com",
+        projectId: "the-virgin-games",
+        storageBucket: "the-virgin-games.appspot.com",
+        messagingSenderId: "1092738842373",
+        appId: "1:1092738842373:web:8bb210d9fb815cc5ae016c"
      };
 
      // Initialize Firebase
@@ -103,9 +103,13 @@
 
     // Update Firestore with new votes
     async function updateVotes(index, updatedComment) {
-      const comments = (await commentsRef.get()).data().comments || [];
+      const commentsDoc = await commentsRef.get(); // Fetch the document
+      const comments = commentsDoc.data().comments || []; // Get comments from the document
+
+      // Update the specific comment
       comments[index] = updatedComment;
 
+      // Update Firestore with the modified comments array
       await updateDoc(commentsRef, {
         comments: comments
       });
@@ -191,6 +195,12 @@
     .downvote {
       background-color: red;
       color: white;
+    }
+    .upvote:hover {
+      background-color: darkgreen; /* Darker green for hover */
+    }
+    .downvote:hover {
+      background-color: darkred; /* Darker red for hover */
     }
     .vote-count {
       margin-left: 10px;
