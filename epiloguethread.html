@@ -41,18 +41,26 @@
           // Display name and text
           const name = comment.name ? comment.name : "Anonymous";
           commentElement.innerHTML = `${name}: ${comment.text}`;
+          
+          // If an image URL exists, display it
+          if (comment.image) {
+            const imageElement = document.createElement('img');
+            imageElement.src = comment.image;
+            imageElement.className = 'comment-image';
+            commentElement.appendChild(imageElement);
+          }
 
-          // Create the vote section (emoji buttons and vote label)
+          // Create the vote section (green button, red button, and vote label)
           const voteContainer = document.createElement('div');
           voteContainer.className = 'vote-container';
           
           const upvoteButton = document.createElement('button');
-          upvoteButton.className = 'upvote vote-button';
-          upvoteButton.innerText = '❤️'; // Upvote emoji
+          upvoteButton.className = 'upvote';
+          upvoteButton.innerHTML = '<img src="https://github-production-user-asset-6210df.s3.amazonaws.com/183553458/372749609-032a4e03-8cb0-4246-9019-0e362c89f50a.png" alt="Upvote" />';
           
           const downvoteButton = document.createElement('button');
-          downvoteButton.className = 'downvote vote-button';
-          downvoteButton.innerText = '💔'; // Downvote emoji
+          downvoteButton.className = 'downvote';
+          downvoteButton.innerHTML = '<img src="https://i.imgur.com/0fEI0v7.png" alt="Downvote" />';
 
           const voteLabel = document.createElement('span');
           voteLabel.className = 'vote-count';
@@ -119,8 +127,10 @@
     document.getElementById('postButton').addEventListener('click', async () => {
       const commentInput = document.getElementById('commentInput');
       const nameInput = document.getElementById('nameInput'); // Get the name input value
+      const imageInput = document.getElementById('imageInput'); // Get the image input value
       const commentText = commentInput.value.trim(); // Trim whitespace
       const nameText = nameInput.value.trim() || "Anonymous"; // Default to "Anonymous" if no name is provided
+      const imageUrl = imageInput.value.trim(); // Trim whitespace
 
       if (commentText === "") {
           alert("Comment cannot be empty!"); // Alert if comment is empty
@@ -129,12 +139,13 @@
 
       // Add the comment to the Firestore document
       await updateDoc(commentsRef, {
-          comments: arrayUnion({ text: commentText, name: nameText, votes: 0, voteType: null }) // Include name with comment
+          comments: arrayUnion({ text: commentText, name: nameText, votes: 0, voteType: null, image: imageUrl }) // Include name and image with comment
       })
       .then(() => {
           console.log("Comment posted successfully!"); // Log success
           commentInput.value = ""; // Clear the input box
           nameInput.value = ""; // Clear the name box
+          imageInput.value = ""; // Clear the image input box
       })
       .catch((error) => {
           console.error("Error posting comment:", error); // Log error
@@ -157,21 +168,30 @@
     .comment {
       border: 1px solid #ddd;
       border-radius: 5px;
-      padding: 10px;
+      padding: 5px; /* Adjusted padding */
       margin: 5px 0;
       background-color: #f9f9f9;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column; /* Make it vertical */
+      align-items: flex-start; /* Align items to the left */
+    }
+    .comment-image {
+      max-width: 100%; /* Ensure image fits within the comment box */
+      max-height: 150px; /* Limit the height of the image */
+      margin-top: 5px; /* Space between text and image */
     }
     .comment-box {
       width: 300px;
-      height: 30px; /* Reduced height */
+      height: 40px; /* Reduced height */
     }
     .name-box {
       width: 300px;
       height: 30px;
       margin-bottom: 10px;
+    }
+    .image-box {
+      width: 100%; /* Full width */
+      margin-top: 10px;
     }
     .post-button {
       margin-top: 10px;
@@ -182,21 +202,31 @@
       display: flex;
       align-items: center;
     }
-    .vote-button {
-      margin-right: 5px; /* Reduced margin */
+    .upvote, .downvote {
+      margin-right: 3px; /* Reduced margin */
       padding: 5px;
       border: none;
       cursor: pointer;
-      font-size: 20px; /* Size for emoji buttons */
     }
     .upvote {
-      color: green;
+      background-color: transparent; /* Set background to transparent for image button */
     }
     .downvote {
-      color: red;
+      background-color: transparent; /* Set background to transparent for image button */
+    }
+    .upvote:hover img {
+      opacity: 0.8; /* Darken on hover */
+    }
+    .downvote:hover img {
+      opacity: 0.8; /* Darken on hover */
     }
     .vote-count {
-      margin-left: 10px;
+      margin-left: 5px; /* Reduced margin */
+    }
+    .image-input-container {
+      display: flex; /* Use flex for alignment */
+      align-items: center; /* Center vertically */
+      margin-top: 10px; /* Space between the comment box and image input */
     }
   </style>
 </head>
@@ -212,7 +242,10 @@
 
     <!-- Comment Input Section -->
     <textarea class="comment-box" id="commentInput" placeholder="Write your comment..."></textarea>
-    <button class="post-button" id="postButton">Post Comment</button>
+    <div class="image-input-container">
+      <input type="text" class="image-box" id="imageInput" placeholder="Paste image URL here..." />
+      <button class="post-button" id="postButton">Post Comment</button>
+    </div>
   </div>
 </body>
 </html>
