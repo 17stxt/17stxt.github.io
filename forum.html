@@ -5,39 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Virgin Forum</title>
   <link rel="stylesheet" href="styles.css">
-  <style>
-    .container {
-      text-align: center;
-      padding: 20px;
-    }
-    .forum-title {
-      font-size: 32px;
-      font-weight: bold;
-    }
-  </style>
 </head>
 <body>
-  <div class="container">
-    <h1 class="forum-title">The Virgin Forum</h1>
-    <p>Create a new post or comment below:</p>
+  <h1>The Virgin Forum</h1>
+  <p>Create a new post or leave comments below:</p>
 
-    <!-- Disqus Comment System -->
-    <div id="disqus_thread"></div>
-    <script>
+  <!-- Disqus Comment Section -->
+  <div id="disqus_thread"></div>
+
+  <!-- Disqus Universal Code with Configuration for unique pages -->
+  <script>
       var disqus_config = function () {
-        this.page.url = window.location.href;  
-        this.page.identifier = 'forum-page'; 
+          this.page.url = window.location.href;  // Use current page URL as the identifier
+          this.page.identifier = window.location.pathname; // Use page path to make each page unique
       };
-      
-      (function() {  
-        var d = document, s = d.createElement('script');
-        s.src = 'https://YOUR_DISQUS_SHORTNAME_HERE.disqus.com/embed.js';  // Replace 'YOUR_DISQUS_SHORTNAME_HERE' with your Disqus shortname
-        s.setAttribute('data-timestamp', +new Date());
-        (d.head || d.body).appendChild(s);
+      (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document, s = d.createElement('script');
+      s.src = 'https://thevirgingames.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+      (d.head || d.body).appendChild(s);
       })();
-    </script>
-    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 
-  </div>
+  <!-- Comment count script (add this to the bottom to show comment counts on pages) -->
+  <script id="dsq-count-scr" src="//thevirgingames.disqus.com/count.js" async></script>
+
 </body>
 </html>
