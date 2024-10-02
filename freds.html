@@ -7,52 +7,49 @@
   <link rel="stylesheet" href="styles.css">
   <style>
     body {
-      background-color: #f5f5f5; /* Subtle background color */
-      font-family: Arial, sans-serif; /* Simple font */
-      margin: 0; /* Remove default margin */
-      padding: 0; /* Remove default padding */
+      background-color: #f0f0f0; /* Subtle background color */
+      font-family: Arial, sans-serif; /* A simple font for the text */
+      margin: 0;
+      padding: 0;
     }
-
     .container {
       text-align: center;
       padding: 20px;
-      max-width: 800px; /* Limit the width of the container */
-      margin: 0 auto; /* Center the container */
     }
-
     h1 {
-      font-size: 24px; /* Smaller font for the title */
-      background-color: #d0e8ff; /* Background color for the title */
-      padding: 10px; /* Padding around the title */
-      margin: 0; /* Remove margin for consistency */
+      font-size: 30px; /* Reduced size for the title */
+      margin-bottom: 10px;
+      background-color: #99cc99; /* Background color for the title */
+      padding: 5px;
+      border: 1px solid #000; /* Border around the title */
+      display: inline-block; /* Keep the background from stretching */
     }
-
     .fred-button {
-      display: flex; /* Flexbox for alignment */
-      align-items: center; /* Center items vertically */
-      margin: 10px 0;
-      padding: 10px;
+      display: flex; /* Use flexbox for layout */
+      align-items: center; /* Center the image and text vertically */
+      margin: 10px auto; /* Center the buttons with auto margins */
+      padding: 10px 20px;
       font-size: 16px; /* Slightly smaller font */
-      background-color: white; /* White background for buttons */
-      border: 1px solid #ccc; /* Border for buttons */
       cursor: pointer;
+      background-color: #fff; /* White background for buttons */
+      border: 2px solid #000; /* Border stroke */
+      width: 300px; /* Fixed width for buttons */
       text-align: left; /* Align text to the left */
+      transition: background-color 0.3s; /* Simple hover transition */
     }
-
+    .fred-button:hover {
+      background-color: #e0e0e0; /* Subtle hover effect */
+    }
     .fred-button img {
-      width: 40px; /* Fixed size for images */
-      height: 40px; /* Fixed size for images */
-      margin-right: 10px; /* Spacing between image and text */
+      margin-right: 10px; /* Space between image and text */
+      width: 50px; /* Width for the thread image */
+      height: auto; /* Maintain aspect ratio */
     }
-
-    /* Credits section styles */
+    /* Credits Section */
     .credits {
-      margin-top: 20px; /* Margin for spacing */
-      font-size: 14px; /* Smaller font size for credits */
-    }
-
-    hr {
-      margin: 20px 0; /* Margin for horizontal rule */
+      margin-top: 20px;
+      border-top: 1px solid #000; /* Top border for separation */
+      padding-top: 10px;
     }
   </style>
 </head>
@@ -60,22 +57,22 @@
   <div class="container">
     <h1>Freds</h1>
     <button class="fred-button" onclick="window.location.href='chapter1fred.html'">
-      <img src="your-image-url-here" alt="Chapter 1">Chapter 1 fred
+      <img src="image_url_for_chapter1" alt="Chapter 1 Image"> Chapter 1 fred
     </button>
     <button class="fred-button" onclick="window.location.href='chapter2fred.html'">
-      <img src="your-image-url-here" alt="Chapter 2">Chapter 2 fred
+      <img src="image_url_for_chapter2" alt="Chapter 2 Image"> Chapter 2 fred
     </button>
     <button class="fred-button" onclick="window.location.href='chapter3fred.html'">
-      <img src="your-image-url-here" alt="Chapter 3">Chapter 3 fred
+      <img src="image_url_for_chapter3" alt="Chapter 3 Image"> Chapter 3 fred
     </button>
     <button class="fred-button" onclick="window.location.href='chapter4fred.html'">
-      <img src="your-image-url-here" alt="Chapter 4">Chapter 4 fred
+      <img src="image_url_for_chapter4" alt="Chapter 4 Image"> Chapter 4 fred
     </button>
     <button class="fred-button" onclick="window.location.href='chapter5fred.html'">
-      <img src="your-image-url-here" alt="Chapter 5">Chapter 5 fred
+      <img src="image_url_for_chapter5" alt="Chapter 5 Image"> Chapter 5 fred
     </button>
     <button class="fred-button" onclick="window.location.href='epiloguefred.html'">
-      <img src="your-image-url-here" alt="Epilogue">Epilogue fred
+      <img src="image_url_for_epilogue" alt="Epilogue Image"> Epilogue fred
     </button>
 
     <!-- Credits Section -->
