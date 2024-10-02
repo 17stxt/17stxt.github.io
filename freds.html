@@ -7,87 +7,56 @@
   <link rel="stylesheet" href="styles.css">
   <style>
     body {
+      background-color: #f0f0f0; /* Light gray background */
       font-family: Arial, sans-serif;
-      background-color: #e9ebee;
-      color: #333;
-      margin: 0;
-      padding: 0;
     }
-
     .container {
-      width: 80%;
-      max-width: 900px;
-      margin: 30px auto;
-      padding: 20px;
-      background-color: #fff;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
-
-    h1, h2 {
       text-align: center;
-      color: #222;
+      padding: 20px;
     }
-
-    .fred-thread {
+    h1 {
+      font-size: 36px;
+      color: #444;
+    }
+    h2 {
+      font-size: 24px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+    .fred-item {
       display: flex;
+      flex-direction: column; /* Stack elements vertically */
       align-items: center;
-      margin: 15px 0;
+      background: white; /* White background for thread items */
+      border: 1px solid #ccc; /* Light border */
+      border-radius: 8px; /* Rounded corners */
       padding: 10px;
-      border-bottom: 1px solid #ddd;
+      margin: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow */
+      transition: transform 0.2s; /* Animation for hover */
       cursor: pointer;
-      transition: background-color 0.2s ease;
     }
-
-    .fred-thread:hover {
-      background-color: #f5f5f5;
+    .fred-item:hover {
+      transform: translateY(-2px); /* Lift effect on hover */
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* Stronger shadow on hover */
     }
-
     .fred-image {
-      width: 50px;
-      height: 50px;
-      border-radius: 5px;
-      margin-right: 15px;
-      background-color: #ccc;
-      /* Placeholder for images */
+      width: 100%; /* Full width */
+      height: auto; /* Maintain aspect ratio */
+      border-radius: 8px; /* Rounded corners */
+      max-height: 150px; /* Limit height */
+      object-fit: cover; /* Cover image */
+      margin-bottom: 10px; /* Spacing below image */
     }
-
-    .fred-info {
-      flex-grow: 1;
+    .recent-comment {
+      font-size: 14px; /* Smaller font for recent comment */
+      color: #777; /* Gray color for text */
+      text-align: left; /* Align text to the left */
+      width: 100%; /* Full width */
+      margin-top: 5px; /* Spacing above recent comment */
     }
-
-    .fred-title {
-      font-size: 20px;
-      color: #2b2b2b;
-      margin: 0;
-      text-decoration: none;
-    }
-
-    .fred-title:hover {
-      text-decoration: underline;
-    }
-
-    .fred-comment {
-      color: #555;
-      font-size: 14px;
-      margin-top: 5px;
-    }
-
-    .poster-name {
-      font-weight: bold;
-    }
-
-    /* Navigation Button to Home */
-    .home-button {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      z-index: 1000;
-    }
-
-    .home-button img {
-      width: 40px;
-      height: 40px;
+    .comment-name {
+      font-weight: bold; /* Bold for name */
     }
   </style>
 </head>
@@ -95,91 +64,91 @@
   <div class="container">
     <h1>Freds</h1>
     <h2>Select a Fred:</h2>
+    
+    <div id="threadsList"></div> <!-- Container for threads -->
 
-    <!-- Thread 1 -->
-    <div class="fred-thread" onclick="window.location.href='chapter1fred.html'">
-      <div class="fred-image">
-        <!-- Thread image placeholder. Replace with actual image URLs -->
-        <img src="path_to_image1.jpg" alt="Thread 1 Image" width="50" height="50">
-      </div>
-      <div class="fred-info">
-        <a class="fred-title" href="chapter1fred.html">Chapter 1 Fred</a>
-        <div class="fred-comment">
-          <span class="poster-name">Anonymous</span>: "And finally when i..."
-        </div>
-      </div>
-    </div>
-
-    <!-- Thread 2 -->
-    <div class="fred-thread" onclick="window.location.href='chapter2fred.html'">
-      <div class="fred-image">
-        <!-- Thread image placeholder -->
-        <img src="path_to_image2.jpg" alt="Thread 2 Image" width="50" height="50">
-      </div>
-      <div class="fred-info">
-        <a class="fred-title" href="chapter2fred.html">Chapter 2 Fred</a>
-        <div class="fred-comment">
-          <span class="poster-name">Anonymous</span>: "Why would t...."
-        </div>
-      </div>
-    </div>
-
-    <!-- Thread 3 -->
-    <div class="fred-thread" onclick="window.location.href='chapter3fred.html'">
-      <div class="fred-image">
-        <img src="path_to_image3.jpg" alt="Thread 3 Image" width="50" height="50">
-      </div>
-      <div class="fred-info">
-        <a class="fred-title" href="chapter3fred.html">Chapter 3 Fred</a>
-        <div class="fred-comment">
-          <span class="poster-name">Anonymous</span>: "H..."
-        </div>
-      </div>
-    </div>
-
-    <!-- Thread 4 -->
-    <div class="fred-thread" onclick="window.location.href='chapter4fred.html'">
-      <div class="fred-image">
-        <img src="path_to_image4.jpg" alt="Thread 4 Image" width="50" height="50">
-      </div>
-      <div class="fred-info">
-        <a class="fred-title" href="chapter4fred.html">Chapter 4 Fred</a>
-        <div class="fred-comment">
-          <span class="poster-name">Anonymous</span>: "When they all ran..."
-        </div>
-      </div>
-    </div>
-
-    <!-- Thread 5 -->
-    <div class="fred-thread" onclick="window.location.href='chapter5fred.html'">
-      <div class="fred-image">
-        <img src="path_to_image5.jpg" alt="Thread 5 Image" width="50" height="50">
-      </div>
-      <div class="fred-info">
-        <a class="fred-title" href="chapter5fred.html">Chapter 5 Fred</a>
-        <div class="fred-comment">
-          <span class="poster-name">Anonymous</span>: "It was amazing how..."
-        </div>
-      </div>
-    </div>
-
-    <!-- Epilogue Thread -->
-    <div class="fred-thread" onclick="window.location.href='epiloguefred.html'">
-      <div class="fred-image">
-        <img src="path_to_image6.jpg" alt="Epilogue Fred Image" width="50" height="50">
-      </div>
-      <div class="fred-info">
-        <a class="fred-title" href="epiloguefred.html">Epilogue Fred</a>
-        <div class="fred-comment">
-          <span class="poster-name">Anonymous</span>: "The end is here..."
-        </div>
-      </div>
-    </div>
   </div>
 
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBCzabBMFxms9HfX0N411uJQYjEzspSnVk",
+      authDomain: "the-virgin-games.firebaseapp.com",
+      projectId: "the-virgin-games",
+      storageBucket: "the-virgin-games.appspot.com",
+      messagingSenderId: "1092738842373",
+      appId: "1:1092738842373:web:8bb210d9fb815cc5ae016c"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const threads = [
+      { name: "Chapter 1 fred", url: "chapter1fred.html", imageUrl: "YOUR_IMAGE_URL_FOR_CHAPTER_1" },
+      { name: "Chapter 2 fred", url: "chapter2fred.html", imageUrl: "YOUR_IMAGE_URL_FOR_CHAPTER_2" },
+      { name: "Chapter 3 fred", url: "chapter3fred.html", imageUrl: "YOUR_IMAGE_URL_FOR_CHAPTER_3" },
+      { name: "Chapter 4 fred", url: "chapter4fred.html", imageUrl: "YOUR_IMAGE_URL_FOR_CHAPTER_4" },
+      { name: "Chapter 5 fred", url: "chapter5fred.html", imageUrl: "YOUR_IMAGE_URL_FOR_CHAPTER_5" },
+      { name: "Epilogue fred", url: "epiloguefred.html", imageUrl: "YOUR_IMAGE_URL_FOR_EPILOGUE" },
+    ];
+
+    // Function to fetch the most recent comment
+    async function fetchRecentComment(threadName) {
+      const commentsRef = doc(db, threadName, 'comments'); // Update with your actual path
+      const docSnap = await getDoc(commentsRef);
+      
+      if (docSnap.exists()) {
+        const comments = docSnap.data().comments || [];
+        // Get the most recent comment based on timestamp
+        if (comments.length > 0) {
+          const recentComment = comments.sort((a, b) => b.timestamp - a.timestamp)[0]; // Sort and get the latest
+          return { text: recentComment.text, name: recentComment.name || "Anonymous" };
+        }
+      }
+      return { text: "No comments yet", name: "" }; // Default message if no comments
+    }
+
+    // Render threads with recent comments
+    async function renderThreads() {
+      const threadsList = document.getElementById('threadsList');
+
+      for (const thread of threads) {
+        const recentComment = await fetchRecentComment(thread.name); // Fetch recent comment for each thread
+
+        const threadElement = document.createElement('div');
+        threadElement.className = 'fred-item';
+        threadElement.onclick = () => window.location.href = thread.url; // Redirect to thread URL
+
+        // Create the image element
+        const imageElement = document.createElement('img');
+        imageElement.src = thread.imageUrl; // Set image URL
+        imageElement.alt = thread.name; // Alt text for the image
+        imageElement.className = 'fred-image'; // Add class for styling
+
+        // Create the comment label
+        const commentElement = document.createElement('div');
+        commentElement.className = 'recent-comment';
+        commentElement.innerHTML = `<span class="comment-name">${recentComment.name}:</span> ${recentComment.text.length > 17 ? recentComment.text.substring(0, 17) + "..." : recentComment.text}`; // Shorten comment if necessary
+
+        // Append image and comment to the thread element
+        threadElement.appendChild(imageElement);
+        threadElement.appendChild(commentElement);
+
+        // Append the thread element to the threads list
+        threadsList.appendChild(threadElement);
+      }
+    }
+
+    renderThreads(); // Call the function to render threads
+  </script>
+
   <!-- Navigation Button to Home Page -->
-  <a href="index.html" class="home-button">
-    <img src="https://i.imgur.com/AmjEU0x.png" alt="Home">
+  <a href="index.html" style="position: fixed; top: 10px; left: 10px; z-index: 1000;">
+      <img src="https://i.imgur.com/AmjEU0x.png" alt="Home" style="width: 40px; height: 40px;">
   </a>
 </body>
 </html>
