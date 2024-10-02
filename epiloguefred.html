@@ -97,7 +97,7 @@
               }
               comment.voteType = 'upvote';
             }
-            await updateVotes(index, comment);
+            await updateVotes(comments, comment); // Pass the whole comments array
           });
 
           // Downvote logic
@@ -114,22 +114,20 @@
               }
               comment.voteType = 'downvote';
             }
-            await updateVotes(index, comment);
+            await updateVotes(comments, comment); // Pass the whole comments array
           });
         });
       }
     });
 
-    async function updateVotes(index, updatedComment) {
-      const commentsDoc = await getDoc(commentsRef); // Use getDoc to fetch the document
-      const comments = commentsDoc.data().comments || []; // Get comments from the document
-
-      // Update the specific comment
-      comments[index] = updatedComment;
+    async function updateVotes(comments, updatedComment) {
+      const updatedComments = comments.map((comment) => 
+        comment.timestamp === updatedComment.timestamp ? updatedComment : comment
+      );
 
       // Update Firestore with the modified comments array
       await updateDoc(commentsRef, {
-        comments: comments
+        comments: updatedComments
       });
     }
 
