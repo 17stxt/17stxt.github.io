@@ -1,1 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 1 Thread</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+  <style>
+    .container {
+      text-align: center;
+      padding: 20px;
+    }
+    .comments {
+      border: 1px solid #ccc;
+      height: 300px;
+      overflow-y: scroll;
+      margin: 20px 0;
+      padding: 10px;
+    }
+    .comment-box {
+      width: 300px;
+      height: 50px;
+    }
+    .post-button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Chapter 1 Thread</h1>
+    
+    <!-- Comments Section -->
+    <div class="comments" id="comments"></div>
 
+    <!-- Comment Input Section -->
+    <textarea class="comment-box" id="commentInput" placeholder="Write your comment..."></textarea>
+    <button class="post-button" onclick="postComment()">Post Comment</button>
+  </div>
+
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBCzabBMFxms9HfX0N411uJQYjEzspSnVk",
+      authDomain: "the-virgin-games.firebaseapp.com",
+      databaseURL: "the-virgin-games.firebaseio.com",
+      projectId: "the-virgin-games",
+      storageBucket: "the-virgin-games.appspot.com",
+      messagingSenderId: "1092738842373",
+      appId: "1:1092738842373:web:8bb210d9fb815cc5ae016c",
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    // Reference to comments in Firebase
+    const commentsRef = database.ref('chapter1/comments');
+
+    // Function to display comments
+    commentsRef.on('value', (snapshot) => {
+      const commentsContainer = document.getElementById('comments');
+      commentsContainer.innerHTML = ""; // Clear previous comments
+      snapshot.forEach((childSnapshot) => {
+        const comment = childSnapshot.val();
+        const commentElement = document.createElement('div');
+        commentElement.innerText = comment.text;
+        commentsContainer.appendChild(commentElement);
+      });
+    });
+
+    // Function to post a comment
+    function postComment() {
+      const commentInput = document.getElementById('commentInput');
+      const newCommentRef = commentsRef.push();
+      newCommentRef.set({ text: commentInput.value });
+      commentInput.value = ""; // Clear the input box
+    }
+  </script>
+</body>
+</html>
