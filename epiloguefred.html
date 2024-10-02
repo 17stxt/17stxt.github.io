@@ -27,109 +27,115 @@
     const db = getFirestore(app);
     const commentsRef = doc(db, 'epilogue', 'comments'); // Firestore reference to the comments document
 
-    // Function to display comments
-    onSnapshot(commentsRef, (doc) => {
-      const commentsContainer = document.getElementById('comments');
-      commentsContainer.innerHTML = ""; // Clear previous comments
-      if (doc.exists()) {
-        let comments = doc.data().comments || [];
-        comments = comments.sort((a, b) => b.timestamp - a.timestamp); // Sort by timestamp, newest first
+// Inside onSnapshot function
+onSnapshot(commentsRef, (doc) => {
+  const commentsContainer = document.getElementById('comments');
+  commentsContainer.innerHTML = ""; // Clear previous comments
+  if (doc.exists()) {
+    let comments = doc.data().comments || [];
+    comments = comments.sort((a, b) => b.timestamp - a.timestamp); // Sort by timestamp, newest first
 
-        comments.forEach((comment, index) => {
-          const commentElement = document.createElement('div');
-          commentElement.className = 'comment'; // Add a class for styling
+    comments.forEach((comment, index) => {
+      const commentElement = document.createElement('div');
+      commentElement.className = 'comment'; // Add a class for styling
 
-          // Display name and text
-          const name = comment.name ? comment.name : "Anonymous";
-          commentElement.innerHTML = `${name}: ${comment.text}`;
+      // Display name and text
+      const name = comment.name ? comment.name : "Anonymous";
+      commentElement.innerHTML = `${name}: ${comment.text}`;
 
-          // Check if there is an image URL in the comment text
-          const imageUrl = comment.imageUrl;
-          if (imageUrl) {
-            const imgElement = document.createElement('img');
-            imgElement.src = imageUrl;
-            imgElement.className = 'comment-image'; // Add a class for image styling
-            commentElement.appendChild(imgElement);
-          }
-
-          // Display timestamp (converted to Philadelphia timezone)
-          const timestampElement = document.createElement('span');
-          const commentDate = new Date(comment.timestamp); // Timestamp from the comment
-          const options = { timeZone: 'America/New_York', hour12: true, hour: 'numeric', minute: 'numeric', second: 'numeric' };
-          timestampElement.innerText = commentDate.toLocaleString('en-US', options);
-          timestampElement.className = 'timestamp';
-          commentElement.appendChild(timestampElement);
-
-          // Create the vote section (green button, red button, and vote label)
-          const voteContainer = document.createElement('div');
-          voteContainer.className = 'vote-container';
-          
-          const upvoteButton = document.createElement('button');
-          upvoteButton.className = 'upvote';
-          upvoteButton.innerText = '↑';
-          
-          const downvoteButton = document.createElement('button');
-          downvoteButton.className = 'downvote';
-          downvoteButton.innerText = '↓';
-
-          const voteLabel = document.createElement('span');
-          voteLabel.className = 'vote-count';
-          voteLabel.innerText = comment.votes || 0; // Default to 0 votes
-
-          voteContainer.appendChild(upvoteButton);
-          voteContainer.appendChild(downvoteButton);
-          voteContainer.appendChild(voteLabel);
-          
-          commentElement.appendChild(voteContainer);
-          commentsContainer.appendChild(commentElement);
-
-          // Upvote logic
-          upvoteButton.addEventListener('click', async () => {
-            if (comment.voteType === 'upvote') {
-              // Remove upvote
-              comment.votes -= 1;
-              comment.voteType = null;
-            } else {
-              // Add upvote and remove downvote if it exists
-              comment.votes += 1;
-              if (comment.voteType === 'downvote') {
-                comment.votes += 1; // Neutralize the previous downvote
-              }
-              comment.voteType = 'upvote';
-            }
-            await updateVotes(comments, comment); // Pass the whole comments array
-          });
-
-          // Downvote logic
-          downvoteButton.addEventListener('click', async () => {
-            if (comment.voteType === 'downvote') {
-              // Remove downvote
-              comment.votes += 1;
-              comment.voteType = null;
-            } else {
-              // Add downvote and remove upvote if it exists
-              comment.votes -= 1;
-              if (comment.voteType === 'upvote') {
-                comment.votes -= 1; // Neutralize the previous upvote
-              }
-              comment.voteType = 'downvote';
-            }
-            await updateVotes(comments, comment); // Pass the whole comments array
-          });
-        });
+      // Check if there is an image URL in the comment text
+      const imageUrl = comment.imageUrl;
+      if (imageUrl) {
+        const imgElement = document.createElement('img');
+        imgElement.src = imageUrl;
+        imgElement.className = 'comment-image'; // Add a class for image styling
+        commentElement.appendChild(imgElement);
       }
-    });
 
-    async function updateVotes(comments, updatedComment) {
-      const updatedComments = comments.map((comment) => 
-        comment.timestamp === updatedComment.timestamp ? updatedComment : comment
-      );
+      // Display timestamp (converted to Philadelphia timezone)
+      const timestampElement = document.createElement('span');
+      const commentDate = new Date(comment.timestamp); // Timestamp from the comment
+      const options = { timeZone: 'America/New_York', hour12: true, hour: 'numeric', minute: 'numeric', second: 'numeric' };
+      timestampElement.innerText = commentDate.toLocaleString('en-US', options);
+      timestampElement.className = 'timestamp';
+      commentElement.appendChild(timestampElement);
 
-      // Update Firestore with the modified comments array
-      await updateDoc(commentsRef, {
-        comments: updatedComments
+      // Create the vote section (green button, red button, and vote label)
+      const voteContainer = document.createElement('div');
+      voteContainer.className = 'vote-container';
+      
+      const upvoteButton = document.createElement('button');
+      upvoteButton.className = 'upvote';
+      upvoteButton.innerText = '↑';
+      
+      const downvoteButton = document.createElement('button');
+      downvoteButton.className = 'downvote';
+      downvoteButton.innerText = '↓';
+
+      const voteLabel = document.createElement('span');
+      voteLabel.className = 'vote-count';
+      voteLabel.innerText = comment.votes || 0; // Default to 0 votes
+
+      voteContainer.appendChild(upvoteButton);
+      voteContainer.appendChild(downvoteButton);
+      voteContainer.appendChild(voteLabel);
+      
+      commentElement.appendChild(voteContainer);
+      commentsContainer.appendChild(commentElement);
+
+      // Upvote logic
+      upvoteButton.addEventListener('click', async () => {
+        const updatedComment = { ...comment }; // Create a copy to avoid mutation
+        if (updatedComment.voteType === 'upvote') {
+          // Remove upvote
+          updatedComment.votes -= 1;
+          updatedComment.voteType = null;
+        } else {
+          // Add upvote and remove downvote if it exists
+          updatedComment.votes += 1;
+          if (updatedComment.voteType === 'downvote') {
+            updatedComment.votes += 1; // Neutralize the previous downvote
+          }
+          updatedComment.voteType = 'upvote';
+        }
+        await updateVotes(index, updatedComment); // Pass updated comment
       });
-    }
+
+      // Downvote logic
+      downvoteButton.addEventListener('click', async () => {
+        const updatedComment = { ...comment }; // Create a copy to avoid mutation
+        if (updatedComment.voteType === 'downvote') {
+          // Remove downvote
+          updatedComment.votes += 1;
+          updatedComment.voteType = null;
+        } else {
+          // Add downvote and remove upvote if it exists
+          updatedComment.votes -= 1;
+          if (updatedComment.voteType === 'upvote') {
+            updatedComment.votes -= 1; // Neutralize the previous upvote
+          }
+          updatedComment.voteType = 'downvote';
+        }
+        await updateVotes(index, updatedComment); // Pass updated comment
+      });
+    });
+  }
+});
+
+// Update votes function remains unchanged
+async function updateVotes(index, updatedComment) {
+  const commentsDoc = await getDoc(commentsRef); // Use getDoc to fetch the document
+  const comments = commentsDoc.data().comments || []; // Get comments from the document
+
+  // Update the specific comment
+  comments[index] = updatedComment;
+
+  // Update Firestore with the modified comments array
+  await updateDoc(commentsRef, {
+    comments: comments
+  });
+}
+
 
     // Function to post a comment
     document.getElementById('postButton').addEventListener('click', async () => {
