@@ -32,7 +32,9 @@
       const commentsContainer = document.getElementById('comments');
       commentsContainer.innerHTML = ""; // Clear previous comments
       if (doc.exists()) {
-        const comments = doc.data().comments || [];
+        let comments = doc.data().comments || [];
+        comments = comments.sort((a, b) => b.timestamp - a.timestamp); // Sort by timestamp, newest first
+
         comments.forEach((comment, index) => {
           const commentElement = document.createElement('div');
           commentElement.className = 'comment'; // Add a class for styling
@@ -49,6 +51,14 @@
             imgElement.className = 'comment-image'; // Add a class for image styling
             commentElement.appendChild(imgElement);
           }
+
+          // Display timestamp (converted to Philadelphia timezone)
+          const timestampElement = document.createElement('span');
+          const commentDate = new Date(comment.timestamp); // Timestamp from the comment
+          const options = { timeZone: 'America/New_York', hour12: true, hour: 'numeric', minute: 'numeric', second: 'numeric' };
+          timestampElement.innerText = commentDate.toLocaleString('en-US', options);
+          timestampElement.className = 'timestamp';
+          commentElement.appendChild(timestampElement);
 
           // Create the vote section (green button, red button, and vote label)
           const voteContainer = document.createElement('div');
@@ -141,7 +151,14 @@
 
       // Add the comment to the Firestore document
       await updateDoc(commentsRef, {
-        comments: arrayUnion({ text: commentText, name: nameText, votes: 0, voteType: null, imageUrl: imageUrl }) // Include image URL
+        comments: arrayUnion({
+          text: commentText,
+          name: nameText,
+          votes: 0,
+          voteType: null,
+          imageUrl: imageUrl,
+          timestamp: new Date().getTime() // Add timestamp in milliseconds
+        })
       })
       .then(() => {
         console.log("Comment posted successfully!"); // Log success
@@ -165,6 +182,7 @@
       overflow-y: scroll;
       margin: 20px 0;
       padding: 10px;
+      resize: vertical; /* Makes the comment list resizable vertically */
     }
     .comment {
       border: 1px solid #ddd;
@@ -222,6 +240,11 @@
     }
     .vote-count {
       margin-left: 10px;
+    }
+    .timestamp {
+      margin-top: 5px;
+      font-size: 12px;
+      color: #888;
     }
   </style>
 </head>
