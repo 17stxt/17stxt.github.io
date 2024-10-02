@@ -152,13 +152,17 @@
       "this is what bon does when he imagines mia big fat juicy ass",
       "no vbucks? forreal?",
       "Imagine listening to Taylor Swift",
-      "I thought I was a fool for nobody",
+      "I thought I was a fool for noone",
+      "ALLL II WANTED WAS YOUUUUUUUUU",
+      "Ohhh I won't let you goo",
+      "Coca cola la ight, coca cola no our ma al, y coca colea zeeeroooooooooooooo",
       "Hello Juju I'm very up close :)",
       "Incredibly uncomfortable after all i've done for you.",
       "How it feels to be in the dubai tram:"
     ];
 
     const randomTextElement = document.getElementById("randomText");
+    let lastPicked = []; // Array to hold the last 3 picked sentences
 
     function typeWriterEffect(text, callback) {
       let i = 0;
@@ -187,9 +191,28 @@
       }, 50); // Speed of deletion (can be customized)
     }
 
+    function pickRandomSentence() {
+      let availableSentences = sentences.filter(sentence => !lastPicked.includes(sentence));
+
+      // If availableSentences is empty (in rare cases), reset lastPicked and make all available again
+      if (availableSentences.length === 0) {
+        availableSentences = sentences;
+      }
+
+      const randomIndex = Math.floor(Math.random() * availableSentences.length);
+      const newText = availableSentences[randomIndex];
+
+      // Update the lastPicked queue
+      lastPicked.push(newText);
+      if (lastPicked.length > 3) {
+        lastPicked.shift(); // Keep only the last 3 selections
+      }
+
+      return newText;
+    }
+
     function changeText() {
-      const randomIndex = Math.floor(Math.random() * sentences.length);
-      const newText = sentences[randomIndex];
+      const newText = pickRandomSentence();
 
       deleteTextEffect(() => {
         typeWriterEffect(newText);
@@ -203,7 +226,9 @@
     // Initial random sentence on page load
     window.onload = () => {
       const initialIndex = Math.floor(Math.random() * sentences.length);
-      typeWriterEffect(sentences[initialIndex]);
+      const initialText = sentences[initialIndex];
+      lastPicked.push(initialText); // Add the first picked text to the lastPicked queue
+      typeWriterEffect(initialText);
     };
 
     // Change the text every 10-15 seconds with typewriter effect
