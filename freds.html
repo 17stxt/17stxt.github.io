@@ -1,155 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Freds</title>
-  <link rel="stylesheet" href="styles.css">
-  <style>
-    body {
-      background-color: #f0f0f0; /* Light gray background for a softer feel */
-      font-family: Arial, sans-serif; /* Clean font */
-      color: #333; /* Dark text for contrast */
-    }
-    .container {
-      max-width: 800px; /* Limit container width for better readability */
-      margin: 0 auto; /* Center container */
-      padding: 20px;
-      text-align: center;
-      background: white; /* White background for the container */
-      border-radius: 8px; /* Slightly rounded corners */
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-    }
-    h1 {
-      font-size: 2.5em; /* Large heading */
-      margin-bottom: 20px;
-      color: #2c3e50; /* Darker shade for title */
-    }
-    h2 {
-      font-size: 1.5em; /* Smaller subtitle */
-      margin-bottom: 20px;
-    }
-    .fred-thread {
-      background-color: #e0e0e0; /* Slightly darker background for threads */
-      border: 1px solid #ccc; /* Border around thread */
-      border-radius: 5px; /* Rounded corners for threads */
-      padding: 15px;
-      margin: 10px 0;
-      transition: background 0.3s; /* Smooth hover transition */
-      cursor: pointer;
-    }
-    .fred-thread:hover {
-      background-color: #d1d1d1; /* Darker background on hover */
-    }
-    .fred-title {
-      font-size: 1.8em; /* Title size */
-      color: #2980b9; /* Blue color for titles */
-      text-decoration: none; /* Remove underline */
-    }
-    .thumbnail {
-      width: 100%; /* Make thumbnails responsive */
-      max-height: 200px; /* Limit height for uniformity */
-      object-fit: cover; /* Crop image to fit */
-      border-radius: 5px; /* Rounded corners */
-    }
-    .recent-comment {
-      font-size: 0.9em; /* Smaller text for recent comment */
-      color: #7f8c8d; /* Gray color for comment */
-      margin-top: 5px; /* Space between comment and title */
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freds</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background-color: #f4f4f4; /* Subtle light background */
+            font-family: Arial, sans-serif; /* Change font to a clean, readable style */
+            margin: 0; /* Reset default margin */
+            padding: 0; /* Reset default padding */
+            color: #333; /* Set default text color */
+        }
+
+        .container {
+            max-width: 900px; /* Limit width for better readability */
+            margin: 0 auto; /* Center align container */
+            padding: 20px; /* Add padding */
+            text-align: center;
+            background: #fff; /* White background for the main container */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+        }
+
+        h1 {
+            font-size: 2.5em; /* Large title size */
+            margin-bottom: 10px; /* Space below title */
+            color: #2C3E50; /* Darker color for the main heading */
+        }
+
+        h2 {
+            font-size: 1.5em; /* Slightly smaller subheading */
+            color: #34495E; /* Darker gray color for subheadings */
+            margin-bottom: 20px; /* Space below subheading */
+        }
+
+        .fred-button {
+            display: block; /* Stack buttons vertically */
+            margin: 15px auto; /* Center buttons with auto margins */
+            padding: 15px; /* More padding for a button-like feel */
+            font-size: 1.2em; /* Increase font size */
+            cursor: pointer; /* Pointer on hover */
+            background-color: #2980B9; /* Button background color */
+            color: white; /* Text color */
+            border: none; /* No border */
+            border-radius: 5px; /* Rounded corners */
+            transition: background 0.3s; /* Transition for hover effect */
+            width: 80%; /* Set a width */
+            max-width: 400px; /* Limit maximum width */
+        }
+
+        .fred-button:hover {
+            background-color: #3498DB; /* Lighter shade on hover */
+        }
+
+        .thumbnail {
+            width: 100%; /* Full width for thumbnails */
+            max-width: 600px; /* Limit maximum width */
+            border-radius: 8px; /* Rounded corners for images */
+            margin: 10px 0; /* Space above and below */
+        }
+
+        /* Thread list styling */
+        .thread-list {
+            padding: 20px; /* Padding inside the thread list */
+            background: #ecf0f1; /* Light gray background for thread list */
+            border-radius: 8px; /* Rounded corners */
+            margin-top: 20px; /* Space above the thread list */
+        }
+
+        .thread {
+            border: 1px solid #bdc3c7; /* Gray border for threads */
+            border-radius: 5px; /* Rounded corners */
+            padding: 10px; /* Padding inside each thread */
+            margin: 10px 0; /* Space between threads */
+            background: white; /* White background for each thread */
+            transition: transform 0.3s; /* Animation for hover effect */
+        }
+
+        .thread:hover {
+            transform: scale(1.02); /* Slight scale effect on hover */
+        }
+
+        .nav-button {
+            position: fixed; /* Fixed positioning */
+            top: 10px; /* Position at the top */
+            left: 10px; /* Position from the left */
+            z-index: 1000; /* High z-index to keep it above others */
+            border: none; /* No border */
+            background: transparent; /* Transparent background */
+            cursor: pointer; /* Pointer cursor */
+        }
+
+        .nav-button img {
+            width: 40px; /* Set image width */
+            height: 40px; /* Set image height */
+        }
+
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Freds</h1>
-    <h2>Select a Fred:</h2>
-
-    <!-- Fred Thread Section -->
-    <div class="fred-thread" onclick="window.location.href='chapter1fred.html'">
-      <img class="thumbnail" src="your-image-url-here.jpg" alt="Chapter 1 Thumbnail">
-      <a class="fred-title">Chapter 1 Fred</a>
-      <div class="recent-comment" id="recent-comment-1">Loading recent comment...</div>
+    <div class="container">
+        <h1>Freds</h1>
+        <h2>Select a Fred:</h2>
+        <div class="thread-list">
+            <div class="thread">
+                <img src="YOUR_IMAGE_URL_HERE" alt="Chapter 1" class="thumbnail">
+                <button class="fred-button" onclick="window.location.href='chapter1fred.html'">Chapter 1 Fred</button>
+            </div>
+            <div class="thread">
+                <img src="YOUR_IMAGE_URL_HERE" alt="Chapter 2" class="thumbnail">
+                <button class="fred-button" onclick="window.location.href='chapter2fred.html'">Chapter 2 Fred</button>
+            </div>
+            <div class="thread">
+                <img src="YOUR_IMAGE_URL_HERE" alt="Chapter 3" class="thumbnail">
+                <button class="fred-button" onclick="window.location.href='chapter3fred.html'">Chapter 3 Fred</button>
+            </div>
+            <div class="thread">
+                <img src="YOUR_IMAGE_URL_HERE" alt="Chapter 4" class="thumbnail">
+                <button class="fred-button" onclick="window.location.href='chapter4fred.html'">Chapter 4 Fred</button>
+            </div>
+            <div class="thread">
+                <img src="YOUR_IMAGE_URL_HERE" alt="Chapter 5" class="thumbnail">
+                <button class="fred-button" onclick="window.location.href='chapter5fred.html'">Chapter 5 Fred</button>
+            </div>
+            <div class="thread">
+                <img src="YOUR_IMAGE_URL_HERE" alt="Epilogue" class="thumbnail">
+                <button class="fred-button" onclick="window.location.href='epiloguefred.html'">Epilogue Fred</button>
+            </div>
+        </div>
     </div>
 
-    <div class="fred-thread" onclick="window.location.href='chapter2fred.html'">
-      <img class="thumbnail" src="your-image-url-here.jpg" alt="Chapter 2 Thumbnail">
-      <a class="fred-title">Chapter 2 Fred</a>
-      <div class="recent-comment" id="recent-comment-2">Loading recent comment...</div>
-    </div>
-
-    <div class="fred-thread" onclick="window.location.href='chapter3fred.html'">
-      <img class="thumbnail" src="your-image-url-here.jpg" alt="Chapter 3 Thumbnail">
-      <a class="fred-title">Chapter 3 Fred</a>
-      <div class="recent-comment" id="recent-comment-3">Loading recent comment...</div>
-    </div>
-
-    <div class="fred-thread" onclick="window.location.href='chapter4fred.html'">
-      <img class="thumbnail" src="your-image-url-here.jpg" alt="Chapter 4 Thumbnail">
-      <a class="fred-title">Chapter 4 Fred</a>
-      <div class="recent-comment" id="recent-comment-4">Loading recent comment...</div>
-    </div>
-
-    <div class="fred-thread" onclick="window.location.href='chapter5fred.html'">
-      <img class="thumbnail" src="your-image-url-here.jpg" alt="Chapter 5 Thumbnail">
-      <a class="fred-title">Chapter 5 Fred</a>
-      <div class="recent-comment" id="recent-comment-5">Loading recent comment...</div>
-    </div>
-
-    <div class="fred-thread" onclick="window.location.href='epiloguefred.html'">
-      <img class="thumbnail" src="your-image-url-here.jpg" alt="Epilogue Thumbnail">
-      <a class="fred-title">Epilogue Fred</a>
-      <div class="recent-comment" id="recent-comment-epilogue">Loading recent comment...</div>
-    </div>
-  </div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBCzabBMFxms9HfX0N411uJQYjEzspSnVk",
-      authDomain: "the-virgin-games.firebaseapp.com",
-      projectId: "the-virgin-games",
-      storageBucket: "the-virgin-games.appspot.com",
-      messagingSenderId: "1092738842373",
-      appId: "1:1092738842373:web:8bb210d9fb815cc5ae016c"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    async function loadRecentComment(threadId, commentElementId) {
-      const threadRef = doc(db, 'chapters', threadId); // Reference to the chapter document
-      const threadDoc = await getDoc(threadRef);
-      if (threadDoc.exists()) {
-        const comments = threadDoc.data().comments || [];
-        if (comments.length > 0) {
-          // Sort comments by timestamp to get the most recent one
-          const mostRecentComment = comments.sort((a, b) => b.timestamp - a.timestamp)[0];
-          const commentText = mostRecentComment.text.length > 17
-            ? mostRecentComment.text.slice(0, 17) + "..."
-            : mostRecentComment.text;
-          const commentName = mostRecentComment.name || "Anonymous";
-          document.getElementById(commentElementId).innerText = `${commentName}: ${commentText}`;
-        }
-      } else {
-        console.log("No such document!");
-      }
-    }
-
-    // Load recent comments for each thread
-    loadRecentComment('chapter1', 'recent-comment-1');
-    loadRecentComment('chapter2', 'recent-comment-2');
-    loadRecentComment('chapter3', 'recent-comment-3');
-    loadRecentComment('chapter4', 'recent-comment-4');
-    loadRecentComment('chapter5', 'recent-comment-5');
-    loadRecentComment('epilogue', 'recent-comment-epilogue');
-  </script>
-
-  <!-- Navigation Button to Home Page -->
-  <a href="index.html" style="position: fixed; top: 10px; left: 10px; z-index: 1000;">
-      <img src="https://i.imgur.com/AmjEU0x.png" alt="Home" style="width: 40px; height: 40px;">
-  </a>
+    <!-- Navigation Button to Home Page -->
+    <button class="nav-button" onclick="window.location.href='index.html'">
+        <img src="https://i.imgur.com/AmjEU0x.png" alt="Home">
+    </button>
 </body>
 </html>
