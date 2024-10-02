@@ -8,7 +8,8 @@
   <style>
     body {
       background-color: #f0f0f0; /* Subtle background color */
-      font-family: Arial, sans-serif; /* Standard font */
+      font-family: Arial, sans-serif; /* Use a simple font */
+      color: #333; /* Darker text for readability */
     }
     
     .container {
@@ -17,65 +18,72 @@
     }
     
     h1 {
-      font-family: 'Comic Sans MS', cursive; /* 4chan style font */
-      background-color: #ccffcc; /* Light green background for title */
-      margin: 0;
-      padding: 10px;
-      border: 2px solid #aaccaa; /* Border around title */
+      margin-bottom: 20px;
+      font-size: 2.5em; /* Larger title */
     }
-    
+
+    h2 {
+      margin-bottom: 20px;
+      font-size: 1.5em; /* Subtitle size */
+    }
+
     .fred-button {
       display: block;
-      margin: 10px auto; /* Center buttons */
+      margin: 10px 0;
       padding: 10px 20px;
       font-size: 18px;
       cursor: pointer;
-      background-color: white; /* White background for buttons */
-      border: 2px solid #aaa; /* Border stroke for buttons */
-      width: 300px; /* Fixed width for uniformity */
+      background-color: #ffffff; /* White background for buttons */
+      border: 2px solid #999999; /* Gray border */
       text-align: left; /* Align text to the left */
-      position: relative; /* Position relative for image */
+      position: relative; /* Position for image */
     }
-    
+
     .fred-button img {
-      width: 20px; /* Adjust image size */
-      height: 20px; /* Adjust image size */
-      position: absolute; /* Positioning for image */
-      left: 10px; /* Image position */
+      position: absolute; /* Position image on the left */
+      left: 10px; /* Space from the left */
       top: 50%; /* Center vertically */
-      transform: translateY(-50%); /* Adjust for vertical centering */
+      transform: translateY(-50%); /* Adjust vertical centering */
+      width: 24px; /* Image width */
+      height: 24px; /* Image height */
     }
 
     .credits {
-      margin-top: 20px; /* Margin for credits */
-      font-size: 14px; /* Smaller font size for credits */
-      border-top: 2px solid #aaa; /* Border above credits */
-      padding-top: 10px; /* Padding above credits */
+      margin-top: 20px; /* Space above credits */
+      font-size: 14px; /* Smaller font for credits */
+      color: #666; /* Lighter color for credits */
+    }
+
+    hr {
+      margin: 20px 0; /* Space around the horizontal rule */
+      border: none; /* Remove default border */
+      border-top: 1px solid #ccc; /* Light gray top border */
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Freds</h1>
+    <h2>Select a Fred:</h2>
     <button class="fred-button" onclick="window.location.href='chapter1fred.html'">
-      <img src="YOUR_IMAGE_URL_1" alt="Chapter 1"> Chapter 1 fred
+      <img src="image_url_for_chapter1" alt="Chapter 1"> Chapter 1 fred
     </button>
     <button class="fred-button" onclick="window.location.href='chapter2fred.html'">
-      <img src="YOUR_IMAGE_URL_2" alt="Chapter 2"> Chapter 2 fred
+      <img src="image_url_for_chapter2" alt="Chapter 2"> Chapter 2 fred
     </button>
     <button class="fred-button" onclick="window.location.href='chapter3fred.html'">
-      <img src="YOUR_IMAGE_URL_3" alt="Chapter 3"> Chapter 3 fred
+      <img src="image_url_for_chapter3" alt="Chapter 3"> Chapter 3 fred
     </button>
     <button class="fred-button" onclick="window.location.href='chapter4fred.html'">
-      <img src="YOUR_IMAGE_URL_4" alt="Chapter 4"> Chapter 4 fred
+      <img src="image_url_for_chapter4" alt="Chapter 4"> Chapter 4 fred
     </button>
     <button class="fred-button" onclick="window.location.href='chapter5fred.html'">
-      <img src="YOUR_IMAGE_URL_5" alt="Chapter 5"> Chapter 5 fred
+      <img src="image_url_for_chapter5" alt="Chapter 5"> Chapter 5 fred
     </button>
     <button class="fred-button" onclick="window.location.href='epiloguefred.html'">
-      <img src="YOUR_IMAGE_URL_6" alt="Epilogue"> Epilogue fred
+      <img src="image_url_for_epilogue" alt="Epilogue"> Epilogue fred
     </button>
-
+    
     <!-- Credits Section -->
     <hr>
     <section class="credits">
