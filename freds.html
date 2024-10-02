@@ -7,157 +7,66 @@
   <link rel="stylesheet" href="styles.css">
   <style>
     body {
-      background-color: #f0f0f0; /* Light grey background for a forum feel */
-      font-family: Arial, sans-serif; /* Use a clean, sans-serif font */
-      color: #333; /* Dark text color for contrast */
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0; /* Light gray background */
+      color: #333; /* Dark text for contrast */
       margin: 0;
-      padding: 0;
-    }
-
-    .container {
-      max-width: 800px; /* Limit width for readability */
-      margin: 20px auto; /* Center container */
       padding: 20px;
-      background-color: #fff; /* White background for the container */
-      border-radius: 8px; /* Rounded corners for a softer look */
     }
-
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
     h1 {
-      text-align: center; /* Center headings */
-      color: #333; /* Darker color for headings */
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      color: #2a9d8f; /* Teal color */
     }
-
-    .fred-thread {
-      display: flex; /* Flexbox for layout */
-      align-items: center; /* Center items vertically */
-      background-color: #f9f9f9; /* Light background for each thread */
-      border: 1px solid #ddd; /* Border for threads */
-      border-radius: 5px; /* Rounded corners */
-      padding: 10px; /* Padding inside thread buttons */
-      margin: 10px 0; /* Margin between threads */
-      cursor: pointer; /* Pointer cursor for clickable threads */
-      width: 100%; /* Make the thread buttons wider */
+    h2 {
+      font-size: 1.5em;
+      margin-bottom: 20px;
+      color: #264653; /* Darker teal */
     }
-
-    .fred-image {
-      width: 100px; /* Thumbnail size */
-      height: 75px; /* Thumbnail size */
-      border-radius: 4px; /* Rounded corners for images */
-      margin-right: 10px; /* Spacing between image and text */
+    .thread {
+      background-color: #fff; /* White background for threads */
+      border: 1px solid #ccc; /* Light gray border */
+      border-radius: 8px; /* Rounded corners */
+      margin: 10px 0;
+      padding: 15px;
+      text-align: left; /* Align text to the left */
+      transition: box-shadow 0.3s; /* Add transition for hover effect */
+      cursor: pointer; /* Pointer cursor */
     }
-
-    .thread-info {
-      flex-grow: 1; /* Allow text to take available space */
-      display: flex;
-      flex-direction: column; /* Stack the title and comment */
+    .thread:hover {
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Hover effect */
     }
-
-    .thread-title {
-      font-size: 20px; /* Larger font for thread titles */
-      color: #007BFF; /* Blue color for thread titles */
-      text-decoration: none; /* Remove underline */
-      margin: 0; /* Reset margin */
+    .thread img {
+      max-width: 100%; /* Responsive image size */
+      border-radius: 5px; /* Rounded corners for images */
     }
-
     .recent-comment {
-      font-size: 14px; /* Smaller font for recent comments */
-      color: #555; /* Dark grey color for comments */
-      margin: 0; /* Reset margin */
+      font-size: 0.9em; /* Smaller font for recent comment */
+      color: #555; /* Gray color for comments */
+      margin-top: 10px;
     }
-
-    /* Credits Section */
-    .credits {
-      margin-top: 20px; /* Add margin above the credits section */
-      text-align: center; /* Center the credits text */
-      font-size: 14px; /* Smaller font size for credits */
-      color: #777; /* Grey color for credits text */
-    }
-
-    /* Navigation Button Style */
-    .nav-button {
-      position: fixed; /* Fixed position for home button */
-      top: 10px; /* Position from top */
-      left: 10px; /* Position from left */
-      z-index: 1000; /* Ensure it stays above other elements */
-    }
-
-    .nav-button img {
-      width: 40px; /* Set image size */
-      height: 40px; /* Set image size */
+    .recent-comment span {
+      font-weight: bold; /* Bold for poster's name */
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Freds</h1>
-    
-    <!-- Thread Buttons -->
-    <div class="fred-thread" onclick="window.location.href='chapter1fred.html'">
-      <img src="YOUR_CHAPTER_1_IMAGE_URL" alt="Chapter 1" class="fred-image">
-      <div class="thread-info">
-        <h3 class="thread-title">Chapter 1 fred</h3>
-        <p class="recent-comment" id="chapter1RecentComment"></p>
-      </div>
-    </div>
+    <h2>Select a Fred:</h2>
 
-    <div class="fred-thread" onclick="window.location.href='chapter2fred.html'">
-      <img src="YOUR_CHAPTER_2_IMAGE_URL" alt="Chapter 2" class="fred-image">
-      <div class="thread-info">
-        <h3 class="thread-title">Chapter 2 fred</h3>
-        <p class="recent-comment" id="chapter2RecentComment"></p>
-      </div>
-    </div>
+    <div id="threads"></div> <!-- Container for threads -->
 
-    <div class="fred-thread" onclick="window.location.href='chapter3fred.html'">
-      <img src="YOUR_CHAPTER_3_IMAGE_URL" alt="Chapter 3" class="fred-image">
-      <div class="thread-info">
-        <h3 class="thread-title">Chapter 3 fred</h3>
-        <p class="recent-comment" id="chapter3RecentComment"></p>
-      </div>
-    </div>
-
-    <div class="fred-thread" onclick="window.location.href='chapter4fred.html'">
-      <img src="YOUR_CHAPTER_4_IMAGE_URL" alt="Chapter 4" class="fred-image">
-      <div class="thread-info">
-        <h3 class="thread-title">Chapter 4 fred</h3>
-        <p class="recent-comment" id="chapter4RecentComment"></p>
-      </div>
-    </div>
-
-    <div class="fred-thread" onclick="window.location.href='chapter5fred.html'">
-      <img src="YOUR_CHAPTER_5_IMAGE_URL" alt="Chapter 5" class="fred-image">
-      <div class="thread-info">
-        <h3 class="thread-title">Chapter 5 fred</h3>
-        <p class="recent-comment" id="chapter5RecentComment"></p>
-      </div>
-    </div>
-
-    <div class="fred-thread" onclick="window.location.href='epiloguefred.html'">
-      <img src="YOUR_EPILOGUE_IMAGE_URL" alt="Epilogue" class="fred-image">
-      <div class="thread-info">
-        <h3 class="thread-title">Epilogue fred</h3>
-        <p class="recent-comment" id="epilogueRecentComment"></p>
-      </div>
-    </div>
-
-    <!-- Credits Section -->
-    <hr>
-    <section class="credits">
-      <h3>Credits</h3>
-      <p>Email: Awesomecatsandpuppies@gmail.com</p>
-      <p>Server: discord.gg/r4hBkmd5Yq</p>
-      <p>Team: @7teens, @redmilfed, @yuyuuser</p>
-    </section>
   </div>
-
-  <!-- Navigation Button to Home Page -->
-  <a href="index.html" class="nav-button">
-    <img src="https://i.imgur.com/AmjEU0x.png" alt="Home">
-  </a>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
 
     // Firebase configuration
     const firebaseConfig = {
@@ -173,33 +82,54 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Function to fetch recent comments for threads
-    async function fetchRecentComments() {
-      const chapters = ['chapter1', 'chapter2', 'chapter3', 'chapter4', 'chapter5', 'epilogue'];
+    async function loadThreads() {
+      const threadsContainer = document.getElementById('threads');
+      const threads = [
+        { title: "Chapter 1 fred", img: "YOUR_IMAGE_URL_FOR_CHAPTER_1", path: "chapter1fred.html", collection: "chapter1" },
+        { title: "Chapter 2 fred", img: "YOUR_IMAGE_URL_FOR_CHAPTER_2", path: "chapter2fred.html", collection: "chapter2" },
+        { title: "Chapter 3 fred", img: "YOUR_IMAGE_URL_FOR_CHAPTER_3", path: "chapter3fred.html", collection: "chapter3" },
+        { title: "Chapter 4 fred", img: "YOUR_IMAGE_URL_FOR_CHAPTER_4", path: "chapter4fred.html", collection: "chapter4" },
+        { title: "Chapter 5 fred", img: "YOUR_IMAGE_URL_FOR_CHAPTER_5", path: "chapter5fred.html", collection: "chapter5" },
+        { title: "Epilogue fred", img: "YOUR_IMAGE_URL_FOR_EPILOGUE", path: "epiloguefred.html", collection: "epilogue" },
+      ];
 
-      for (const chapter of chapters) {
-        const commentRef = doc(db, chapter, 'comments');
-        const commentDoc = await getDoc(commentRef);
+      for (const thread of threads) {
+        const latestComment = await getLatestComment(thread.collection);
 
-        if (commentDoc.exists()) {
-          const comments = commentDoc.data().comments || [];
-          // Get the most recent comment based on the timestamp
-          const recentComment = comments.sort((a, b) => b.timestamp - a.timestamp)[0];
-          if (recentComment) {
-            const commentText = recentComment.text.length > 17 ? `${recentComment.text.substring(0, 17)}...` : recentComment.text;
-            const commentName = recentComment.name || "Anonymous"; // Default to "Anonymous" if name is missing
-            document.getElementById(`${chapter}RecentComment`).innerText = `${commentName}: ${commentText}`; // Display comment
-          } else {
-            document.getElementById(`${chapter}RecentComment`).innerText = ''; // Clear if no comment
-          }
-        } else {
-          document.getElementById(`${chapter}RecentComment`).innerText = ''; // Clear if no document
-        }
+        const threadElement = document.createElement('div');
+        threadElement.className = 'thread';
+        threadElement.onclick = () => window.location.href = thread.path;
+
+        threadElement.innerHTML = `
+          <img src="${thread.img}" alt="${thread.title}">
+          <h3>${thread.title}</h3>
+          <div class="recent-comment">
+            ${latestComment ? `<span>${latestComment.name}:</span> ${truncateComment(latestComment.text)}` : "No comments yet."}
+          </div>
+        `;
+        
+        threadsContainer.appendChild(threadElement);
       }
     }
 
-    // Call the function to fetch comments
-    fetchRecentComments();
+    async function getLatestComment(collectionName) {
+      const commentsCollection = collection(db, collectionName, "comments");
+      const q = query(commentsCollection, orderBy("timestamp", "desc"));
+      const querySnapshot = await getDocs(q);
+      const latestComment = querySnapshot.docs[0]?.data(); // Get the most recent comment
+      return latestComment ? { text: latestComment.text, name: latestComment.name || "Anonymous" } : null;
+    }
+
+    function truncateComment(comment) {
+      return comment.length > 17 ? comment.slice(0, 17) + '...' : comment;
+    }
+
+    loadThreads();
   </script>
+
+  <!-- Navigation Button to Home Page -->
+  <a href="index.html" style="position: fixed; top: 10px; left: 10px; z-index: 1000;">
+      <img src="https://i.imgur.com/AmjEU0x.png" alt="Home" style="width: 40px; height: 40px;">
+  </a>
 </body>
 </html>
