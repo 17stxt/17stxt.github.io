@@ -6,9 +6,9 @@
   <title>Epilogue Thread</title>
   <link rel="stylesheet" href="styles.css">
   
-  <!-- Include Firebase scripts -->
-  <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-firestore.js"></script>
+  <!-- Include Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
 
   <style>
     .container {
@@ -57,7 +57,7 @@
     };
 
     // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
+    firebase.initializeApp(firebaseConfig);
     const firestore = firebase.firestore();
 
     // Reference to comments in Firestore
