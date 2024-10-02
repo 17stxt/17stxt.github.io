@@ -41,13 +41,14 @@
           // Display name and text
           const name = comment.name ? comment.name : "Anonymous";
           commentElement.innerHTML = `${name}: ${comment.text}`;
-          
-          // If an image URL exists, display it
-          if (comment.image) {
-            const imageElement = document.createElement('img');
-            imageElement.src = comment.image;
-            imageElement.className = 'comment-image';
-            commentElement.appendChild(imageElement);
+
+          // Check for an image and add it if it exists
+          if (comment.imageUrl) {
+            const img = document.createElement('img');
+            img.src = comment.imageUrl;
+            img.alt = "Comment image";
+            img.className = 'comment-image';
+            commentElement.appendChild(img);
           }
 
           // Create the vote section (green button, red button, and vote label)
@@ -56,11 +57,11 @@
           
           const upvoteButton = document.createElement('button');
           upvoteButton.className = 'upvote';
-          upvoteButton.innerHTML = '<img src="https://github-production-user-asset-6210df.s3.amazonaws.com/183553458/372749609-032a4e03-8cb0-4246-9019-0e362c89f50a.png" alt="Upvote" />';
+          upvoteButton.innerText = '↑';
           
           const downvoteButton = document.createElement('button');
           downvoteButton.className = 'downvote';
-          downvoteButton.innerHTML = '<img src="https://i.imgur.com/0fEI0v7.png" alt="Downvote" />';
+          downvoteButton.innerText = '↓';
 
           const voteLabel = document.createElement('span');
           voteLabel.className = 'vote-count';
@@ -127,10 +128,10 @@
     document.getElementById('postButton').addEventListener('click', async () => {
       const commentInput = document.getElementById('commentInput');
       const nameInput = document.getElementById('nameInput'); // Get the name input value
-      const imageInput = document.getElementById('imageInput'); // Get the image input value
+      const imageInput = document.getElementById('imageInput'); // Get the image URL input value
       const commentText = commentInput.value.trim(); // Trim whitespace
       const nameText = nameInput.value.trim() || "Anonymous"; // Default to "Anonymous" if no name is provided
-      const imageUrl = imageInput.value.trim(); // Trim whitespace
+      const imageUrl = imageInput.value.trim(); // Get the image URL
 
       if (commentText === "") {
           alert("Comment cannot be empty!"); // Alert if comment is empty
@@ -139,18 +140,24 @@
 
       // Add the comment to the Firestore document
       await updateDoc(commentsRef, {
-          comments: arrayUnion({ text: commentText, name: nameText, votes: 0, voteType: null, image: imageUrl }) // Include name and image with comment
+          comments: arrayUnion({ text: commentText, name: nameText, votes: 0, voteType: null, imageUrl }) // Include name and image URL with comment
       })
       .then(() => {
           console.log("Comment posted successfully!"); // Log success
           commentInput.value = ""; // Clear the input box
           nameInput.value = ""; // Clear the name box
-          imageInput.value = ""; // Clear the image input box
+          imageInput.value = ""; // Clear the image URL box
       })
       .catch((error) => {
           console.error("Error posting comment:", error); // Log error
       });
     });
+
+    // Function to toggle image input visibility
+    function toggleImageInput() {
+      const imageInputContainer = document.getElementById('imageInputContainer');
+      imageInputContainer.classList.toggle('hidden'); // Toggle visibility
+    }
   </script>
 
   <style>
@@ -168,17 +175,16 @@
     .comment {
       border: 1px solid #ddd;
       border-radius: 5px;
-      padding: 5px; /* Adjusted padding */
+      padding: 5px; /* Reduced padding for shorter height */
       margin: 5px 0;
       background-color: #f9f9f9;
       display: flex;
-      flex-direction: column; /* Make it vertical */
-      align-items: flex-start; /* Align items to the left */
+      flex-direction: column; /* Allow for vertical stacking */
     }
     .comment-image {
-      max-width: 100%; /* Ensure image fits within the comment box */
-      max-height: 150px; /* Limit the height of the image */
-      margin-top: 5px; /* Space between text and image */
+      max-width: 100%; /* Make sure images fit within the comment box */
+      height: auto;
+      margin: 5px 0;
     }
     .comment-box {
       width: 300px;
@@ -189,10 +195,6 @@
       height: 30px;
       margin-bottom: 10px;
     }
-    .image-box {
-      width: 100%; /* Full width */
-      margin-top: 10px;
-    }
     .post-button {
       margin-top: 10px;
       padding: 10px 20px;
@@ -201,32 +203,47 @@
     .vote-container {
       display: flex;
       align-items: center;
+      margin-top: 5px; /* Reduce margin for closer buttons */
     }
     .upvote, .downvote {
-      margin-right: 3px; /* Reduced margin */
+      margin-right: 2px; /* Less spread between buttons */
       padding: 5px;
       border: none;
       cursor: pointer;
     }
     .upvote {
-      background-color: transparent; /* Set background to transparent for image button */
+      background-color: green;
+      color: white;
     }
     .downvote {
-      background-color: transparent; /* Set background to transparent for image button */
+      background-color: red;
+      color: white;
     }
-    .upvote:hover img {
-      opacity: 0.8; /* Darken on hover */
+    .upvote:hover {
+      background-color: darkgreen; /* Darker green for hover */
     }
-    .downvote:hover img {
-      opacity: 0.8; /* Darken on hover */
+    .downvote:hover {
+      background-color: darkred; /* Darker red for hover */
     }
     .vote-count {
-      margin-left: 5px; /* Reduced margin */
+      margin-left: 5px; /* Less space between vote count and buttons */
     }
     .image-input-container {
-      display: flex; /* Use flex for alignment */
-      align-items: center; /* Center vertically */
-      margin-top: 10px; /* Space between the comment box and image input */
+      display: flex;
+      align-items: center;
+      margin-top: 10px; /* Space between comment box and image input */
+    }
+    .image-input {
+      width: 100%; /* Make it fill the space */
+      margin-left: 5px;
+    }
+    .hidden {
+      display: none; /* Hide image input by default */
+    }
+    .toggle-image-button {
+      padding: 5px;
+      cursor: pointer;
+      margin-top: 10px; /* Space above the button */
     }
   </style>
 </head>
@@ -242,10 +259,14 @@
 
     <!-- Comment Input Section -->
     <textarea class="comment-box" id="commentInput" placeholder="Write your comment..."></textarea>
+    
+    <!-- Image Input Section -->
     <div class="image-input-container">
-      <input type="text" class="image-box" id="imageInput" placeholder="Paste image URL here..." />
-      <button class="post-button" id="postButton">Post Comment</button>
+      <button class="toggle-image-button" id="toggleImageButton" onclick="toggleImageInput()">Add Image/GIF</button>
+      <input type="text" class="image-input hidden" id="imageInput" placeholder="Paste image/GIF URL here..." />
     </div>
+    
+    <button class="post-button" id="postButton">Post Comment</button>
   </div>
 </body>
 </html>
