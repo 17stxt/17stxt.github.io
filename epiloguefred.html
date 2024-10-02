@@ -83,96 +83,98 @@ onSnapshot(commentsRef, (doc) => {
       commentElement.appendChild(voteContainer);
       commentsContainer.appendChild(commentElement);
 
-      // Upvote logic
-      upvoteButton.addEventListener('click', async () => {
-        const updatedComment = { ...comment }; // Create a copy to avoid mutation
-        if (updatedComment.voteType === 'upvote') {
-          // Remove upvote
-          updatedComment.votes -= 1;
-          updatedComment.voteType = null;
-        } else {
-          // Add upvote and remove downvote if it exists
-          updatedComment.votes += 1;
-          if (updatedComment.voteType === 'downvote') {
-            updatedComment.votes += 1; // Neutralize the previous downvote
-          }
-          updatedComment.voteType = 'upvote';
-        }
-        await updateVotes(index, updatedComment); // Pass updated comment
-      });
+// Upvote logic
+upvoteButton.addEventListener('click', async () => {
+  const commentId = comment.id; // Get the unique ID of the comment
+  if (comment.voteType === 'upvote') {
+    comment.votes -= 1;
+    comment.voteType = null;
+  } else {
+    comment.votes += 1;
+    if (comment.voteType === 'downvote') {
+      comment.votes += 1; // Neutralize the previous downvote
+    }
+    comment.voteType = 'upvote';
+  }
+  await updateVotes(commentId, comment); // Pass ID instead of index
+});
 
-      // Downvote logic
-      downvoteButton.addEventListener('click', async () => {
-        const updatedComment = { ...comment }; // Create a copy to avoid mutation
-        if (updatedComment.voteType === 'downvote') {
-          // Remove downvote
-          updatedComment.votes += 1;
-          updatedComment.voteType = null;
-        } else {
-          // Add downvote and remove upvote if it exists
-          updatedComment.votes -= 1;
-          if (updatedComment.voteType === 'upvote') {
-            updatedComment.votes -= 1; // Neutralize the previous upvote
-          }
-          updatedComment.voteType = 'downvote';
-        }
-        await updateVotes(index, updatedComment); // Pass updated comment
-      });
+// Downvote logic
+downvoteButton.addEventListener('click', async () => {
+  const commentId = comment.id; // Get the unique ID of the comment
+  if (comment.voteType === 'downvote') {
+    comment.votes += 1;
+    comment.voteType = null;
+  } else {
+    comment.votes -= 1;
+    if (comment.voteType === 'upvote') {
+      comment.votes -= 1; // Neutralize the previous upvote
+    }
+    comment.voteType = 'downvote';
+  }
+  await updateVotes(commentId, comment); // Pass ID instead of index
+});
+
     });
   }
 });
 
-// Update votes function remains unchanged
-async function updateVotes(index, updatedComment) {
-  const commentsDoc = await getDoc(commentsRef); // Use getDoc to fetch the document
-  const comments = commentsDoc.data().comments || []; // Get comments from the document
+async function updateVotes(commentId, updatedComment) {
+  const commentsDoc = await getDoc(commentsRef);
+  const comments = commentsDoc.data().comments || [];
 
-  // Update the specific comment
-  comments[index] = updatedComment;
+  // Find the index of the comment to update by ID
+  const commentIndex = comments.findIndex(comment => comment.id === commentId);
+  if (commentIndex !== -1) {
+    comments[commentIndex] = updatedComment; // Update the specific comment
+  }
 
-  // Update Firestore with the modified comments array
   await updateDoc(commentsRef, {
     comments: comments
   });
 }
 
 
-    // Function to post a comment
-    document.getElementById('postButton').addEventListener('click', async () => {
-      const commentInput = document.getElementById('commentInput');
-      const nameInput = document.getElementById('nameInput'); // Get the name input value
-      const commentText = commentInput.value.trim(); // Trim whitespace
-      const nameText = nameInput.value.trim() || "Anonymous"; // Default to "Anonymous" if no name is provided
 
-      if (commentText === "") {
-        alert("Comment cannot be empty!"); // Alert if comment is empty
-        return;
-      }
+// Function to post a comment
+document.getElementById('postButton').addEventListener('click', async () => {
+  const commentInput = document.getElementById('commentInput');
+  const nameInput = document.getElementById('nameInput');
+  const commentText = commentInput.value.trim();
+  const nameText = nameInput.value.trim() || "Anonymous";
 
-      // Check if there's an image URL in the comment
-      const imageUrlMatch = commentText.match(/https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp)/); // Regex to match image URLs
-      const imageUrl = imageUrlMatch ? imageUrlMatch[0] : null;
+  if (commentText === "") {
+    alert("Comment cannot be empty!");
+    return;
+  }
 
-      // Add the comment to the Firestore document
-      await updateDoc(commentsRef, {
-        comments: arrayUnion({
-          text: commentText,
-          name: nameText,
-          votes: 0,
-          voteType: null,
-          imageUrl: imageUrl,
-          timestamp: new Date().getTime() // Add timestamp in milliseconds
-        })
-      })
-      .then(() => {
-        console.log("Comment posted successfully!"); // Log success
-        commentInput.value = ""; // Clear the input box
-        nameInput.value = ""; // Clear the name box
-      })
-      .catch((error) => {
-        console.error("Error posting comment:", error); // Log error
-      });
-    });
+  const imageUrlMatch = commentText.match(/https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp)/);
+  const imageUrl = imageUrlMatch ? imageUrlMatch[0] : null;
+
+  // Generate a unique ID for the comment
+  const commentId = new Date().getTime(); // Using timestamp as a unique ID
+
+  await updateDoc(commentsRef, {
+    comments: arrayUnion({
+      id: commentId, // Add unique ID here
+      text: commentText,
+      name: nameText,
+      votes: 0,
+      voteType: null,
+      imageUrl: imageUrl,
+      timestamp: new Date().getTime() // Add timestamp in milliseconds
+    })
+  })
+  .then(() => {
+    console.log("Comment posted successfully!");
+    commentInput.value = "";
+    nameInput.value = "";
+  })
+  .catch((error) => {
+    console.error("Error posting comment:", error);
+  });
+});
+
   </script>
 
   <style>
