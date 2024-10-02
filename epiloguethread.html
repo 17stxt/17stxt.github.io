@@ -9,7 +9,7 @@
   <!-- Include Firebase SDKs -->
   <script type="module">
      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-     import { getFirestore, collection, onSnapshot, updateDoc, arrayUnion, doc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+     import { getFirestore, collection, onSnapshot, updateDoc, arrayUnion, doc, arrayRemove } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
      
      // Firebase configuration
      const firebaseConfig = {
@@ -33,14 +33,83 @@
       commentsContainer.innerHTML = ""; // Clear previous comments
       if (doc.exists()) {
         const comments = doc.data().comments || [];
-        comments.forEach((comment) => {
+        comments.forEach((comment, index) => {
           const commentElement = document.createElement('div');
           commentElement.className = 'comment'; // Add a class for styling
-          commentElement.innerText = `${comment.name}: ${comment.text}`; // Display name and text
+          
+          // Display name and text
+          const name = comment.name ? comment.name : "Anonymous";
+          commentElement.innerHTML = `${name}: ${comment.text}`;
+
+          // Create the vote section (green button, red button, and vote label)
+          const voteContainer = document.createElement('div');
+          voteContainer.className = 'vote-container';
+          
+          const upvoteButton = document.createElement('button');
+          upvoteButton.className = 'upvote';
+          upvoteButton.innerText = '↑';
+          
+          const downvoteButton = document.createElement('button');
+          downvoteButton.className = 'downvote';
+          downvoteButton.innerText = '↓';
+
+          const voteLabel = document.createElement('span');
+          voteLabel.className = 'vote-count';
+          voteLabel.innerText = comment.votes || 0; // Default to 0 votes
+
+          voteContainer.appendChild(upvoteButton);
+          voteContainer.appendChild(downvoteButton);
+          voteContainer.appendChild(voteLabel);
+          
+          commentElement.appendChild(voteContainer);
           commentsContainer.appendChild(commentElement);
+
+          // Upvote logic
+          upvoteButton.addEventListener('click', async () => {
+            if (comment.voteType === 'upvote') {
+              // Remove upvote
+              comment.votes -= 1;
+              comment.voteType = null;
+            } else {
+              // Add upvote and remove downvote if it exists
+              comment.votes += 1;
+              if (comment.voteType === 'downvote') {
+                comment.votes += 1; // Neutralize the previous downvote
+              }
+              comment.voteType = 'upvote';
+            }
+            await updateVotes(index, comment);
+          });
+
+          // Downvote logic
+          downvoteButton.addEventListener('click', async () => {
+            if (comment.voteType === 'downvote') {
+              // Remove downvote
+              comment.votes += 1;
+              comment.voteType = null;
+            } else {
+              // Add downvote and remove upvote if it exists
+              comment.votes -= 1;
+              if (comment.voteType === 'upvote') {
+                comment.votes -= 1; // Neutralize the previous upvote
+              }
+              comment.voteType = 'downvote';
+            }
+            await updateVotes(index, comment);
+          });
         });
       }
     });
+
+    // Update Firestore with new votes
+    async function updateVotes(index, updatedComment) {
+      const comments = (await commentsRef.get()).data().comments || [];
+      comments[index] = updatedComment;
+
+      await updateDoc(commentsRef, {
+        comments: comments
+      });
+    }
 
     // Function to post a comment
     document.getElementById('postButton').addEventListener('click', async () => {
@@ -56,7 +125,7 @@
 
       // Add the comment to the Firestore document
       await updateDoc(commentsRef, {
-          comments: arrayUnion({ text: commentText, name: nameText }) // Include name with comment
+          comments: arrayUnion({ text: commentText, name: nameText, votes: 0, voteType: null }) // Include name with comment
       })
       .then(() => {
           console.log("Comment posted successfully!"); // Log success
@@ -87,6 +156,9 @@
       padding: 10px;
       margin: 5px 0;
       background-color: #f9f9f9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .comment-box {
       width: 300px;
@@ -101,6 +173,27 @@
       margin-top: 10px;
       padding: 10px 20px;
       font-size: 16px;
+    }
+    .vote-container {
+      display: flex;
+      align-items: center;
+    }
+    .upvote, .downvote {
+      margin-right: 5px;
+      padding: 5px;
+      border: none;
+      cursor: pointer;
+    }
+    .upvote {
+      background-color: green;
+      color: white;
+    }
+    .downvote {
+      background-color: red;
+      color: white;
+    }
+    .vote-count {
+      margin-left: 10px;
     }
   </style>
 </head>
