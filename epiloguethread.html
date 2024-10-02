@@ -8,6 +8,7 @@
   
   <!-- Include Firebase SDKs -->
   <script type="module">
+      import { getDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
      import { getFirestore, doc, onSnapshot, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
      
@@ -101,19 +102,19 @@
       }
     });
 
-    // Update Firestore with new votes
-    async function updateVotes(index, updatedComment) {
-      const commentsDoc = await commentsRef.get(); // Fetch the document
-      const comments = commentsDoc.data().comments || []; // Get comments from the document
+async function updateVotes(index, updatedComment) {
+  const commentsDoc = await getDoc(commentsRef); // Use getDoc to fetch the document
+  const comments = commentsDoc.data().comments || []; // Get comments from the document
 
-      // Update the specific comment
-      comments[index] = updatedComment;
+  // Update the specific comment
+  comments[index] = updatedComment;
 
-      // Update Firestore with the modified comments array
-      await updateDoc(commentsRef, {
-        comments: comments
-      });
-    }
+  // Update Firestore with the modified comments array
+  await updateDoc(commentsRef, {
+    comments: comments
+  });
+}
+
 
     // Function to post a comment
     document.getElementById('postButton').addEventListener('click', async () => {
