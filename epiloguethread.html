@@ -9,8 +9,8 @@
   <!-- Include Firebase SDKs -->
   <script type="module">
       import { getDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
-     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-     import { getFirestore, doc, onSnapshot, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+      import { getFirestore, doc, onSnapshot, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
      
      // Firebase configuration
      const firebaseConfig = {
@@ -42,17 +42,17 @@
           const name = comment.name ? comment.name : "Anonymous";
           commentElement.innerHTML = `${name}: ${comment.text}`;
 
-          // Create the vote section (green button, red button, and vote label)
+          // Create the vote section (emoji buttons and vote label)
           const voteContainer = document.createElement('div');
           voteContainer.className = 'vote-container';
           
           const upvoteButton = document.createElement('button');
-          upvoteButton.className = 'upvote';
-          upvoteButton.innerText = '↑';
+          upvoteButton.className = 'upvote vote-button';
+          upvoteButton.innerText = '❤️'; // Upvote emoji
           
           const downvoteButton = document.createElement('button');
-          downvoteButton.className = 'downvote';
-          downvoteButton.innerText = '↓';
+          downvoteButton.className = 'downvote vote-button';
+          downvoteButton.innerText = '💔'; // Downvote emoji
 
           const voteLabel = document.createElement('span');
           voteLabel.className = 'vote-count';
@@ -102,19 +102,18 @@
       }
     });
 
-async function updateVotes(index, updatedComment) {
-  const commentsDoc = await getDoc(commentsRef); // Use getDoc to fetch the document
-  const comments = commentsDoc.data().comments || []; // Get comments from the document
+    async function updateVotes(index, updatedComment) {
+      const commentsDoc = await getDoc(commentsRef); // Use getDoc to fetch the document
+      const comments = commentsDoc.data().comments || []; // Get comments from the document
 
-  // Update the specific comment
-  comments[index] = updatedComment;
+      // Update the specific comment
+      comments[index] = updatedComment;
 
-  // Update Firestore with the modified comments array
-  await updateDoc(commentsRef, {
-    comments: comments
-  });
-}
-
+      // Update Firestore with the modified comments array
+      await updateDoc(commentsRef, {
+        comments: comments
+      });
+    }
 
     // Function to post a comment
     document.getElementById('postButton').addEventListener('click', async () => {
@@ -167,7 +166,7 @@ async function updateVotes(index, updatedComment) {
     }
     .comment-box {
       width: 300px;
-      height: 50px;
+      height: 30px; /* Reduced height */
     }
     .name-box {
       width: 300px;
@@ -183,25 +182,18 @@ async function updateVotes(index, updatedComment) {
       display: flex;
       align-items: center;
     }
-    .upvote, .downvote {
-      margin-right: 5px;
+    .vote-button {
+      margin-right: 5px; /* Reduced margin */
       padding: 5px;
       border: none;
       cursor: pointer;
+      font-size: 20px; /* Size for emoji buttons */
     }
     .upvote {
-      background-color: green;
-      color: white;
+      color: green;
     }
     .downvote {
-      background-color: red;
-      color: white;
-    }
-    .upvote:hover {
-      background-color: darkgreen; /* Darker green for hover */
-    }
-    .downvote:hover {
-      background-color: darkred; /* Darker red for hover */
+      color: red;
     }
     .vote-count {
       margin-left: 10px;
