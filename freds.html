@@ -5,70 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Freds</title>
   <link rel="stylesheet" href="styles.css">
-  
-  <!-- Include Firebase SDKs -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
-    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
-
-    // Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyBCzabBMFxms9HfX0N411uJQYjEzspSnVk",
-      authDomain: "the-virgin-games.firebaseapp.com",
-      projectId: "the-virgin-games",
-      storageBucket: "the-virgin-games.appspot.com",
-      messagingSenderId: "1092738842373",
-      appId: "1:1092738842373:web:8bb210d9fb815cc5ae016c"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
-
-    let currentUser = null;
-
-    // Sign in anonymously and listen for auth state changes
-    signInAnonymously(auth).catch(error => {
-      console.error("Error during anonymous sign-in:", error);
-    });
-
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        currentUser = user;
-        console.log("Anonymous User Signed In:", user.uid);
-      } else {
-        console.log("User signed out");
-      }
-    });
-
-    // Function to handle name registration
-    document.getElementById('registerButton').addEventListener('click', async () => {
-      const nameInput = document.getElementById('nameInput');
-      const nameText = nameInput.value.trim();
-
-      if (nameText === "") {
-        alert("Name cannot be empty!");
-        return;
-      }
-
-      const nameDoc = doc(db, "usernames", nameText);
-      const nameSnapshot = await getDoc(nameDoc);
-
-      if (nameSnapshot.exists()) {
-        alert("This name is already taken! Please choose another one.");
-      } else {
-        await setDoc(nameDoc, {
-          uid: currentUser.uid
-        });
-
-        alert(`Name '${nameText}' registered successfully!`);
-        nameInput.value = ""; // Clear the input box
-      }
-    });
-  </script>
-
   <style>
     .container {
       text-align: center;
@@ -80,16 +16,6 @@
       padding: 10px 20px;
       font-size: 18px;
       cursor: pointer;
-    }
-    .name-input {
-      width: 300px;
-      height: 30px;
-      margin-bottom: 10px;
-    }
-    .register-button {
-      margin-top: 10px;
-      padding: 10px 20px;
-      font-size: 16px;
     }
   </style>
 </head>
@@ -103,10 +29,11 @@
     <button class="fred-button" onclick="window.location.href='chapter4fred.html'">Chapter 4 fred</button>
     <button class="fred-button" onclick="window.location.href='chapter5fred.html'">Chapter 5 fred</button>
     <button class="fred-button" onclick="window.location.href='epiloguefred.html'">Epilogue fred</button>
-    
-    <!-- Name Registration Section -->
-    <input type="text" class="name-input" id="nameInput" placeholder="Enter your name to register" />
-    <button class="register-button" id="registerButton">Register Name</button>
   </div>
 </body>
 </html>
+
+<!-- Navigation Button to Home Page -->
+<a href="index.html" style="position: fixed; top: 10px; left: 10px; z-index: 1000;">
+    <img src="https://i.imgur.com/AmjEU0x.png" alt="Home" style="width: 40px; height: 40px;">
+</a>
