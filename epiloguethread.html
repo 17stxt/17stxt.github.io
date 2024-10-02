@@ -8,28 +8,28 @@
   
   <!-- Include Firebase SDKs -->
   <script type="module">
-    import { getDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-    import { getFirestore, doc, onSnapshot, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
-    
-    // Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyBCzabBMFxms9HfX0N411uJQYjEzspSnVk",
-      authDomain: "the-virgin-games.firebaseapp.com",
-      projectId: "the-virgin-games",
-      storageBucket: "the-virgin-games.appspot.com",
-      messagingSenderId: "1092738842373",
-      appId: "1:1092738842373:web:8bb210d9fb815cc5ae016c"
-    };
+      import { getDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+      import { getFirestore, doc, onSnapshot, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+     
+     // Firebase configuration
+     const firebaseConfig = {
+        apiKey: "AIzaSyBCzabBMFxms9HfX0N411uJQYjEzspSnVk",
+        authDomain: "the-virgin-games.firebaseapp.com",
+        projectId: "the-virgin-games",
+        storageBucket: "the-virgin-games.appspot.com",
+        messagingSenderId: "1092738842373",
+        appId: "1:1092738842373:web:8bb210d9fb815cc5ae016c"
+     };
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+     // Initialize Firebase
+     const app = initializeApp(firebaseConfig);
+     const db = getFirestore(app);
 
-    const commentsRef = doc(db, 'epilogue', 'comments'); // Firestore reference to the comments document
+     const commentsRef = doc(db, 'epilogue', 'comments'); // Firestore reference to the comments document
 
-    // Function to display comments
-    onSnapshot(commentsRef, (doc) => {
+     // Function to display comments
+     onSnapshot(commentsRef, (doc) => {
       const commentsContainer = document.getElementById('comments');
       commentsContainer.innerHTML = ""; // Clear previous comments
       if (doc.exists()) {
@@ -37,16 +37,16 @@
         comments.forEach((comment, index) => {
           const commentElement = document.createElement('div');
           commentElement.className = 'comment'; // Add a class for styling
-
+          
           // Display name and text
           const name = comment.name ? comment.name : "Anonymous";
           commentElement.innerHTML = `${name}: ${comment.text}`;
-
-          // Check if there's an image URL and add it
-          if (comment.image) {
+          
+          // Add image if present
+          if (comment.imageUrl) {
             const imgElement = document.createElement('img');
-            imgElement.src = comment.image;
-            imgElement.className = 'comment-image';
+            imgElement.src = comment.imageUrl;
+            imgElement.className = 'comment-image'; // Add class for image styling
             commentElement.appendChild(imgElement);
           }
 
@@ -123,32 +123,40 @@
       });
     }
 
+    // Toggle image input functionality
+    let imageInputVisible = false; // Track visibility of the image input
+    const toggleImageInput = () => {
+      const imageUrlInput = document.getElementById('imageUrlInput');
+      imageInputVisible = !imageInputVisible;
+      imageUrlInput.style.display = imageInputVisible ? 'inline' : 'none';
+    };
+
     // Function to post a comment
     document.getElementById('postButton').addEventListener('click', async () => {
       const commentInput = document.getElementById('commentInput');
       const nameInput = document.getElementById('nameInput'); // Get the name input value
-      const imageInput = document.getElementById('imageInput'); // Get the image input value
+      const imageUrlInput = document.getElementById('imageUrlInput'); // Get the image URL input value
       const commentText = commentInput.value.trim(); // Trim whitespace
       const nameText = nameInput.value.trim() || "Anonymous"; // Default to "Anonymous" if no name is provided
-      const imageUrl = imageInput.value.trim(); // Get the image URL
+      const imageUrl = imageUrlInput.value.trim(); // Get image URL
 
-      if (commentText === "") {
-        alert("Comment cannot be empty!"); // Alert if comment is empty
-        return;
+      if (commentText === "" && imageUrl === "") {
+          alert("Comment cannot be empty!"); // Alert if comment and image URL are both empty
+          return;
       }
 
       // Add the comment to the Firestore document
       await updateDoc(commentsRef, {
-        comments: arrayUnion({ text: commentText, name: nameText, votes: 0, voteType: null, image: imageUrl }) // Include name and image with comment
+          comments: arrayUnion({ text: commentText, name: nameText, votes: 0, voteType: null, imageUrl: imageUrl }) // Include name and image URL with comment
       })
       .then(() => {
-        console.log("Comment posted successfully!"); // Log success
-        commentInput.value = ""; // Clear the input box
-        nameInput.value = ""; // Clear the name box
-        imageInput.value = ""; // Clear the image URL box
+          console.log("Comment posted successfully!"); // Log success
+          commentInput.value = ""; // Clear the input box
+          nameInput.value = ""; // Clear the name box
+          imageUrlInput.value = ""; // Clear the image URL input
       })
       .catch((error) => {
-        console.error("Error posting comment:", error); // Log error
+          console.error("Error posting comment:", error); // Log error
       });
     });
   </script>
@@ -172,27 +180,22 @@
       margin: 5px 0;
       background-color: #f9f9f9;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-direction: column; /* Adjust to allow images below the text */
+      flex-direction: column; /* Stack children vertically */
+      align-items: flex-start; /* Align children to the start */
     }
     .comment-image {
-      max-width: 100%; /* Make the image responsive */
-      margin-top: 5px; /* Add some space between text and image */
+      max-width: 100%; /* Ensure the image doesn't overflow */
+      max-height: 200px; /* Set max height for the image */
+      margin-top: 5px; /* Space above the image */
     }
     .comment-box {
       width: 300px;
-      height: 30px; /* Reduced height of the comment box */
+      height: 50px;
     }
     .name-box {
       width: 300px;
       height: 30px;
       margin-bottom: 10px;
-    }
-    .image-box {
-      width: 200px; /* Width of the image URL input */
-      height: 30px; /* Height of the image URL input */
-      margin-right: 10px; /* Add some space to the right */
     }
     .post-button {
       margin-top: 10px;
@@ -226,6 +229,19 @@
     .vote-count {
       margin-left: 10px;
     }
+    /* Styles for the image input section */
+    #imageUrlInput {
+      display: none; /* Hidden by default */
+      width: 250px;
+      margin-left: 5px;
+    }
+    .camera-button {
+      cursor: pointer;
+      border: none;
+      background: none;
+      padding: 0;
+      margin-right: 5px; /* Space between button and input */
+    }
   </style>
 </head>
 <body>
@@ -239,8 +255,13 @@
     <div class="comments" id="comments"></div>
 
     <!-- Comment Input Section -->
+    <div>
+      <button class="camera-button" id="toggleImageInputButton" onclick="toggleImageInput()">
+        <img src="https://win98icons.alexmeub.com/icons/png/camera3_vid-4.png" alt="Camera" width="25" height="25" />
+      </button>
+      <input type="text" id="imageUrlInput" placeholder="Paste image URL here..." />
+    </div>
     <textarea class="comment-box" id="commentInput" placeholder="Write your comment..."></textarea>
-    <input type="text" class="image-box" id="imageInput" placeholder="Paste image/GIF URL here..." />
     <button class="post-button" id="postButton">Post Comment</button>
   </div>
 </body>
