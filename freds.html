@@ -1,140 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Freds</title>
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        body {
-            background-color: #f4f4f4; /* Subtle light background */
-            font-family: Arial, sans-serif; /* Change font to a clean, readable style */
-            margin: 0; /* Reset default margin */
-            padding: 0; /* Reset default padding */
-            color: #333; /* Set default text color */
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Freds</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      background-color: #f0f0f0; /* Light background */
+      font-family: Arial, sans-serif; /* Simple font */
+      margin: 0; /* Remove default margin */
+    }
+    
+    .container {
+      text-align: center;
+      padding: 20px;
+      max-width: 800px; /* Limit width for a classic feel */
+      margin: 0 auto; /* Center the container */
+      background-color: #ffffff; /* White background for contrast */
+      border: 1px solid #ccc; /* Simple border */
+      border-radius: 8px; /* Rounded corners */
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    }
 
-        .container {
-            max-width: 900px; /* Limit width for better readability */
-            margin: 0 auto; /* Center align container */
-            padding: 20px; /* Add padding */
-            text-align: center;
-            background: #fff; /* White background for the main container */
-            border-radius: 8px; /* Rounded corners */
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-        }
+    h1 {
+      font-size: 2.5em; /* Larger heading */
+      margin: 0; /* Remove margin */
+      padding: 10px 0; /* Add padding */
+    }
 
-        h1 {
-            font-size: 2.5em; /* Large title size */
-            margin-bottom: 10px; /* Space below title */
-            color: #2C3E50; /* Darker color for the main heading */
-        }
+    h2 {
+      font-size: 1.5em; /* Smaller subheading */
+      color: #666; /* Slightly muted color */
+      margin-bottom: 20px; /* Space below */
+    }
 
-        h2 {
-            font-size: 1.5em; /* Slightly smaller subheading */
-            color: #34495E; /* Darker gray color for subheadings */
-            margin-bottom: 20px; /* Space below subheading */
-        }
+    .fred-button {
+      display: flex; /* Use flexbox for image and button */
+      align-items: center; /* Center items vertically */
+      background-color: #e6e6e6; /* Button background */
+      border: 1px solid #999; /* Button border */
+      border-radius: 4px; /* Rounded corners */
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 18px; /* Button font size */
+      cursor: pointer; /* Pointer cursor */
+      text-decoration: none; /* Remove underline */
+      color: #000; /* Button text color */
+      transition: background-color 0.3s; /* Smooth background transition */
+      width: 100%; /* Make buttons full width */
+    }
 
-        .fred-button {
-            display: block; /* Stack buttons vertically */
-            margin: 15px auto; /* Center buttons with auto margins */
-            padding: 15px; /* More padding for a button-like feel */
-            font-size: 1.2em; /* Increase font size */
-            cursor: pointer; /* Pointer on hover */
-            background-color: #2980B9; /* Button background color */
-            color: white; /* Text color */
-            border: none; /* No border */
-            border-radius: 5px; /* Rounded corners */
-            transition: background 0.3s; /* Transition for hover effect */
-            width: 80%; /* Set a width */
-            max-width: 400px; /* Limit maximum width */
-        }
+    .fred-button:hover {
+      background-color: #d4d4d4; /* Darker shade on hover */
+    }
 
-        .fred-button:hover {
-            background-color: #3498DB; /* Lighter shade on hover */
-        }
+    .fred-image {
+      width: 40px; /* Fixed width for images */
+      height: 40px; /* Fixed height for images */
+      margin-right: 10px; /* Space between image and text */
+    }
 
-        .thumbnail {
-            width: 100%; /* Full width for thumbnails */
-            max-width: 600px; /* Limit maximum width */
-            border-radius: 8px; /* Rounded corners for images */
-            margin: 10px 0; /* Space above and below */
-        }
+    hr {
+      margin: 20px 0; /* Space around horizontal rule */
+    }
 
-        /* Thread list styling */
-        .thread-list {
-            padding: 20px; /* Padding inside the thread list */
-            background: #ecf0f1; /* Light gray background for thread list */
-            border-radius: 8px; /* Rounded corners */
-            margin-top: 20px; /* Space above the thread list */
-        }
+    .credits {
+      font-size: 0.9em; /* Smaller font size */
+      color: #333; /* Darker text for credits */
+      padding: 10px; /* Padding for credits */
+    }
 
-        .thread {
-            border: 1px solid #bdc3c7; /* Gray border for threads */
-            border-radius: 5px; /* Rounded corners */
-            padding: 10px; /* Padding inside each thread */
-            margin: 10px 0; /* Space between threads */
-            background: white; /* White background for each thread */
-            transition: transform 0.3s; /* Animation for hover effect */
-        }
-
-        .thread:hover {
-            transform: scale(1.02); /* Slight scale effect on hover */
-        }
-
-        .nav-button {
-            position: fixed; /* Fixed positioning */
-            top: 10px; /* Position at the top */
-            left: 10px; /* Position from the left */
-            z-index: 1000; /* High z-index to keep it above others */
-            border: none; /* No border */
-            background: transparent; /* Transparent background */
-            cursor: pointer; /* Pointer cursor */
-        }
-
-        .nav-button img {
-            width: 40px; /* Set image width */
-            height: 40px; /* Set image height */
-        }
-
-    </style>
+    /* Style for credits section */
+    .credits h3 {
+      margin-top: 0; /* Remove top margin for heading */
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Freds</h1>
-        <h2>Select a Fred:</h2>
-        <div class="thread-list">
-            <div class="thread">
-                <img src="YOUR_IMAGE_URL_HERE" alt="Chapter 1" class="thumbnail">
-                <button class="fred-button" onclick="window.location.href='chapter1fred.html'">Chapter 1 Fred</button>
-            </div>
-            <div class="thread">
-                <img src="YOUR_IMAGE_URL_HERE" alt="Chapter 2" class="thumbnail">
-                <button class="fred-button" onclick="window.location.href='chapter2fred.html'">Chapter 2 Fred</button>
-            </div>
-            <div class="thread">
-                <img src="YOUR_IMAGE_URL_HERE" alt="Chapter 3" class="thumbnail">
-                <button class="fred-button" onclick="window.location.href='chapter3fred.html'">Chapter 3 Fred</button>
-            </div>
-            <div class="thread">
-                <img src="YOUR_IMAGE_URL_HERE" alt="Chapter 4" class="thumbnail">
-                <button class="fred-button" onclick="window.location.href='chapter4fred.html'">Chapter 4 Fred</button>
-            </div>
-            <div class="thread">
-                <img src="YOUR_IMAGE_URL_HERE" alt="Chapter 5" class="thumbnail">
-                <button class="fred-button" onclick="window.location.href='chapter5fred.html'">Chapter 5 Fred</button>
-            </div>
-            <div class="thread">
-                <img src="YOUR_IMAGE_URL_HERE" alt="Epilogue" class="thumbnail">
-                <button class="fred-button" onclick="window.location.href='epiloguefred.html'">Epilogue Fred</button>
-            </div>
-        </div>
-    </div>
+  <div class="container">
+    <h1>Freds</h1>
+    <h2>Select a Fred:</h2>
+    <a class="fred-button" href="chapter1fred.html">
+      <img class="fred-image" src="image_url_for_chapter1" alt="Chapter 1 Image"> Chapter 1 fred
+    </a>
+    <a class="fred-button" href="chapter2fred.html">
+      <img class="fred-image" src="image_url_for_chapter2" alt="Chapter 2 Image"> Chapter 2 fred
+    </a>
+    <a class="fred-button" href="chapter3fred.html">
+      <img class="fred-image" src="image_url_for_chapter3" alt="Chapter 3 Image"> Chapter 3 fred
+    </a>
+    <a class="fred-button" href="chapter4fred.html">
+      <img class="fred-image" src="image_url_for_chapter4" alt="Chapter 4 Image"> Chapter 4 fred
+    </a>
+    <a class="fred-button" href="chapter5fred.html">
+      <img class="fred-image" src="image_url_for_chapter5" alt="Chapter 5 Image"> Chapter 5 fred
+    </a>
+    <a class="fred-button" href="epiloguefred.html">
+      <img class="fred-image" src="image_url_for_epilogue" alt="Epilogue Image"> Epilogue fred
+    </a>
 
-    <!-- Navigation Button to Home Page -->
-    <button class="nav-button" onclick="window.location.href='index.html'">
-        <img src="https://i.imgur.com/AmjEU0x.png" alt="Home">
-    </button>
+    <!-- Credits Section -->
+    <hr>
+    <section class="credits">
+      <h3>Credits</h3>
+      <p>Email: Awesomecatsandpuppies@gmail.com</p>
+      <p>Server: <a href="https://discord.gg/r4hBkmd5Yq" style="color: #0066cc;">discord.gg/r4hBkmd5Yq</a></p>
+      <p>Team: @7teens, @redmilfed, @yuyuuser</p>
+    </section>
+  </div>
+
+  <!-- Navigation Button to Home Page -->
+  <a href="index.html" style="position: fixed; top: 10px; left: 10px; z-index: 1000;">
+    <img src="https://i.imgur.com/AmjEU0x.png" alt="Home" style="width: 40px; height: 40px;">
+  </a>
 </body>
 </html>
