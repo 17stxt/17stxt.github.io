@@ -5,12 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Epilogue Fred</title>
   <link rel="stylesheet" href="styles.css">
-  
+
   <!-- Include Firebase SDKs -->
   <script type="module">
-    import { getDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-    import { getFirestore, doc, onSnapshot, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+    import { getDoc, getFirestore, doc, onSnapshot, updateDoc, arrayUnion, initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
     
     // Firebase configuration
     const firebaseConfig = {
@@ -27,195 +25,159 @@
     const db = getFirestore(app);
     const commentsRef = doc(db, 'epilogue', 'comments'); // Firestore reference to the comments document
 
-let userVotes = {}; // Object to keep track of user's votes
+    let userVotes = {}; // Object to keep track of user's votes
 
-// Inside the onSnapshot function
-onSnapshot(commentsRef, (doc) => {
-  const commentsContainer = document.getElementById('comments');
-  commentsContainer.innerHTML = ""; // Clear previous comments
-  if (doc.exists()) {
-    let comments = doc.data().comments || [];
-    comments = comments.sort((a, b) => b.timestamp - a.timestamp); // Sort by timestamp, newest first
+    // Listen for comments in Firestore
+    onSnapshot(commentsRef, (doc) => {
+      const commentsContainer = document.getElementById('comments');
+      commentsContainer.innerHTML = ""; // Clear previous comments
+      if (doc.exists()) {
+        let comments = doc.data().comments || [];
+        comments = comments.sort((a, b) => b.timestamp - a.timestamp); // Sort by timestamp, newest first
 
-    comments.forEach((comment, index) => {
-      const commentElement = document.createElement('div');
-      commentElement.className = 'comment';
+        comments.forEach((comment) => {
+          const commentElement = document.createElement('div');
+          commentElement.className = 'comment';
 
-      const name = comment.name ? comment.name : "Anonymous";
-      commentElement.innerHTML = `${name}: ${comment.text}`;
+          const name = comment.name ? comment.name : "Anonymous";
+          commentElement.innerHTML = `${name}: ${comment.text}`;
 
-      const imageUrl = comment.imageUrl;
-      if (imageUrl) {
-        const imgElement = document.createElement('img');
-        imgElement.src = imageUrl;
-        imgElement.className = 'comment-image';
-        commentElement.appendChild(imgElement);
+          const imageUrl = comment.imageUrl;
+          if (imageUrl) {
+            const imgElement = document.createElement('img');
+            imgElement.src = imageUrl;
+            imgElement.className = 'comment-image';
+            commentElement.appendChild(imgElement);
+          }
+
+          const timestampElement = document.createElement('span');
+          const commentDate = new Date(comment.timestamp);
+          const options = { timeZone: 'America/New_York', hour12: true, hour: 'numeric', minute: 'numeric', second: 'numeric' };
+          timestampElement.innerText = commentDate.toLocaleString('en-US', options);
+          timestampElement.className = 'timestamp';
+          commentElement.appendChild(timestampElement);
+
+          // Create the vote section
+          const voteContainer = document.createElement('div');
+          voteContainer.className = 'vote-container';
+
+          const upvoteButton = document.createElement('button');
+          upvoteButton.className = 'upvote';
+          upvoteButton.innerText = '↑';
+
+          const downvoteButton = document.createElement('button');
+          downvoteButton.className = 'downvote';
+          downvoteButton.innerText = '↓';
+
+          const voteLabel = document.createElement('span');
+          voteLabel.className = 'vote-count';
+          voteLabel.innerText = comment.votes || 0; // Default to 0 votes
+
+          voteContainer.appendChild(upvoteButton);
+          voteContainer.appendChild(downvoteButton);
+          voteContainer.appendChild(voteLabel);
+
+          commentElement.appendChild(voteContainer);
+          commentsContainer.appendChild(commentElement);
+
+          // Upvote logic
+          upvoteButton.addEventListener('click', async () => {
+            const commentId = comment.id;
+            if (userVotes[commentId] === 'upvote') {
+              // Remove upvote
+              comment.votes -= 1;
+              userVotes[commentId] = null; // Reset user vote
+            } else {
+              if (userVotes[commentId] === 'downvote') {
+                // Remove downvote and add upvote
+                comment.votes += 2; // Neutralize the downvote and add an upvote
+              } else {
+                // Add upvote
+                comment.votes += 1;
+              }
+              userVotes[commentId] = 'upvote'; // Set user's vote to upvote
+            }
+            await updateVotes(commentId, comment);
+            voteLabel.innerText = comment.votes; // Update the vote count in UI
+          });
+
+          // Downvote logic
+          downvoteButton.addEventListener('click', async () => {
+            const commentId = comment.id;
+            if (userVotes[commentId] === 'downvote') {
+              // Remove downvote
+              comment.votes += 1;
+              userVotes[commentId] = null; // Reset user vote
+            } else {
+              if (userVotes[commentId] === 'upvote') {
+                // Remove upvote and add downvote
+                comment.votes -= 2; // Neutralize the upvote and add a downvote
+              } else {
+                // Add downvote
+                comment.votes -= 1;
+              }
+              userVotes[commentId] = 'downvote'; // Set user's vote to downvote
+            }
+            await updateVotes(commentId, comment);
+            voteLabel.innerText = comment.votes; // Update the vote count in UI
+          });
+        });
+      }
+    });
+
+    // Update votes function
+    async function updateVotes(commentId, updatedComment) {
+      const commentsDoc = await getDoc(commentsRef);
+      const comments = commentsDoc.data().comments || [];
+
+      const commentIndex = comments.findIndex(comment => comment.id === commentId);
+      if (commentIndex !== -1) {
+        comments[commentIndex] = updatedComment; // Update the specific comment
       }
 
-      const timestampElement = document.createElement('span');
-      const commentDate = new Date(comment.timestamp);
-      const options = { timeZone: 'America/New_York', hour12: true, hour: 'numeric', minute: 'numeric', second: 'numeric' };
-      timestampElement.innerText = commentDate.toLocaleString('en-US', options);
-      timestampElement.className = 'timestamp';
-      commentElement.appendChild(timestampElement);
-
-      // Create the vote section
-      const voteContainer = document.createElement('div');
-      voteContainer.className = 'vote-container';
-      
-      const upvoteButton = document.createElement('button');
-      upvoteButton.className = 'upvote';
-      upvoteButton.innerText = '↑';
-      
-      const downvoteButton = document.createElement('button');
-      downvoteButton.className = 'downvote';
-      downvoteButton.innerText = '↓';
-
-      const voteLabel = document.createElement('span');
-      voteLabel.className = 'vote-count';
-      voteLabel.innerText = comment.votes || 0; // Default to 0 votes
-
-      voteContainer.appendChild(upvoteButton);
-      voteContainer.appendChild(downvoteButton);
-      voteContainer.appendChild(voteLabel);
-      
-      commentElement.appendChild(voteContainer);
-      commentsContainer.appendChild(commentElement);
-
-      // Upvote logic
-      upvoteButton.addEventListener('click', async () => {
-        const commentId = comment.id;
-        if (userVotes[commentId] === 'upvote') {
-          // Remove upvote
-          comment.votes -= 1;
-          userVotes[commentId] = null; // Reset user vote
-        } else {
-          if (userVotes[commentId] === 'downvote') {
-            // Remove downvote and add upvote
-            comment.votes += 2; // Neutralize the downvote and add an upvote
-          } else {
-            // Add upvote
-            comment.votes += 1;
-          }
-          userVotes[commentId] = 'upvote'; // Set user's vote to upvote
-        }
-        await updateVotes(commentId, comment);
+      await updateDoc(commentsRef, {
+        comments: comments
       });
-
-      // Downvote logic
-      downvoteButton.addEventListener('click', async () => {
-        const commentId = comment.id;
-        if (userVotes[commentId] === 'downvote') {
-          // Remove downvote
-          comment.votes += 1;
-          userVotes[commentId] = null; // Reset user vote
-        } else {
-          if (userVotes[commentId] === 'upvote') {
-            // Remove upvote and add downvote
-            comment.votes -= 2; // Neutralize the upvote and add a downvote
-          } else {
-            // Add downvote
-            comment.votes -= 1;
-          }
-          userVotes[commentId] = 'downvote'; // Set user's vote to downvote
-        }
-        await updateVotes(commentId, comment);
-      });
-    });
-  }
-});
-
-// Update votes function remains unchanged
-async function updateVotes(commentId, updatedComment) {
-  const commentsDoc = await getDoc(commentsRef);
-  const comments = commentsDoc.data().comments || [];
-
-  const commentIndex = comments.findIndex(comment => comment.id === commentId);
-  if (commentIndex !== -1) {
-    comments[commentIndex] = updatedComment;
-  }
-
-  await updateDoc(commentsRef, {
-    comments: comments
-  });
-}
-
-
-// Downvote logic
-downvoteButton.addEventListener('click', async () => {
-  const commentId = comment.id; // Get the unique ID of the comment
-  if (comment.voteType === 'downvote') {
-    comment.votes += 1;
-    comment.voteType = null;
-  } else {
-    comment.votes -= 1;
-    if (comment.voteType === 'upvote') {
-      comment.votes -= 1; // Neutralize the previous upvote
     }
-    comment.voteType = 'downvote';
-  }
-  await updateVotes(commentId, comment); // Pass ID instead of index
-});
 
+    // Function to post a comment
+    document.getElementById('postButton').addEventListener('click', async () => {
+      const commentInput = document.getElementById('commentInput');
+      const nameInput = document.getElementById('nameInput');
+      const commentText = commentInput.value.trim();
+      const nameText = nameInput.value.trim() || "Anonymous";
+
+      if (commentText === "") {
+        alert("Comment cannot be empty!");
+        return;
+      }
+
+      const imageUrlMatch = commentText.match(/https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp)/);
+      const imageUrl = imageUrlMatch ? imageUrlMatch[0] : null;
+
+      // Generate a unique ID for the comment
+      const commentId = new Date().getTime(); // Using timestamp as a unique ID
+
+      await updateDoc(commentsRef, {
+        comments: arrayUnion({
+          id: commentId, // Add unique ID here
+          text: commentText,
+          name: nameText,
+          votes: 0,
+          voteType: null,
+          imageUrl: imageUrl,
+          timestamp: new Date().getTime() // Add timestamp in milliseconds
+        })
+      })
+      .then(() => {
+        console.log("Comment posted successfully!");
+        commentInput.value = "";
+        nameInput.value = "";
+      })
+      .catch((error) => {
+        console.error("Error posting comment:", error);
+      });
     });
-  }
-});
-
-async function updateVotes(commentId, updatedComment) {
-  const commentsDoc = await getDoc(commentsRef);
-  const comments = commentsDoc.data().comments || [];
-
-  // Find the index of the comment to update by ID
-  const commentIndex = comments.findIndex(comment => comment.id === commentId);
-  if (commentIndex !== -1) {
-    comments[commentIndex] = updatedComment; // Update the specific comment
-  }
-
-  await updateDoc(commentsRef, {
-    comments: comments
-  });
-}
-
-
-
-// Function to post a comment
-document.getElementById('postButton').addEventListener('click', async () => {
-  const commentInput = document.getElementById('commentInput');
-  const nameInput = document.getElementById('nameInput');
-  const commentText = commentInput.value.trim();
-  const nameText = nameInput.value.trim() || "Anonymous";
-
-  if (commentText === "") {
-    alert("Comment cannot be empty!");
-    return;
-  }
-
-  const imageUrlMatch = commentText.match(/https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp)/);
-  const imageUrl = imageUrlMatch ? imageUrlMatch[0] : null;
-
-  // Generate a unique ID for the comment
-  const commentId = new Date().getTime(); // Using timestamp as a unique ID
-
-  await updateDoc(commentsRef, {
-    comments: arrayUnion({
-      id: commentId, // Add unique ID here
-      text: commentText,
-      name: nameText,
-      votes: 0,
-      voteType: null,
-      imageUrl: imageUrl,
-      timestamp: new Date().getTime() // Add timestamp in milliseconds
-    })
-  })
-  .then(() => {
-    console.log("Comment posted successfully!");
-    commentInput.value = "";
-    nameInput.value = "";
-  })
-  .catch((error) => {
-    console.error("Error posting comment:", error);
-  });
-});
 
   </script>
 
@@ -310,10 +272,10 @@ document.getElementById('postButton').addEventListener('click', async () => {
     <textarea class="comment-box" id="commentInput" placeholder="Write your comment..."></textarea>
     <button class="post-button" id="postButton">Post Comment</button>
   </div>
+
+  <!-- Navigation Button to Home Page -->
+  <a href="freds.html" style="position: fixed; top: 10px; left: 10px; z-index: 1000;">
+      <img src="https://www.iconsdb.com/icons/preview/gray/undo-5-xxl.png" alt="Home" style="width: 40px; height: 40px;">
+  </a>
 </body>
 </html>
-
-<!-- Navigation Button to Home Page -->
-<a href="freds.html" style="position: fixed; top: 10px; left: 10px; z-index: 1000;">
-    <img src="https://www.iconsdb.com/icons/preview/gray/undo-5-xxl.png" alt="Home" style="width: 40px; height: 40px;">
-</a>
