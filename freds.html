@@ -6,16 +6,88 @@
   <title>Freds</title>
   <link rel="stylesheet" href="styles.css">
   <style>
-    .container {
-      text-align: center;
-      padding: 20px;
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #e9ebee;
+      color: #333;
+      margin: 0;
+      padding: 0;
     }
-    .fred-button {
-      display: block;
-      margin: 10px 0;
-      padding: 10px 20px;
-      font-size: 18px;
+
+    .container {
+      width: 80%;
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    h1, h2 {
+      text-align: center;
+      color: #222;
+    }
+
+    .fred-thread {
+      display: flex;
+      align-items: center;
+      margin: 15px 0;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
       cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .fred-thread:hover {
+      background-color: #f5f5f5;
+    }
+
+    .fred-image {
+      width: 50px;
+      height: 50px;
+      border-radius: 5px;
+      margin-right: 15px;
+      background-color: #ccc;
+      /* Placeholder for images */
+    }
+
+    .fred-info {
+      flex-grow: 1;
+    }
+
+    .fred-title {
+      font-size: 20px;
+      color: #2b2b2b;
+      margin: 0;
+      text-decoration: none;
+    }
+
+    .fred-title:hover {
+      text-decoration: underline;
+    }
+
+    .fred-comment {
+      color: #555;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+
+    .poster-name {
+      font-weight: bold;
+    }
+
+    /* Navigation Button to Home */
+    .home-button {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+    }
+
+    .home-button img {
+      width: 40px;
+      height: 40px;
     }
   </style>
 </head>
@@ -23,17 +95,91 @@
   <div class="container">
     <h1>Freds</h1>
     <h2>Select a Fred:</h2>
-    <button class="fred-button" onclick="window.location.href='chapter1fred.html'">Chapter 1 fred</button>
-    <button class="fred-button" onclick="window.location.href='chapter2fred.html'">Chapter 2 fred</button>
-    <button class="fred-button" onclick="window.location.href='chapter3fred.html'">Chapter 3 fred</button>
-    <button class="fred-button" onclick="window.location.href='chapter4fred.html'">Chapter 4 fred</button>
-    <button class="fred-button" onclick="window.location.href='chapter5fred.html'">Chapter 5 fred</button>
-    <button class="fred-button" onclick="window.location.href='epiloguefred.html'">Epilogue fred</button>
+
+    <!-- Thread 1 -->
+    <div class="fred-thread" onclick="window.location.href='chapter1fred.html'">
+      <div class="fred-image">
+        <!-- Thread image placeholder. Replace with actual image URLs -->
+        <img src="path_to_image1.jpg" alt="Thread 1 Image" width="50" height="50">
+      </div>
+      <div class="fred-info">
+        <a class="fred-title" href="chapter1fred.html">Chapter 1 Fred</a>
+        <div class="fred-comment">
+          <span class="poster-name">Anonymous</span>: "And finally when i..."
+        </div>
+      </div>
+    </div>
+
+    <!-- Thread 2 -->
+    <div class="fred-thread" onclick="window.location.href='chapter2fred.html'">
+      <div class="fred-image">
+        <!-- Thread image placeholder -->
+        <img src="path_to_image2.jpg" alt="Thread 2 Image" width="50" height="50">
+      </div>
+      <div class="fred-info">
+        <a class="fred-title" href="chapter2fred.html">Chapter 2 Fred</a>
+        <div class="fred-comment">
+          <span class="poster-name">Anonymous</span>: "Why would t...."
+        </div>
+      </div>
+    </div>
+
+    <!-- Thread 3 -->
+    <div class="fred-thread" onclick="window.location.href='chapter3fred.html'">
+      <div class="fred-image">
+        <img src="path_to_image3.jpg" alt="Thread 3 Image" width="50" height="50">
+      </div>
+      <div class="fred-info">
+        <a class="fred-title" href="chapter3fred.html">Chapter 3 Fred</a>
+        <div class="fred-comment">
+          <span class="poster-name">Anonymous</span>: "H..."
+        </div>
+      </div>
+    </div>
+
+    <!-- Thread 4 -->
+    <div class="fred-thread" onclick="window.location.href='chapter4fred.html'">
+      <div class="fred-image">
+        <img src="path_to_image4.jpg" alt="Thread 4 Image" width="50" height="50">
+      </div>
+      <div class="fred-info">
+        <a class="fred-title" href="chapter4fred.html">Chapter 4 Fred</a>
+        <div class="fred-comment">
+          <span class="poster-name">Anonymous</span>: "When they all ran..."
+        </div>
+      </div>
+    </div>
+
+    <!-- Thread 5 -->
+    <div class="fred-thread" onclick="window.location.href='chapter5fred.html'">
+      <div class="fred-image">
+        <img src="path_to_image5.jpg" alt="Thread 5 Image" width="50" height="50">
+      </div>
+      <div class="fred-info">
+        <a class="fred-title" href="chapter5fred.html">Chapter 5 Fred</a>
+        <div class="fred-comment">
+          <span class="poster-name">Anonymous</span>: "It was amazing how..."
+        </div>
+      </div>
+    </div>
+
+    <!-- Epilogue Thread -->
+    <div class="fred-thread" onclick="window.location.href='epiloguefred.html'">
+      <div class="fred-image">
+        <img src="path_to_image6.jpg" alt="Epilogue Fred Image" width="50" height="50">
+      </div>
+      <div class="fred-info">
+        <a class="fred-title" href="epiloguefred.html">Epilogue Fred</a>
+        <div class="fred-comment">
+          <span class="poster-name">Anonymous</span>: "The end is here..."
+        </div>
+      </div>
+    </div>
   </div>
+
+  <!-- Navigation Button to Home Page -->
+  <a href="index.html" class="home-button">
+    <img src="https://i.imgur.com/AmjEU0x.png" alt="Home">
+  </a>
 </body>
 </html>
-
-<!-- Navigation Button to Home Page -->
-<a href="index.html" style="position: fixed; top: 10px; left: 10px; z-index: 1000;">
-    <img src="https://i.imgur.com/AmjEU0x.png" alt="Home" style="width: 40px; height: 40px;">
-</a>
