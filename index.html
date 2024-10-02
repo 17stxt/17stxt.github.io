@@ -10,11 +10,30 @@
       text-align: center;
     }
     
-    /* Remove wiggle animation for the thumbnail */
+    /* Wiggle animation for the thumbnail */
     .title-image {
       display: block;
       margin: 0 auto;
-      /* No animation applied, stays still */
+      animation: wiggle 0.25s ease-in-out infinite; /* Slightly longer duration for smoother effect */
+    }
+
+    /* Wiggle keyframes for rotation and scaling */
+    @keyframes wiggle {
+      0%, 100% {
+        transform: rotate(0deg) scale(1); /* Normal state */
+      }
+      20% {
+        transform: rotate(3deg) scale(1.05); /* Slightly larger and rotated */
+      }
+      40% {
+        transform: rotate(-3deg) scale(1.03); /* Slightly smaller and rotated in the opposite direction */
+      }
+      60% {
+        transform: rotate(2deg) scale(1.04); /* Back to a smaller rotation */
+      }
+      80% {
+        transform: rotate(-1deg) scale(1.02); /* Almost back to normal */
+      }
     }
 
     /* Styling for the download buttons */
@@ -47,7 +66,7 @@
 </head>
 <body>
   <div class="container">
-    <!-- Header Image (The Virgin Games Thumbnail) without animation -->
+    <!-- Header Image (The Virgin Games Thumbnail) with wiggle animation -->
     <img src="https://i.imgur.com/gMYDs9s.png" alt="The Virgin Games" class="title-image">
 
     <!-- Subheading Text -->
