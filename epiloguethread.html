@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Epilogue Thread</title>
   <link rel="stylesheet" href="styles.css">
+  <!-- Include Firebase scripts -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
   <style>
     .container {
       text-align: center;
@@ -39,7 +40,7 @@
 
     <!-- Comment Input Section -->
     <textarea class="comment-box" id="commentInput" placeholder="Write your comment..."></textarea>
-    <button class="post-button" onclick="postComment()">Post Comment</button>
+    <button class="post-button" id="postButton">Post Comment</button>
   </div>
 
   <script>
@@ -47,7 +48,6 @@
     const firebaseConfig = {
       apiKey: "AIzaSyBCzabBMFxms9HfX0N411uJQYjEzspSnVk",
       authDomain: "the-virgin-games.firebaseapp.com",
-      databaseURL: "the-virgin-games.firebaseio.com",
       projectId: "the-virgin-games",
       storageBucket: "the-virgin-games.appspot.com",
       messagingSenderId: "1092738842373",
@@ -56,30 +56,45 @@
 
     // Initialize Firebase
     const app = firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+    const firestore = firebase.firestore();
 
-    // Reference to comments in Firebase
-    const commentsRef = database.ref('chapter1/comments');
+    // Reference to comments in Firestore
+    const commentsRef = firestore.collection('epilogue').doc('comments');
 
     // Function to display comments
-    commentsRef.on('value', (snapshot) => {
+    commentsRef.onSnapshot((doc) => {
       const commentsContainer = document.getElementById('comments');
       commentsContainer.innerHTML = ""; // Clear previous comments
-      snapshot.forEach((childSnapshot) => {
-        const comment = childSnapshot.val();
-        const commentElement = document.createElement('div');
-        commentElement.innerText = comment.text;
-        commentsContainer.appendChild(commentElement);
-      });
+      if (doc.exists) {
+        const comments = doc.data().comments || [];
+        comments.forEach((comment) => {
+          const commentElement = document.createElement('div');
+          commentElement.innerText = comment.text;
+          commentsContainer.appendChild(commentElement);
+        });
+      }
     });
 
     // Function to post a comment
-    function postComment() {
+    document.getElementById('postButton').addEventListener('click', () => {
       const commentInput = document.getElementById('commentInput');
-      const newCommentRef = commentsRef.push();
-      newCommentRef.set({ text: commentInput.value });
-      commentInput.value = ""; // Clear the input box
-    }
+      const commentText = commentInput.value.trim(); // Trim whitespace
+      if (commentText === "") {
+          alert("Comment cannot be empty!"); // Alert if comment is empty
+          return;
+      }
+
+      commentsRef.update({
+          comments: firebase.firestore.FieldValue.arrayUnion({ text: commentText })
+      })
+      .then(() => {
+          console.log("Comment posted successfully!"); // Log success
+          commentInput.value = ""; // Clear the input box
+      })
+      .catch((error) => {
+          console.error("Error posting comment:", error); // Log error
+      });
+    });
   </script>
 </body>
 </html>
