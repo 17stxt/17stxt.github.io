@@ -9,31 +9,42 @@
     .container {
       text-align: center;
     }
-    
+
     /* Wiggle animation for the thumbnail */
     .title-image {
       display: block;
       margin: 0 auto;
-      animation: wiggle 0.25s ease-in-out infinite; /* Slightly longer duration for smoother effect */
+      animation: wiggle 0.25s ease-in-out infinite;
     }
 
-    /* Wiggle keyframes for rotation and scaling */
+    /* Wiggle keyframes */
     @keyframes wiggle {
       0%, 100% {
-        transform: rotate(0deg) scale(1); /* Normal state */
+        transform: rotate(0deg) scale(1);
       }
       20% {
-        transform: rotate(3deg) scale(1.05); /* Slightly larger and rotated */
+        transform: rotate(3deg) scale(1.05);
       }
       40% {
-        transform: rotate(-3deg) scale(1.03); /* Slightly smaller and rotated in the opposite direction */
+        transform: rotate(-3deg) scale(1.03);
       }
       60% {
-        transform: rotate(2deg) scale(1.04); /* Back to a smaller rotation */
+        transform: rotate(2deg) scale(1.04);
       }
       80% {
-        transform: rotate(-1deg) scale(1.02); /* Almost back to normal */
+        transform: rotate(-1deg) scale(1.02);
       }
+    }
+
+    /* Typewriter effect */
+    .subheading {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      border-right: 2px solid black;
+      white-space: nowrap;
+      overflow: hidden;
+      display: inline-block;
     }
 
     /* Styling for the download buttons */
@@ -66,11 +77,11 @@
 </head>
 <body>
   <div class="container">
-    <!-- Header Image (The Virgin Games Thumbnail) with wiggle animation -->
+    <!-- Header Image (The Virgin Games Thumbnail) -->
     <img src="https://i.imgur.com/gMYDs9s.png" alt="The Virgin Games" class="title-image">
 
-    <!-- Subheading Text -->
-    <p class="subheading">The ground is fake you are simply floating</p>
+    <!-- Subheading Text (Random Text Area) -->
+    <p class="subheading" id="randomText">The ground is fake you are simply floating</p>
 
     <!-- Chapter Navigation Section -->
     <section class="chapters">
@@ -131,5 +142,74 @@
       <p>Team: @7teens, @redmilfed, @yuyuuser</p>
     </section>
   </div>
+
+  <script>
+    // List of sentences
+    const sentences = [
+      "The ground is fake you are simply floating",
+      "Reality is a simulation",
+      "Everything you know is a lie",
+      "We're all in this together",
+      "Press F to pay respects",
+      "404: Life not found",
+      "The cake is a lie",
+      "Please don't turn off your device",
+      "There is no spoon",
+      "You've met with a terrible fate, haven't you?"
+    ];
+
+    const randomTextElement = document.getElementById("randomText");
+
+    function typeWriterEffect(text, callback) {
+      let i = 0;
+      randomTextElement.innerHTML = ""; // Clear current text
+      const typing = setInterval(() => {
+        if (i < text.length) {
+          randomTextElement.innerHTML += text.charAt(i);
+          i++;
+        } else {
+          clearInterval(typing);
+          if (callback) callback();
+        }
+      }, 100); // Speed of typing (can be customized)
+    }
+
+    function deleteTextEffect(callback) {
+      let length = randomTextElement.innerHTML.length;
+      const deleting = setInterval(() => {
+        if (length > 0) {
+          randomTextElement.innerHTML = randomTextElement.innerHTML.substring(0, length - 1);
+          length--;
+        } else {
+          clearInterval(deleting);
+          if (callback) callback();
+        }
+      }, 50); // Speed of deletion (can be customized)
+    }
+
+    function changeText() {
+      const randomIndex = Math.floor(Math.random() * sentences.length);
+      const newText = sentences[randomIndex];
+
+      deleteTextEffect(() => {
+        typeWriterEffect(newText);
+      });
+    }
+
+    function randomInterval(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    // Initial random sentence on page load
+    window.onload = () => {
+      const initialIndex = Math.floor(Math.random() * sentences.length);
+      typeWriterEffect(sentences[initialIndex]);
+    };
+
+    // Change the text every 10-15 seconds with typewriter effect
+    setInterval(() => {
+      changeText();
+    }, randomInterval(10000, 15000)); // Interval between 10 to 15 seconds
+  </script>
 </body>
 </html>
