@@ -14,22 +14,25 @@
     .title-image {
       display: block;
       margin: 0 auto;
-      animation: wiggle 0.15s ease-in-out infinite;
+      animation: wiggle 0.25s ease-in-out infinite; /* Slightly longer duration for smoother effect */
     }
 
-    /* Wiggle keyframes for subtle, creepy shake */
+    /* Wiggle keyframes for rotation and scaling */
     @keyframes wiggle {
       0%, 100% {
-        transform: rotate(0deg);
+        transform: rotate(0deg) scale(1); /* Normal state */
       }
-      25% {
-        transform: rotate(2deg);
+      20% {
+        transform: rotate(3deg) scale(1.05); /* Slightly larger and rotated */
       }
-      50% {
-        transform: rotate(-2deg);
+      40% {
+        transform: rotate(-3deg) scale(1.03); /* Slightly smaller and rotated in the opposite direction */
       }
-      75% {
-        transform: rotate(1deg);
+      60% {
+        transform: rotate(2deg) scale(1.04); /* Back to a smaller rotation */
+      }
+      80% {
+        transform: rotate(-1deg) scale(1.02); /* Almost back to normal */
       }
     }
 
