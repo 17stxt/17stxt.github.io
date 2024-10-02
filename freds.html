@@ -23,7 +23,7 @@
     }
 
     h1 {
-      text-align: center; /* Center heading */
+      text-align: center; /* Center headings */
       color: #333; /* Darker color for headings */
     }
 
@@ -33,15 +33,10 @@
       background-color: #f9f9f9; /* Light background for each thread */
       border: 1px solid #ddd; /* Border for threads */
       border-radius: 5px; /* Rounded corners */
-      padding: 15px; /* Increased padding */
+      padding: 10px; /* Padding inside thread buttons */
       margin: 10px 0; /* Margin between threads */
-      transition: background-color 0.3s; /* Smooth hover effect */
       cursor: pointer; /* Pointer cursor for clickable threads */
-      height: 100px; /* Fixed height for threads */
-    }
-
-    .fred-thread:hover {
-      background-color: #e0e0e0; /* Change background on hover */
+      width: 100%; /* Make the thread buttons wider */
     }
 
     .fred-image {
@@ -70,6 +65,14 @@
       margin: 0; /* Reset margin */
     }
 
+    /* Credits Section */
+    .credits {
+      margin-top: 20px; /* Add margin above the credits section */
+      text-align: center; /* Center the credits text */
+      font-size: 14px; /* Smaller font size for credits */
+      color: #777; /* Grey color for credits text */
+    }
+
     /* Navigation Button Style */
     .nav-button {
       position: fixed; /* Fixed position for home button */
@@ -81,19 +84,6 @@
     .nav-button img {
       width: 40px; /* Set image size */
       height: 40px; /* Set image size */
-    }
-
-    /* Credits Section Style */
-    .credits {
-      margin-top: 20px; /* Space above credits */
-      text-align: center; /* Center credits text */
-      color: #777; /* Lighter color for credits */
-    }
-
-    hr {
-      border: 0; /* Remove default border */
-      border-top: 1px solid #ddd; /* Add a subtle line */
-      margin: 20px 0; /* Space above and below */
     }
   </style>
 </head>
@@ -149,7 +139,7 @@
         <p class="recent-comment" id="epilogueRecentComment"></p>
       </div>
     </div>
-    
+
     <!-- Credits Section -->
     <hr>
     <section class="credits">
@@ -199,7 +189,11 @@
             const commentText = recentComment.text.length > 17 ? `${recentComment.text.substring(0, 17)}...` : recentComment.text;
             const commentName = recentComment.name || "Anonymous"; // Default to "Anonymous" if name is missing
             document.getElementById(`${chapter}RecentComment`).innerText = `${commentName}: ${commentText}`; // Display comment
+          } else {
+            document.getElementById(`${chapter}RecentComment`).innerText = ''; // Clear if no comment
           }
+        } else {
+          document.getElementById(`${chapter}RecentComment`).innerText = ''; // Clear if no document
         }
       }
     }
