@@ -5,11 +5,66 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Virgin Games</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    .container {
+      text-align: center;
+    }
+    
+    /* Wiggle animation for the thumbnail */
+    .title-image {
+      display: block;
+      margin: 0 auto;
+      animation: wiggle 0.15s ease-in-out infinite;
+    }
+
+    /* Wiggle keyframes for subtle, creepy shake */
+    @keyframes wiggle {
+      0%, 100% {
+        transform: rotate(0deg);
+      }
+      25% {
+        transform: rotate(2deg);
+      }
+      50% {
+        transform: rotate(-2deg);
+      }
+      75% {
+        transform: rotate(1deg);
+      }
+    }
+
+    /* Styling for the download buttons */
+    .download-button {
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+    .download-button img {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Styling for the forum button */
+    .forum-button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .forum-button:hover {
+      background-color: #2980b9;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-    <!-- Header Image (The Virgin Games Thumbnail) -->
-    <img src="https://media.discordapp.net/attachments/1258974856159039532/1268254645374025940/Untitled31_20240731111044.png" alt="The Virgin Games" class="title-image">
+    <!-- Header Image (The Virgin Games Thumbnail) with wiggle animation -->
+    <img src="https://media.discordapp.net/attachments/1258974856159039532/1268254645374025940/Untitled31_20240731111044.png?ex=66fd7eae&is=66fc2d2e&hm=82027f462d51bfc2c1313cf6930e8d8de0462ae10c3e4088352bf8cc532550a2&" alt="The Virgin Games" class="title-image">
 
     <!-- Subheading Text -->
     <p class="subheading">The ground is fake you are simply floating</p>
@@ -24,21 +79,45 @@
             <button class="download-button" onclick="window.location.href='chapter1.pdf'">
               <img src="https://win98icons.alexmeub.com/icons/png/cable-1.png" alt="Download Chapter 1">
             </button>
-            <!-- Add comment count for Chapter 1 -->
-            <a href="chapter1.html#disqus_thread">Comments (<span class="disqus-comment-count" data-disqus-identifier="chapter1"></span>)</a>
           </td>
           <td>
             <button onclick="window.location.href='chapter2.html'">Consume Chapter 2</button>
             <button class="download-button" onclick="window.location.href='chapter2.pdf'">
               <img src="https://win98icons.alexmeub.com/icons/png/cable-1.png" alt="Download Chapter 2">
             </button>
-            <!-- Add comment count for Chapter 2 -->
-            <a href="chapter2.html#disqus_thread">Comments (<span class="disqus-comment-count" data-disqus-identifier="chapter2"></span>)</a>
           </td>
-          <!-- Repeat for other chapters -->
+          <td>
+            <button onclick="window.location.href='chapter3.html'">Consume Chapter 3</button>
+            <button class="download-button" onclick="window.location.href='chapter3.pdf'">
+              <img src="https://win98icons.alexmeub.com/icons/png/cable-1.png" alt="Download Chapter 3">
+            </button>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <button onclick="window.location.href='chapter4.html'">Consume Chapter 4</button>
+            <button class="download-button" onclick="window.location.href='chapter4.pdf'">
+              <img src="https://win98icons.alexmeub.com/icons/png/cable-1.png" alt="Download Chapter 4">
+            </button>
+          </td>
+          <td>
+            <button onclick="window.location.href='chapter5.html'">Consume Chapter 5</button>
+            <button class="download-button" onclick="window.location.href='chapter5.pdf'">
+              <img src="https://win98icons.alexmeub.com/icons/png/cable-1.png" alt="Download Chapter 5">
+            </button>
+          </td>
+          <td>
+            <button onclick="window.location.href='epilogue.html'">Consume Epilogue</button>
+            <button class="download-button" onclick="window.location.href='epilogue.pdf'">
+              <img src="https://win98icons.alexmeub.com/icons/png/cable-1.png" alt="Download Epilogue">
+            </button>
+          </td>
         </tr>
       </table>
     </section>
+
+    <!-- Forum Button -->
+    <button class="forum-button" onclick="window.location.href='forum.html'">Go to Forum</button>
 
     <!-- Credits Section -->
     <hr>
@@ -48,8 +127,5 @@
       <p>Discord: 7teens, redmilfed, yuyuuser</p>
     </section>
   </div>
-
-  <!-- Add comment count script at the bottom -->
-  <script id="dsq-count-scr" src="//thevirgingames.disqus.com/count.js" async></script>
 </body>
 </html>
