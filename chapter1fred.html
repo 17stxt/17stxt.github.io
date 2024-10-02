@@ -27,7 +27,9 @@
     const db = getFirestore(app);
     const commentsRef = doc(db, 'chapter1', 'comments'); // Firestore reference to the comments document
 
-// Inside onSnapshot function
+let userVotes = {}; // Object to keep track of user's votes
+
+// Inside the onSnapshot function
 onSnapshot(commentsRef, (doc) => {
   const commentsContainer = document.getElementById('comments');
   commentsContainer.innerHTML = ""; // Clear previous comments
@@ -37,30 +39,27 @@ onSnapshot(commentsRef, (doc) => {
 
     comments.forEach((comment, index) => {
       const commentElement = document.createElement('div');
-      commentElement.className = 'comment'; // Add a class for styling
+      commentElement.className = 'comment';
 
-      // Display name and text
       const name = comment.name ? comment.name : "Anonymous";
       commentElement.innerHTML = `${name}: ${comment.text}`;
 
-      // Check if there is an image URL in the comment text
       const imageUrl = comment.imageUrl;
       if (imageUrl) {
         const imgElement = document.createElement('img');
         imgElement.src = imageUrl;
-        imgElement.className = 'comment-image'; // Add a class for image styling
+        imgElement.className = 'comment-image';
         commentElement.appendChild(imgElement);
       }
 
-      // Display timestamp (converted to Philadelphia timezone)
       const timestampElement = document.createElement('span');
-      const commentDate = new Date(comment.timestamp); // Timestamp from the comment
+      const commentDate = new Date(comment.timestamp);
       const options = { timeZone: 'America/New_York', hour12: true, hour: 'numeric', minute: 'numeric', second: 'numeric' };
       timestampElement.innerText = commentDate.toLocaleString('en-US', options);
       timestampElement.className = 'timestamp';
       commentElement.appendChild(timestampElement);
 
-      // Create the vote section (green button, red button, and vote label)
+      // Create the vote section
       const voteContainer = document.createElement('div');
       voteContainer.className = 'vote-container';
       
@@ -83,21 +82,64 @@ onSnapshot(commentsRef, (doc) => {
       commentElement.appendChild(voteContainer);
       commentsContainer.appendChild(commentElement);
 
-// Upvote logic
-upvoteButton.addEventListener('click', async () => {
-  const commentId = comment.id; // Get the unique ID of the comment
-  if (comment.voteType === 'upvote') {
-    comment.votes -= 1;
-    comment.voteType = null;
-  } else {
-    comment.votes += 1;
-    if (comment.voteType === 'downvote') {
-      comment.votes += 1; // Neutralize the previous downvote
-    }
-    comment.voteType = 'upvote';
+      // Upvote logic
+      upvoteButton.addEventListener('click', async () => {
+        const commentId = comment.id;
+        if (userVotes[commentId] === 'upvote') {
+          // Remove upvote
+          comment.votes -= 1;
+          userVotes[commentId] = null; // Reset user vote
+        } else {
+          if (userVotes[commentId] === 'downvote') {
+            // Remove downvote and add upvote
+            comment.votes += 2; // Neutralize the downvote and add an upvote
+          } else {
+            // Add upvote
+            comment.votes += 1;
+          }
+          userVotes[commentId] = 'upvote'; // Set user's vote to upvote
+        }
+        await updateVotes(commentId, comment);
+      });
+
+      // Downvote logic
+      downvoteButton.addEventListener('click', async () => {
+        const commentId = comment.id;
+        if (userVotes[commentId] === 'downvote') {
+          // Remove downvote
+          comment.votes += 1;
+          userVotes[commentId] = null; // Reset user vote
+        } else {
+          if (userVotes[commentId] === 'upvote') {
+            // Remove upvote and add downvote
+            comment.votes -= 2; // Neutralize the upvote and add a downvote
+          } else {
+            // Add downvote
+            comment.votes -= 1;
+          }
+          userVotes[commentId] = 'downvote'; // Set user's vote to downvote
+        }
+        await updateVotes(commentId, comment);
+      });
+    });
   }
-  await updateVotes(commentId, comment); // Pass ID instead of index
 });
+
+// Update votes function remains unchanged
+async function updateVotes(commentId, updatedComment) {
+  const commentsDoc = await getDoc(commentsRef);
+  const comments = commentsDoc.data().comments || [];
+
+  const commentIndex = comments.findIndex(comment => comment.id === commentId);
+  if (commentIndex !== -1) {
+    comments[commentIndex] = updatedComment;
+  }
+
+  await updateDoc(commentsRef, {
+    comments: comments
+  });
+}
+
 
 // Downvote logic
 downvoteButton.addEventListener('click', async () => {
