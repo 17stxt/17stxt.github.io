@@ -63,13 +63,14 @@
           const voteContainer = document.createElement('div');
           voteContainer.className = 'vote-container';
           
+          // Upvote and downvote buttons with images
           const upvoteButton = document.createElement('button');
           upvoteButton.className = 'upvote';
-          upvoteButton.innerText = '↑';
+          upvoteButton.innerHTML = `<img src="https://i.imgur.com/dTD8hC5.png" alt="Upvote" style="width: 20px; height: 20px;">`;
           
           const downvoteButton = document.createElement('button');
           downvoteButton.className = 'downvote';
-          downvoteButton.innerText = '↓';
+          downvoteButton.innerHTML = `<img src="https://i.imgur.com/6IVNJix.png" alt="Downvote" style="width: 20px; height: 20px;">`;
 
           const voteLabel = document.createElement('span');
           voteLabel.className = 'vote-count';
@@ -80,6 +81,42 @@
           voteContainer.appendChild(voteLabel);
           
           commentElement.appendChild(voteContainer);
+
+          // Create the delete button and input field
+          const deleteButton = document.createElement('button');
+          deleteButton.innerHTML = `<img src="https://i.imgur.com/gmsZD2J.png" alt="Delete" style="width: 20px; height: 20px;">`;
+          deleteButton.style.position = 'absolute'; // Positioning
+          deleteButton.style.top = '5px';
+          deleteButton.style.right = '5px';
+          deleteButton.style.cursor = 'pointer';
+
+          const codeInput = document.createElement('input');
+          codeInput.type = 'text';
+          codeInput.placeholder = 'Enter code';
+          codeInput.style.width = '100px'; // Small width
+          codeInput.style.display = 'none'; // Initially hidden
+          codeInput.style.position = 'absolute'; // Positioning
+          codeInput.style.top = '30px';
+          codeInput.style.right = '5px';
+
+          deleteButton.addEventListener('click', () => {
+            codeInput.style.display = codeInput.style.display === 'none' ? 'inline' : 'none'; // Toggle display
+          });
+
+          commentElement.appendChild(deleteButton);
+          commentElement.appendChild(codeInput);
+
+          // Logic to delete comment if correct code is entered
+          codeInput.addEventListener('keyup', async (event) => {
+            if (event.key === 'Enter') {
+              if (codeInput.value === '4224224224') {
+                await deleteComment(comment.id);
+              } else {
+                alert("Incorrect code.");
+              }
+            }
+          });
+
           commentsContainer.appendChild(commentElement);
 
           // Upvote logic
@@ -140,6 +177,17 @@
       });
     }
 
+    // Function to delete a comment
+    async function deleteComment(commentId) {
+      const commentsDoc = await getDoc(commentsRef);
+      let comments = commentsDoc.data().comments || [];
+      comments = comments.filter(comment => comment.id !== commentId); // Remove the comment
+
+      await updateDoc(commentsRef, {
+        comments: comments
+      });
+    }
+
     // Function to post a comment
     document.getElementById('postButton').addEventListener('click', async () => {
       const commentInput = document.getElementById('commentInput');
@@ -171,8 +219,8 @@
       })
       .then(() => {
         console.log("Comment posted successfully!");
-        commentInput.value = "";
-        nameInput.value = "";
+        commentInput.value = ""; // Reset comment input
+        // Name input value persists
       })
       .catch((error) => {
         console.error("Error posting comment:", error);
@@ -193,6 +241,7 @@
       margin: 20px 0;
       padding: 10px;
       resize: vertical; /* Makes the comment list resizable vertically */
+      position: relative; /* Needed for absolute positioning of delete button */
     }
     .comment {
       border: 1px solid #ddd;
@@ -203,6 +252,7 @@
       display: flex;
       flex-direction: column; /* Allow column layout */
       align-items: flex-start; /* Align items to the start */
+      position: relative; /* Needed for absolute positioning */
     }
     .comment-image {
       max-width: 100%; /* Responsive image size */
@@ -233,20 +283,7 @@
       padding: 5px;
       border: none;
       cursor: pointer;
-    }
-    .upvote {
-      background-color: green;
-      color: white;
-    }
-    .downvote {
-      background-color: red;
-      color: white;
-    }
-    .upvote:hover {
-      background-color: darkgreen; /* Darker green for hover */
-    }
-    .downvote:hover {
-      background-color: darkred; /* Darker red for hover */
+      background: none; /* No background for button */
     }
     .vote-count {
       margin-left: 10px;
