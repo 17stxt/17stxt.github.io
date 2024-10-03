@@ -58,14 +58,6 @@
           commentIdLabel.innerText = `(${comment.id})`; // Display the comment ID
           commentElement.appendChild(commentIdLabel);
 
-          // Display reply info if it's a reply
-          if (comment.replyToId) {
-            const replyIdLabel = document.createElement('span');
-            replyIdLabel.className = 'reply-id';
-            replyIdLabel.innerText = `(${comment.replyToId})`; // Display the reply ID
-            commentElement.appendChild(replyIdLabel);
-          }
-
           const timestampElement = document.createElement('span');
           const commentDate = new Date(comment.timestamp);
           const options = { timeZone: 'America/New_York', hour12: true, hour: 'numeric', minute: 'numeric', second: 'numeric' };
@@ -77,11 +69,6 @@
           const voteContainer = document.createElement('div');
           voteContainer.className = 'vote-container';
           
-          // Reply button
-          const replyButton = document.createElement('button');
-          replyButton.className = 'reply-button';
-          replyButton.innerText = 'Reply';
-
           const upvoteButton = document.createElement('button');
           upvoteButton.className = 'upvote';
           upvoteButton.innerText = '↑';
@@ -94,7 +81,6 @@
           voteLabel.className = 'vote-count';
           voteLabel.innerText = comment.votes || 0; // Default to 0 votes
 
-          voteContainer.appendChild(replyButton);
           voteContainer.appendChild(upvoteButton);
           voteContainer.appendChild(downvoteButton);
           voteContainer.appendChild(voteLabel);
@@ -191,8 +177,7 @@
           votes: 0,
           voteType: null,
           imageUrl: imageUrl,
-          timestamp: new Date().getTime(), // Add timestamp in milliseconds
-          replyToId: null // Set this to null for top-level comments
+          timestamp: new Date().getTime() // Add timestamp in milliseconds
         })
       })
       .then(() => {
@@ -225,54 +210,86 @@
       border-radius: 5px;
       padding: 10px;
       margin: 5px 0;
-      position: relative;
+      background-color: #f9f9f9;
       display: flex;
-      flex-direction: column; /* Arrange children vertically */
-      align-items: flex-start; /* Align children to the left */
+      flex-direction: column; /* Allow column layout */
+      align-items: flex-start; /* Align items to the start */
+      position: relative; /* Required for positioning the ID label */
+    }
+    .comment-id {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      font-size: 12px;
+      color: #666;
     }
     .comment-image {
-      max-width: 100%;
-      height: auto;
-      border-radius: 5px;
-      margin: 10px 0; /* Add some space around the image */
+      max-width: 100%; /* Responsive image size */
+      height: auto; /* Maintain aspect ratio */
+      border-radius: 5px; /* Rounded corners */
+      margin-top: 5px; /* Spacing between text and image */
     }
-    .timestamp {
-      font-size: 0.8em;
-      color: #555;
-      margin-top: 5px; /* Add some space above the timestamp */
+    .comment-box {
+      width: 300px;
+      height: 50px;
+    }
+    .name-box {
+      width: 300px;
+      height: 30px;
+      margin-bottom: 10px;
+    }
+    .post-button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
     }
     .vote-container {
       display: flex;
-      justify-content: flex-end; /* Align buttons to the right */
-      margin-top: 10px; /* Add some space above the vote buttons */
-    }
-    .reply-button {
-      margin-right: 5px;
+      align-items: center;
     }
     .upvote, .downvote {
-      margin: 0 5px; /* Adjust margins for voting buttons */
+      margin-right: 5px;
+      padding: 5px;
+      border: none;
       cursor: pointer;
-      width: 30px; /* Set a fixed width for buttons */
-      height: 30px; /* Set a fixed height for buttons */
     }
-    .reply-id {
-      color: blue; /* Change text color to blue */
-      margin-top: 2px; /* Add space above reply ID */
+    .upvote {
+      background-color: green;
+      color: white;
     }
-    .comment-id {
-      color: black; /* Keep comment ID color black */
-      margin-top: 2px; /* Add space above comment ID */
+    .downvote {
+      background-color: red;
+      color: white;
+    }
+    .upvote:hover {
+      background-color: darkgreen; /* Darker green for hover */
+    }
+    .downvote:hover {
+      background-color: darkred; /* Darker red for hover */
+    }
+    .vote-count {
+      margin-left: 10px;
+    }
+    .timestamp {
+      margin-top: 5px;
+      font-size: 12px;
+      color: #888;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Epilogue Fred</h1>
+    
+    <!-- Name Input Section -->
+    <input type="text" class="name-box" id="nameInput" placeholder="Enter your name (optional)" />
+
+    <!-- Comments Section -->
     <div class="comments" id="comments"></div>
 
-    <input type="text" id="nameInput" placeholder="Your name (optional)">
-    <textarea id="commentInput" rows="4" placeholder="Write your comment..."></textarea>
-    <button id="postButton">Post Comment</button>
+    <!-- Comment Input Section -->
+    <textarea class="comment-box" id="commentInput" placeholder="Write your comment..."></textarea>
+    <button class="post-button" id="postButton">Post Comment</button>
   </div>
 </body>
 </html>
