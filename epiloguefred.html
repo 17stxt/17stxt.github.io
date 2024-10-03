@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Epilogue Fred</title>
   <link rel="stylesheet" href="styles.css">
-  
+
   <!-- Include Firebase SDKs -->
   <script type="module">
     import { getDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-    import { getFirestore, doc, onSnapshot, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
-    
+    import { getFirestore, doc, onSnapshot, updateDoc, arrayUnion, deleteDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+
     // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyBCzabBMFxms9HfX0N411uJQYjEzspSnVk",
@@ -37,7 +37,7 @@
         let comments = doc.data().comments || [];
         comments = comments.sort((a, b) => b.timestamp - a.timestamp); // Sort by timestamp, newest first
 
-        comments.forEach((comment, index) => {
+        comments.forEach((comment) => {
           const commentElement = document.createElement('div');
           commentElement.className = 'comment';
 
@@ -62,11 +62,11 @@
           // Create the vote section
           const voteContainer = document.createElement('div');
           voteContainer.className = 'vote-container';
-          
+
           const upvoteButton = document.createElement('button');
           upvoteButton.className = 'upvote';
           upvoteButton.innerText = '↑';
-          
+
           const downvoteButton = document.createElement('button');
           downvoteButton.className = 'downvote';
           downvoteButton.innerText = '↓';
@@ -78,7 +78,31 @@
           voteContainer.appendChild(upvoteButton);
           voteContainer.appendChild(downvoteButton);
           voteContainer.appendChild(voteLabel);
-          
+
+          // Create delete button
+          const deleteButton = document.createElement('button');
+          deleteButton.className = 'delete-button';
+          deleteButton.innerHTML = '&#x274C;'; // Trash can or grey "X" icon
+
+          // Create input box for code
+          const codeInput = document.createElement('input');
+          codeInput.type = 'text';
+          codeInput.className = 'code-input';
+          codeInput.placeholder = 'Enter code...';
+          codeInput.style.display = 'none'; // Initially hidden
+
+          // Toggle code input visibility
+          deleteButton.addEventListener('click', () => {
+            if (codeInput.style.display === 'none') {
+              codeInput.style.display = 'inline'; // Show input box
+            } else {
+              codeInput.style.display = 'none'; // Hide input box
+            }
+          });
+
+          // Add input box and delete button to comment
+          voteContainer.appendChild(deleteButton);
+          voteContainer.appendChild(codeInput);
           commentElement.appendChild(voteContainer);
           commentsContainer.appendChild(commentElement);
 
@@ -121,6 +145,19 @@
             }
             await updateVotes(commentId, comment);
           });
+
+          // Code input event to delete comment
+          codeInput.addEventListener('keypress', async (event) => {
+            if (event.key === 'Enter') {
+              const codeValue = codeInput.value.trim();
+              if (codeValue === '4224224224') {
+                await deleteComment(comment.id);
+                codeInput.value = ''; // Clear the input after deletion
+              } else {
+                alert('Incorrect code.'); // Notify user of incorrect code
+              }
+            }
+          });
         });
       }
     });
@@ -137,6 +174,18 @@
 
       await updateDoc(commentsRef, {
         comments: comments
+      });
+    }
+
+    // Delete comment function
+    async function deleteComment(commentId) {
+      const commentsDoc = await getDoc(commentsRef);
+      const comments = commentsDoc.data().comments || [];
+
+      const updatedComments = comments.filter(comment => comment.id !== commentId); // Remove the comment
+
+      await updateDoc(commentsRef, {
+        comments: updatedComments
       });
     }
 
@@ -175,78 +224,81 @@
         nameInput.value = "";
       })
       .catch((error) => {
-        console.error("Error posting comment:", error);
+        console.error("Error posting comment: ", error);
       });
     });
-
   </script>
 
   <style>
-    .container {
-      text-align: center;
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
       padding: 20px;
     }
-    .comments {
-      border: 1px solid #ccc;
-      height: 500px;
-      overflow-y: scroll;
-      margin: 20px 0;
-      padding: 10px;
-      resize: vertical; /* Makes the comment list resizable vertically */
-    }
-    .comment {
-      border: 1px solid #ddd;
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 20px;
       border-radius: 5px;
-      padding: 10px;
-      margin: 5px 0;
-      background-color: #f9f9f9;
-      display: flex;
-      flex-direction: column; /* Allow column layout */
-      align-items: flex-start; /* Align items to the start */
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
-    .comment-image {
-      max-width: 100%; /* Responsive image size */
-      height: auto; /* Maintain aspect ratio */
-      border-radius: 5px; /* Rounded corners */
-      margin-top: 5px; /* Spacing between text and image */
-    }
-    .comment-box {
-      width: 300px;
-      height: 50px;
-    }
-    .name-box {
-      width: 300px;
-      height: 30px;
+    .name-box, .comment-box {
+      width: calc(100% - 22px);
       margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
     }
     .post-button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .post-button:hover {
+      background-color: #45a049;
+    }
+    .comments {
+      margin-top: 20px;
+    }
+    .comment {
+      background-color: #f1f1f1;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 4px;
+      position: relative; /* Added for positioning the delete button */
+    }
+    .comment-image {
+      max-width: 100%;
+      height: auto;
       margin-top: 10px;
-      padding: 10px 20px;
-      font-size: 16px;
     }
     .vote-container {
       display: flex;
       align-items: center;
+      margin-top: 10px;
     }
     .upvote, .downvote {
-      margin-right: 5px;
-      padding: 5px;
-      border: none;
-      cursor: pointer;
-    }
-    .upvote {
-      background-color: green;
+      background-color: #4CAF50;
       color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 5px;
     }
     .downvote {
       background-color: red;
-      color: white;
     }
     .upvote:hover {
-      background-color: darkgreen; /* Darker green for hover */
+      background-color: darkgreen;
     }
     .downvote:hover {
-      background-color: darkred; /* Darker red for hover */
+      background-color: darkred;
     }
     .vote-count {
       margin-left: 10px;
@@ -255,6 +307,20 @@
       margin-top: 5px;
       font-size: 12px;
       color: #888;
+    }
+    .delete-button {
+      background-color: transparent;
+      border: none;
+      color: grey;
+      cursor: pointer;
+      font-size: 16px;
+      margin-left: auto; /* Align to the right */
+      position: relative;
+    }
+    .code-input {
+      width: 120px; /* Adjust width for the input box */
+      margin-left: 5px;
+      display: none; /* Hidden by default */
     }
   </style>
 </head>
