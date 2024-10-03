@@ -63,14 +63,13 @@
           const voteContainer = document.createElement('div');
           voteContainer.className = 'vote-container';
           
-          // Upvote and downvote buttons with images
           const upvoteButton = document.createElement('button');
           upvoteButton.className = 'upvote';
-          upvoteButton.innerHTML = `<img src="https://i.imgur.com/dTD8hC5.png" alt="Upvote" style="width: 20px; height: 20px;">`;
+          upvoteButton.innerText = '↑';
           
           const downvoteButton = document.createElement('button');
           downvoteButton.className = 'downvote';
-          downvoteButton.innerHTML = `<img src="https://i.imgur.com/6IVNJix.png" alt="Downvote" style="width: 20px; height: 20px;">`;
+          downvoteButton.innerText = '↓';
 
           const voteLabel = document.createElement('span');
           voteLabel.className = 'vote-count';
@@ -81,42 +80,6 @@
           voteContainer.appendChild(voteLabel);
           
           commentElement.appendChild(voteContainer);
-
-          // Create the delete button and input field
-          const deleteButton = document.createElement('button');
-          deleteButton.innerHTML = `<img src="https://i.imgur.com/gmsZD2J.png" alt="Delete" style="width: 20px; height: 20px;">`;
-          deleteButton.style.position = 'absolute'; // Positioning
-          deleteButton.style.top = '5px';
-          deleteButton.style.right = '5px';
-          deleteButton.style.cursor = 'pointer';
-
-          const codeInput = document.createElement('input');
-          codeInput.type = 'text';
-          codeInput.placeholder = 'Enter code';
-          codeInput.style.width = '100px'; // Small width
-          codeInput.style.display = 'none'; // Initially hidden
-          codeInput.style.position = 'absolute'; // Positioning
-          codeInput.style.top = '30px';
-          codeInput.style.right = '5px';
-
-          deleteButton.addEventListener('click', () => {
-            codeInput.style.display = codeInput.style.display === 'none' ? 'inline' : 'none'; // Toggle display
-          });
-
-          commentElement.appendChild(deleteButton);
-          commentElement.appendChild(codeInput);
-
-          // Logic to delete comment if correct code is entered
-          codeInput.addEventListener('keyup', async (event) => {
-            if (event.key === 'Enter') {
-              if (codeInput.value === '4224224224') {
-                await deleteComment(comment.id);
-              } else {
-                alert("Incorrect code.");
-              }
-            }
-          });
-
           commentsContainer.appendChild(commentElement);
 
           // Upvote logic
@@ -177,17 +140,6 @@
       });
     }
 
-    // Function to delete a comment
-    async function deleteComment(commentId) {
-      const commentsDoc = await getDoc(commentsRef);
-      let comments = commentsDoc.data().comments || [];
-      comments = comments.filter(comment => comment.id !== commentId); // Remove the comment
-
-      await updateDoc(commentsRef, {
-        comments: comments
-      });
-    }
-
     // Function to post a comment
     document.getElementById('postButton').addEventListener('click', async () => {
       const commentInput = document.getElementById('commentInput');
@@ -219,8 +171,8 @@
       })
       .then(() => {
         console.log("Comment posted successfully!");
-        commentInput.value = ""; // Reset comment input
-        // Name input value persists
+        commentInput.value = "";
+        nameInput.value = "";
       })
       .catch((error) => {
         console.error("Error posting comment:", error);
@@ -240,8 +192,7 @@
       overflow-y: scroll;
       margin: 20px 0;
       padding: 10px;
-      resize: vertical;
-      position: relative;
+      resize: vertical; /* Makes the comment list resizable vertically */
     }
     .comment {
       border: 1px solid #ddd;
@@ -250,15 +201,14 @@
       margin: 5px 0;
       background-color: #f9f9f9;
       display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      position: relative;
+      flex-direction: column; /* Allow column layout */
+      align-items: flex-start; /* Align items to the start */
     }
     .comment-image {
-      max-width: 100%;
-      height: auto;
-      border-radius: 5px;
-      margin-top: 5px;
+      max-width: 100%; /* Responsive image size */
+      height: auto; /* Maintain aspect ratio */
+      border-radius: 5px; /* Rounded corners */
+      margin-top: 5px; /* Spacing between text and image */
     }
     .comment-box {
       width: 300px;
@@ -277,48 +227,34 @@
     .vote-container {
       display: flex;
       align-items: center;
-      margin-top: -10px; /* Reduced spacing to move it higher */
     }
     .upvote, .downvote {
-      margin-right: 3px; /* Reduced margin */
+      margin-right: 5px;
       padding: 5px;
       border: none;
       cursor: pointer;
-      background: transparent;
     }
-    .upvote img, .downvote img {
-      width: 18px; /* Smaller image size for a tighter layout */
-      height: 18px;
+    .upvote {
+      background-color: green;
+      color: white;
+    }
+    .downvote {
+      background-color: red;
+      color: white;
+    }
+    .upvote:hover {
+      background-color: darkgreen; /* Darker green for hover */
+    }
+    .downvote:hover {
+      background-color: darkred; /* Darker red for hover */
     }
     .vote-count {
-      margin-left: 3px; /* Reduced spacing between buttons and score */
+      margin-left: 10px;
     }
     .timestamp {
       margin-top: 5px;
       font-size: 12px;
       color: #888;
-    }
-    /* Updated delete button styles */
-    .delete-button {
-      width: 25px; /* Small square */
-      height: 25px;
-      background-color: #f0f0f0; /* Subtle gray background */
-      border: 1px solid #ccc; /* Thin border */
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0; /* Remove padding */
-    }
-    .delete-button img {
-      width: 100%; /* Full size image to match button size */
-      height: 100%;
-    }
-    .delete-button:hover {
-      background-color: #e0e0e0; /* Slightly darker on hover */
     }
   </style>
 </head>
