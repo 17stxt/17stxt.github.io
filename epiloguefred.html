@@ -5,10 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Epilogue Fred</title>
   <link rel="stylesheet" href="styles.css">
-
+  
   <!-- Include Firebase SDKs -->
   <script type="module">
-    import { getDoc, getFirestore, doc, onSnapshot, updateDoc, arrayUnion, initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+    import { getDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+    import { getFirestore, doc, onSnapshot, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
     
     // Firebase configuration
     const firebaseConfig = {
@@ -27,7 +29,7 @@
 
     let userVotes = {}; // Object to keep track of user's votes
 
-    // Listen for comments in Firestore
+    // Inside the onSnapshot function
     onSnapshot(commentsRef, (doc) => {
       const commentsContainer = document.getElementById('comments');
       commentsContainer.innerHTML = ""; // Clear previous comments
@@ -35,7 +37,7 @@
         let comments = doc.data().comments || [];
         comments = comments.sort((a, b) => b.timestamp - a.timestamp); // Sort by timestamp, newest first
 
-        comments.forEach((comment) => {
+        comments.forEach((comment, index) => {
           const commentElement = document.createElement('div');
           commentElement.className = 'comment';
 
@@ -60,11 +62,11 @@
           // Create the vote section
           const voteContainer = document.createElement('div');
           voteContainer.className = 'vote-container';
-
+          
           const upvoteButton = document.createElement('button');
           upvoteButton.className = 'upvote';
           upvoteButton.innerText = '↑';
-
+          
           const downvoteButton = document.createElement('button');
           downvoteButton.className = 'downvote';
           downvoteButton.innerText = '↓';
@@ -76,7 +78,7 @@
           voteContainer.appendChild(upvoteButton);
           voteContainer.appendChild(downvoteButton);
           voteContainer.appendChild(voteLabel);
-
+          
           commentElement.appendChild(voteContainer);
           commentsContainer.appendChild(commentElement);
 
@@ -98,7 +100,6 @@
               userVotes[commentId] = 'upvote'; // Set user's vote to upvote
             }
             await updateVotes(commentId, comment);
-            voteLabel.innerText = comment.votes; // Update the vote count in UI
           });
 
           // Downvote logic
@@ -119,20 +120,19 @@
               userVotes[commentId] = 'downvote'; // Set user's vote to downvote
             }
             await updateVotes(commentId, comment);
-            voteLabel.innerText = comment.votes; // Update the vote count in UI
           });
         });
       }
     });
 
-    // Update votes function
+    // Update votes function remains unchanged
     async function updateVotes(commentId, updatedComment) {
       const commentsDoc = await getDoc(commentsRef);
       const comments = commentsDoc.data().comments || [];
 
       const commentIndex = comments.findIndex(comment => comment.id === commentId);
       if (commentIndex !== -1) {
-        comments[commentIndex] = updatedComment; // Update the specific comment
+        comments[commentIndex] = updatedComment;
       }
 
       await updateDoc(commentsRef, {
@@ -272,10 +272,10 @@
     <textarea class="comment-box" id="commentInput" placeholder="Write your comment..."></textarea>
     <button class="post-button" id="postButton">Post Comment</button>
   </div>
-
-  <!-- Navigation Button to Home Page -->
-  <a href="freds.html" style="position: fixed; top: 10px; left: 10px; z-index: 1000;">
-      <img src="https://www.iconsdb.com/icons/preview/gray/undo-5-xxl.png" alt="Home" style="width: 40px; height: 40px;">
-  </a>
 </body>
 </html>
+
+<!-- Navigation Button to Home Page -->
+<a href="freds.html" style="position: fixed; top: 10px; left: 10px; z-index: 1000;">
+    <img src="https://www.iconsdb.com/icons/preview/gray/undo-5-xxl.png" alt="Home" style="width: 40px; height: 40px;">
+</a>
