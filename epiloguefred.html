@@ -37,20 +37,12 @@
         let comments = doc.data().comments || [];
         comments = comments.sort((a, b) => b.timestamp - a.timestamp); // Sort by timestamp, newest first
 
-        comments.forEach((comment, index) => {
+        comments.forEach((comment) => {
           const commentElement = document.createElement('div');
           commentElement.className = 'comment';
 
-          // Display comment ID in the top-right corner
-          const commentIdElement = document.createElement('span');
-          commentIdElement.className = 'comment-id';
-          commentIdElement.innerText = `(${comment.id})`; // Display the unique comment ID
-          commentElement.appendChild(commentIdElement);
-
           const name = comment.name ? comment.name : "Anonymous";
-          const textElement = document.createElement('p');
-          textElement.innerHTML = `${name}: ${comment.text}`;
-          commentElement.appendChild(textElement);
+          commentElement.innerHTML = `${name}: ${comment.text}`;
 
           const imageUrl = comment.imageUrl;
           if (imageUrl) {
@@ -59,6 +51,12 @@
             imgElement.className = 'comment-image';
             commentElement.appendChild(imgElement);
           }
+
+          // Create a span for the comment ID
+          const commentIdLabel = document.createElement('span');
+          commentIdLabel.className = 'comment-id';
+          commentIdLabel.innerText = `(${comment.id})`; // Display the comment ID
+          commentElement.appendChild(commentIdLabel);
 
           const timestampElement = document.createElement('span');
           const commentDate = new Date(comment.timestamp);
@@ -148,6 +146,11 @@
       });
     }
 
+    // Function to generate a random 6-digit ID
+    function generateCommentId() {
+      return Math.floor(100000 + Math.random() * 900000); // Generates a random 6-digit number
+    }
+
     // Function to post a comment
     document.getElementById('postButton').addEventListener('click', async () => {
       const commentInput = document.getElementById('commentInput');
@@ -163,12 +166,12 @@
       const imageUrlMatch = commentText.match(/https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp)/);
       const imageUrl = imageUrlMatch ? imageUrlMatch[0] : null;
 
-      // Generate a unique 6-digit random ID for the comment
-      const commentId = Math.floor(100000 + Math.random() * 900000); // Generate a 6-digit random number
+      // Generate a unique ID for the comment
+      const commentId = generateCommentId(); // Use the new generateCommentId function
 
       await updateDoc(commentsRef, {
         comments: arrayUnion({
-          id: commentId, // Add the generated unique ID here
+          id: commentId, // Add unique ID here
           text: commentText,
           name: nameText,
           votes: 0,
@@ -208,14 +211,17 @@
       padding: 10px;
       margin: 5px 0;
       background-color: #f9f9f9;
-      position: relative; /* For positioning the ID */
+      display: flex;
+      flex-direction: column; /* Allow column layout */
+      align-items: flex-start; /* Align items to the start */
+      position: relative; /* Required for positioning the ID label */
     }
     .comment-id {
       position: absolute;
       top: 5px;
       right: 10px;
       font-size: 12px;
-      color: #666; /* Slightly darker text for ID */
+      color: #666;
     }
     .comment-image {
       max-width: 100%; /* Responsive image size */
