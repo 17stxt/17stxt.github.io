@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Epilogue Fred</title>
   <link rel="stylesheet" href="styles.css">
-
+  
   <!-- Include Firebase SDKs -->
   <script type="module">
     import { getDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
     import { getFirestore, doc, onSnapshot, updateDoc, arrayUnion, deleteDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
-
+    
     // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyBCzabBMFxms9HfX0N411uJQYjEzspSnVk",
@@ -62,14 +62,26 @@
           // Create the vote section
           const voteContainer = document.createElement('div');
           voteContainer.className = 'vote-container';
-
+          
+          // Upvote button
           const upvoteButton = document.createElement('button');
           upvoteButton.className = 'upvote';
-          upvoteButton.innerText = '↑';
-
+          const upvoteImg = document.createElement('img');
+          upvoteImg.src = "https://i.imgur.com/dTD8hC5.png"; // Upvote image
+          upvoteImg.alt = "Upvote";
+          upvoteImg.style.width = "20px"; // Set image size
+          upvoteImg.style.height = "20px";
+          upvoteButton.appendChild(upvoteImg);
+          
+          // Downvote button
           const downvoteButton = document.createElement('button');
           downvoteButton.className = 'downvote';
-          downvoteButton.innerText = '↓';
+          const downvoteImg = document.createElement('img');
+          downvoteImg.src = "https://i.imgur.com/6IVNJix.png"; // Downvote image
+          downvoteImg.alt = "Downvote";
+          downvoteImg.style.width = "20px"; // Set image size
+          downvoteImg.style.height = "20px";
+          downvoteButton.appendChild(downvoteImg);
 
           const voteLabel = document.createElement('span');
           voteLabel.className = 'vote-count';
@@ -78,32 +90,53 @@
           voteContainer.appendChild(upvoteButton);
           voteContainer.appendChild(downvoteButton);
           voteContainer.appendChild(voteLabel);
+          
+          commentElement.appendChild(voteContainer);
 
-          // Create delete button
+          // Delete button section
           const deleteButton = document.createElement('button');
           deleteButton.className = 'delete-button';
-          deleteButton.innerHTML = '&#x274C;'; // Trash can or grey "X" icon
+          const deleteImg = document.createElement('img');
+          deleteImg.src = "https://i.imgur.com/gmsZD2J.png"; // Delete image
+          deleteImg.alt = "Delete";
+          deleteImg.style.width = "20px"; // Set image size
+          deleteImg.style.height = "20px";
+          deleteButton.appendChild(deleteImg);
 
-          // Create input box for code
-          const codeInput = document.createElement('input');
-          codeInput.type = 'text';
-          codeInput.className = 'code-input';
-          codeInput.placeholder = 'Enter code...';
-          codeInput.style.display = 'none'; // Initially hidden
+          // Textbox for the delete code
+          const deleteInput = document.createElement('input');
+          deleteInput.type = 'text';
+          deleteInput.placeholder = 'Enter code';
+          deleteInput.style.display = 'none'; // Hidden by default
+          deleteInput.style.width = '100px'; // Set width
+          deleteInput.className = 'delete-input';
 
-          // Toggle code input visibility
+          // Toggle the input field
           deleteButton.addEventListener('click', () => {
-            if (codeInput.style.display === 'none') {
-              codeInput.style.display = 'inline'; // Show input box
+            if (deleteInput.style.display === 'none') {
+              deleteInput.style.display = 'inline-block'; // Show the input
+              deleteInput.focus();
             } else {
-              codeInput.style.display = 'none'; // Hide input box
+              deleteInput.style.display = 'none'; // Hide the input
             }
           });
 
-          // Add input box and delete button to comment
-          voteContainer.appendChild(deleteButton);
-          voteContainer.appendChild(codeInput);
-          commentElement.appendChild(voteContainer);
+          // Handle code submission
+          deleteInput.addEventListener('keydown', async (event) => {
+            if (event.key === 'Enter') {
+              const code = deleteInput.value;
+              if (code === '4224224224') {
+                await deleteComment(comment.id);
+                deleteInput.style.display = 'none'; // Hide the input after deletion
+              } else {
+                alert('Incorrect code.'); // Show alert for incorrect code
+              }
+            }
+          });
+
+          // Append elements
+          commentElement.appendChild(deleteButton);
+          commentElement.appendChild(deleteInput);
           commentsContainer.appendChild(commentElement);
 
           // Upvote logic
@@ -145,22 +178,22 @@
             }
             await updateVotes(commentId, comment);
           });
-
-          // Code input event to delete comment
-          codeInput.addEventListener('keypress', async (event) => {
-            if (event.key === 'Enter') {
-              const codeValue = codeInput.value.trim();
-              if (codeValue === '4224224224') {
-                await deleteComment(comment.id);
-                codeInput.value = ''; // Clear the input after deletion
-              } else {
-                alert('Incorrect code.'); // Notify user of incorrect code
-              }
-            }
-          });
         });
       }
     });
+
+    // Function to delete a comment
+    async function deleteComment(commentId) {
+      const commentsDoc = await getDoc(commentsRef);
+      const comments = commentsDoc.data().comments || [];
+
+      // Filter out the comment to delete
+      const updatedComments = comments.filter(comment => comment.id !== commentId);
+
+      await updateDoc(commentsRef, {
+        comments: updatedComments
+      });
+    }
 
     // Update votes function remains unchanged
     async function updateVotes(commentId, updatedComment) {
@@ -177,62 +210,42 @@
       });
     }
 
-    // Delete comment function
-    async function deleteComment(commentId) {
-      const commentsDoc = await getDoc(commentsRef);
-      const comments = commentsDoc.data().comments || [];
-
-      const updatedComments = comments.filter(comment => comment.id !== commentId); // Remove the comment
-
-      await updateDoc(commentsRef, {
-        comments: updatedComments
-      });
-    }
-
     // Function to post a comment
     document.getElementById('postButton').addEventListener('click', async () => {
       const commentInput = document.getElementById('commentInput');
       const nameInput = document.getElementById('nameInput');
       const commentText = commentInput.value.trim();
-      const nameText = nameInput.value.trim() || "Anonymous";
+      const nameText = nameInput.value.trim(); // Get name input value
 
-      if (commentText === "") {
-        alert("Comment cannot be empty!");
-        return;
-      }
-
-      const imageUrlMatch = commentText.match(/https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp)/);
-      const imageUrl = imageUrlMatch ? imageUrlMatch[0] : null;
-
-      // Generate a unique ID for the comment
-      const commentId = new Date().getTime(); // Using timestamp as a unique ID
-
-      await updateDoc(commentsRef, {
-        comments: arrayUnion({
-          id: commentId, // Add unique ID here
+      if (commentText) {
+        const newComment = {
+          id: Date.now().toString(),
           text: commentText,
-          name: nameText,
-          votes: 0,
-          voteType: null,
-          imageUrl: imageUrl,
-          timestamp: new Date().getTime() // Add timestamp in milliseconds
-        })
-      })
-      .then(() => {
-        console.log("Comment posted successfully!");
-        commentInput.value = "";
-        nameInput.value = "";
-      })
-      .catch((error) => {
-        console.error("Error posting comment: ", error);
-      });
+          name: nameText, // Keep the name input value
+          timestamp: Date.now(),
+          votes: 0
+        };
+
+        const commentsDoc = await getDoc(commentsRef);
+        const comments = commentsDoc.data().comments || [];
+
+        // Add the new comment to the comments array
+        comments.push(newComment);
+
+        await updateDoc(commentsRef, {
+          comments: comments
+        });
+
+        // Clear the comment input but keep the name input
+        commentInput.value = '';
+      }
     });
   </script>
-
+  
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f9f9f9;
+      background-color: #f4f4f4;
       margin: 0;
       padding: 20px;
     }
@@ -241,64 +254,50 @@
       margin: auto;
       background: white;
       padding: 20px;
-      border-radius: 5px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
     .name-box, .comment-box {
-      width: calc(100% - 22px);
-      margin-bottom: 10px;
+      width: 100%;
       padding: 10px;
+      margin: 10px 0;
       border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    .post-button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 10px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .post-button:hover {
-      background-color: #45a049;
-    }
-    .comments {
-      margin-top: 20px;
+      border-radius: 5px;
     }
     .comment {
-      background-color: #f1f1f1;
-      margin-bottom: 10px;
+      margin: 10px 0;
       padding: 10px;
-      border-radius: 4px;
-      position: relative; /* Added for positioning the delete button */
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      position: relative; /* For positioning delete button */
     }
-    .comment-image {
-      max-width: 100%;
-      height: auto;
-      margin-top: 10px;
+    .delete-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      position: absolute;
+      top: 10px;
+      right: 10px; /* Adjust as needed for spacing */
+    }
+    .delete-input {
+      display: none; /* Hidden by default */
+      margin-left: 5px; /* Space between button and input */
+      width: 80px; /* Adjust width */
     }
     .vote-container {
       display: flex;
       align-items: center;
-      margin-top: 10px;
+      margin-top: 5px;
     }
     .upvote, .downvote {
-      background-color: #4CAF50;
-      color: white;
+      background: none;
       border: none;
-      padding: 5px 10px;
-      border-radius: 4px;
       cursor: pointer;
-      margin-right: 5px;
+      margin-right: 10px;
     }
-    .downvote {
-      background-color: red;
-    }
-    .upvote:hover {
-      background-color: darkgreen;
-    }
-    .downvote:hover {
-      background-color: darkred;
+    .upvote img, .downvote img {
+      width: 20px; /* Set image size */
+      height: 20px;
     }
     .vote-count {
       margin-left: 10px;
@@ -308,19 +307,16 @@
       font-size: 12px;
       color: #888;
     }
-    .delete-button {
-      background-color: transparent;
+    .post-button {
+      background-color: #28a745;
+      color: white;
       border: none;
-      color: grey;
+      padding: 10px 20px;
+      border-radius: 5px;
       cursor: pointer;
-      font-size: 16px;
-      margin-left: auto; /* Align to the right */
-      position: relative;
     }
-    .code-input {
-      width: 120px; /* Adjust width for the input box */
-      margin-left: 5px;
-      display: none; /* Hidden by default */
+    .post-button:hover {
+      background-color: #218838;
     }
   </style>
 </head>
