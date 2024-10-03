@@ -240,8 +240,8 @@
       overflow-y: scroll;
       margin: 20px 0;
       padding: 10px;
-      resize: vertical; /* Makes the comment list resizable vertically */
-      position: relative; /* Needed for absolute positioning of delete button */
+      resize: vertical;
+      position: relative;
     }
     .comment {
       border: 1px solid #ddd;
@@ -250,15 +250,15 @@
       margin: 5px 0;
       background-color: #f9f9f9;
       display: flex;
-      flex-direction: column; /* Allow column layout */
-      align-items: flex-start; /* Align items to the start */
-      position: relative; /* Needed for absolute positioning */
+      flex-direction: column;
+      align-items: flex-start;
+      position: relative;
     }
     .comment-image {
-      max-width: 100%; /* Responsive image size */
-      height: auto; /* Maintain aspect ratio */
-      border-radius: 5px; /* Rounded corners */
-      margin-top: 5px; /* Spacing between text and image */
+      max-width: 100%;
+      height: auto;
+      border-radius: 5px;
+      margin-top: 5px;
     }
     .comment-box {
       width: 300px;
@@ -277,33 +277,48 @@
     .vote-container {
       display: flex;
       align-items: center;
+      margin-top: -10px; /* Reduced spacing to move it higher */
     }
     .upvote, .downvote {
-      margin-right: 5px;
+      margin-right: 3px; /* Reduced margin */
       padding: 5px;
       border: none;
       cursor: pointer;
-      background: transparent; /* No background for button */
+      background: transparent;
     }
-    .upvote:hover, .downvote:hover {
-      background: transparent; /* Ensure background stays transparent on hover */
+    .upvote img, .downvote img {
+      width: 18px; /* Smaller image size for a tighter layout */
+      height: 18px;
     }
     .vote-count {
-      margin-left: 10px;
+      margin-left: 3px; /* Reduced spacing between buttons and score */
     }
     .timestamp {
       margin-top: 5px;
       font-size: 12px;
       color: #888;
     }
-    /* Styles for the delete button */
+    /* Updated delete button styles */
     .delete-button {
-      background: transparent; /* No background */
-      border: none; /* Remove border */
-      cursor: pointer; /* Pointer cursor on hover */
+      width: 25px; /* Small square */
+      height: 25px;
+      background-color: #f0f0f0; /* Subtle gray background */
+      border: 1px solid #ccc; /* Thin border */
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0; /* Remove padding */
+    }
+    .delete-button img {
+      width: 100%; /* Full size image to match button size */
+      height: 100%;
     }
     .delete-button:hover {
-      background: transparent; /* Ensure background stays transparent on hover */
+      background-color: #e0e0e0; /* Slightly darker on hover */
     }
   </style>
 </head>
