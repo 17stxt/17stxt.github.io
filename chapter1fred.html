@@ -37,7 +37,7 @@
         let comments = doc.data().comments || [];
         comments = comments.sort((a, b) => b.timestamp - a.timestamp); // Sort by timestamp, newest first
 
-        comments.forEach((comment, index) => {
+        comments.forEach((comment) => {
           const commentElement = document.createElement('div');
           commentElement.className = 'comment';
 
@@ -51,6 +51,12 @@
             imgElement.className = 'comment-image';
             commentElement.appendChild(imgElement);
           }
+
+          // Create a span for the comment ID
+          const commentIdLabel = document.createElement('span');
+          commentIdLabel.className = 'comment-id';
+          commentIdLabel.innerText = `(${comment.id})`; // Display the comment ID
+          commentElement.appendChild(commentIdLabel);
 
           const timestampElement = document.createElement('span');
           const commentDate = new Date(comment.timestamp);
@@ -140,6 +146,11 @@
       });
     }
 
+    // Function to generate a random 6-digit ID
+    function generateCommentId() {
+      return Math.floor(100000 + Math.random() * 900000); // Generates a random 6-digit number
+    }
+
     // Function to post a comment
     document.getElementById('postButton').addEventListener('click', async () => {
       const commentInput = document.getElementById('commentInput');
@@ -156,7 +167,7 @@
       const imageUrl = imageUrlMatch ? imageUrlMatch[0] : null;
 
       // Generate a unique ID for the comment
-      const commentId = new Date().getTime(); // Using timestamp as a unique ID
+      const commentId = generateCommentId(); // Use the new generateCommentId function
 
       await updateDoc(commentsRef, {
         comments: arrayUnion({
@@ -203,6 +214,14 @@
       display: flex;
       flex-direction: column; /* Allow column layout */
       align-items: flex-start; /* Align items to the start */
+      position: relative; /* Required for positioning the ID label */
+    }
+    .comment-id {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      font-size: 12px;
+      color: #666;
     }
     .comment-image {
       max-width: 100%; /* Responsive image size */
