@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,11 +26,10 @@
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const commentsRef = doc(db, 'epilogue', 'comments'); // Firestore reference to the comments document
+    const commentsRef = doc(db, 'epilogue', 'comments');
 
-    let userVotes = {}; // Object to keep track of user's votes
+    let userVotes = {}; // Object to track user votes
 
-    // Inside the onSnapshot function
     onSnapshot(commentsRef, (doc) => {
       const commentsContainer = document.getElementById('comments');
       commentsContainer.innerHTML = ""; // Clear previous comments
@@ -55,15 +55,16 @@
           // Create a span for the comment ID
           const commentIdLabel = document.createElement('span');
           commentIdLabel.className = 'comment-id';
-          commentIdLabel.innerText = `(${comment.id})`; // Display the comment ID
+          commentIdLabel.innerText = `(${comment.id})`;
           commentElement.appendChild(commentIdLabel);
 
-          // Display reply info if it's a reply
+          // Add reply-to ID label if the comment is a reply
           if (comment.replyToId) {
-            const replyIdLabel = document.createElement('span');
-            replyIdLabel.className = 'reply-id';
-            replyIdLabel.innerText = `(${comment.replyToId})`; // Display the reply ID
-            commentElement.appendChild(replyIdLabel);
+            const replyToLabel = document.createElement('button');
+            replyToLabel.className = 'reply-id';
+            replyToLabel.innerText = `(${comment.replyToId})`;
+            replyToLabel.onclick = () => scrollToComment(comment.replyToId);
+            commentIdLabel.insertAdjacentElement('afterend', replyToLabel); // Insert it below the comment ID
           }
 
           const timestampElement = document.createElement('span');
@@ -77,15 +78,15 @@
           const voteContainer = document.createElement('div');
           voteContainer.className = 'vote-container';
           
-          // Reply button
           const replyButton = document.createElement('button');
           replyButton.className = 'reply-button';
-          replyButton.innerText = 'Reply';
+          replyButton.innerText = '↩';
+          replyButton.onclick = () => enterReplyMode(comment.id);
 
           const upvoteButton = document.createElement('button');
           upvoteButton.className = 'upvote';
           upvoteButton.innerText = '↑';
-          
+
           const downvoteButton = document.createElement('button');
           downvoteButton.className = 'downvote';
           downvoteButton.innerText = '↓';
@@ -94,11 +95,12 @@
           voteLabel.className = 'vote-count';
           voteLabel.innerText = comment.votes || 0; // Default to 0 votes
 
+          // Append the reply button and voting buttons in the required order
           voteContainer.appendChild(replyButton);
           voteContainer.appendChild(upvoteButton);
           voteContainer.appendChild(downvoteButton);
           voteContainer.appendChild(voteLabel);
-          
+
           commentElement.appendChild(voteContainer);
           commentsContainer.appendChild(commentElement);
 
@@ -106,18 +108,15 @@
           upvoteButton.addEventListener('click', async () => {
             const commentId = comment.id;
             if (userVotes[commentId] === 'upvote') {
-              // Remove upvote
               comment.votes -= 1;
-              userVotes[commentId] = null; // Reset user vote
+              userVotes[commentId] = null;
             } else {
               if (userVotes[commentId] === 'downvote') {
-                // Remove downvote and add upvote
-                comment.votes += 2; // Neutralize the downvote and add an upvote
+                comment.votes += 2;
               } else {
-                // Add upvote
                 comment.votes += 1;
               }
-              userVotes[commentId] = 'upvote'; // Set user's vote to upvote
+              userVotes[commentId] = 'upvote';
             }
             await updateVotes(commentId, comment);
           });
@@ -126,18 +125,15 @@
           downvoteButton.addEventListener('click', async () => {
             const commentId = comment.id;
             if (userVotes[commentId] === 'downvote') {
-              // Remove downvote
               comment.votes += 1;
-              userVotes[commentId] = null; // Reset user vote
+              userVotes[commentId] = null;
             } else {
               if (userVotes[commentId] === 'upvote') {
-                // Remove upvote and add downvote
-                comment.votes -= 2; // Neutralize the upvote and add a downvote
+                comment.votes -= 2;
               } else {
-                // Add downvote
                 comment.votes -= 1;
               }
-              userVotes[commentId] = 'downvote'; // Set user's vote to downvote
+              userVotes[commentId] = 'downvote';
             }
             await updateVotes(commentId, comment);
           });
@@ -145,7 +141,25 @@
       }
     });
 
-    // Update votes function remains unchanged
+    // Scroll to comment function (on reply button click)
+    function scrollToComment(replyToId) {
+      const commentElements = document.querySelectorAll('.comment');
+      commentElements.forEach((el) => {
+        if (el.querySelector('.comment-id').innerText === `(${replyToId})`) {
+          el.scrollIntoView({ behavior: 'smooth' });
+          el.classList.add('highlight');
+          setTimeout(() => el.classList.remove('highlight'), 2000); // Remove highlight after 2 seconds
+        }
+      });
+    }
+
+    // Enter reply mode function (on reply button click)
+    function enterReplyMode(replyToId) {
+      const replyIndicator = document.getElementById('replyIndicator');
+      replyIndicator.style.display = 'block'; // Show the reply indicator
+      replyIndicator.dataset.replyToId = replyToId; // Store the replyToId
+    }
+
     async function updateVotes(commentId, updatedComment) {
       const commentsDoc = await getDoc(commentsRef);
       const comments = commentsDoc.data().comments || [];
@@ -162,7 +176,7 @@
 
     // Function to generate a random 6-digit ID
     function generateCommentId() {
-      return Math.floor(100000 + Math.random() * 900000); // Generates a random 6-digit number
+      return Math.floor(100000 + Math.random() * 900000);
     }
 
     // Function to post a comment
@@ -171,6 +185,7 @@
       const nameInput = document.getElementById('nameInput');
       const commentText = commentInput.value.trim();
       const nameText = nameInput.value.trim() || "Anonymous";
+      const replyToId = document.getElementById('replyIndicator').dataset.replyToId;
 
       if (commentText === "") {
         alert("Comment cannot be empty!");
@@ -180,25 +195,25 @@
       const imageUrlMatch = commentText.match(/https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp)/);
       const imageUrl = imageUrlMatch ? imageUrlMatch[0] : null;
 
-      // Generate a unique ID for the comment
-      const commentId = generateCommentId(); // Use the new generateCommentId function
+      const commentId = generateCommentId();
 
       await updateDoc(commentsRef, {
         comments: arrayUnion({
-          id: commentId, // Add unique ID here
+          id: commentId,
           text: commentText,
           name: nameText,
           votes: 0,
           voteType: null,
           imageUrl: imageUrl,
-          timestamp: new Date().getTime(), // Add timestamp in milliseconds
-          replyToId: null // Set this to null for top-level comments
+          replyToId: replyToId || null, // Store reply ID if available
+          timestamp: new Date().getTime()
         })
       })
       .then(() => {
         console.log("Comment posted successfully!");
         commentInput.value = "";
         nameInput.value = "";
+        document.getElementById('replyIndicator').style.display = 'none'; // Hide reply indicator after posting
       })
       .catch((error) => {
         console.error("Error posting comment:", error);
@@ -218,61 +233,117 @@
       overflow-y: scroll;
       margin: 20px 0;
       padding: 10px;
-      resize: vertical; /* Makes the comment list resizable vertically */
+      resize: vertical;
     }
     .comment {
       border: 1px solid #ddd;
       border-radius: 5px;
       padding: 10px;
       margin: 5px 0;
-      position: relative;
+      background-color: #f9f9f9;
       display: flex;
-      flex-direction: column; /* Arrange children vertically */
-      align-items: flex-start; /* Align children to the left */
+      flex-direction: column;
+      align-items: flex-start;
+      position: relative;
+      transition: border-color 0.3s;
+    }
+    .comment:focus, .comment.highlight {
+      border-color: blue;
+    }
+    .comment-id {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      font-size: 12px;
+      color: #666;
+    }
+    .reply-id {
+      font-size: 12px;
+      color: blue;
+      background: none;
+      border: none;
+      cursor: pointer;
+      margin-left: 5px;
     }
     .comment-image {
       max-width: 100%;
       height: auto;
       border-radius: 5px;
-      margin: 10px 0; /* Add some space around the image */
+      margin-top: 5px;
     }
-    .timestamp {
-      font-size: 0.8em;
-      color: #555;
-      margin-top: 5px; /* Add some space above the timestamp */
+    .comment-box {
+      width: 300px;
+      height: 50px;
+    }
+    .name-box {
+      width: 300px;
+      height: 30px;
+      margin-bottom: 10px;
+    }
+    .post-button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
     }
     .vote-container {
       display: flex;
-      justify-content: flex-end; /* Align buttons to the right */
-      margin-top: 10px; /* Add some space above the vote buttons */
+      align-items: center;
+      margin-top: 5px;
+    }
+    .reply-button, .upvote, .downvote {
+      margin-right: 5px;
+      padding: 5px;
+      border: none;
+      cursor: pointer;
     }
     .reply-button {
-      margin-right: 5px;
+      background-color: lightblue;
+      color: white;
     }
-    .upvote, .downvote {
-      margin: 0 5px; /* Adjust margins for voting buttons */
-      cursor: pointer;
-      width: 30px; /* Set a fixed width for buttons */
-      height: 30px; /* Set a fixed height for buttons */
+    .upvote {
+      background-color: green;
+      color: white;
     }
-    .reply-id {
-      color: blue; /* Change text color to blue */
-      margin-top: 2px; /* Add space above reply ID */
+    .downvote {
+      background-color: red;
+      color: white;
     }
-    .comment-id {
-      color: black; /* Keep comment ID color black */
-      margin-top: 2px; /* Add space above comment ID */
+    .reply-button:hover, .upvote:hover, .downvote:hover {
+      background-color: darkblue; /* For reply */
+      background-color: darkgreen; /* For upvote */
+      background-color: darkred; /* For downvote */
+    }
+    .vote-count {
+      margin-left: 10px;
+    }
+    .timestamp {
+      margin-top: 5px;
+      font-size: 12px;
+      color: #888;
+    }
+    #replyIndicator {
+      display: none;
+      font-size: 14px;
+      color: blue;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Epilogue Fred</h1>
+
+    <!-- Name Input Section -->
+    <input type="text" class="name-box" id="nameInput" placeholder="Enter your name (optional)" />
+
+    <!-- Reply Indicator -->
+    <div id="replyIndicator">Replying to Comment: </div>
+
+    <!-- Comments Section -->
     <div class="comments" id="comments"></div>
 
-    <input type="text" id="nameInput" placeholder="Your name (optional)">
-    <textarea id="commentInput" rows="4" placeholder="Write your comment..."></textarea>
-    <button id="postButton">Post Comment</button>
+    <!-- Comment Input Section -->
+    <textarea class="comment-box" id="commentInput" placeholder="Write your comment..."></textarea>
+    <button class="post-button" id="postButton">Post Comment</button>
   </div>
 </body>
 </html>
