@@ -28,7 +28,6 @@
     const commentsRef = doc(db, 'epilogue', 'comments'); // Firestore reference to the comments document
 
     let userVotes = {}; // Object to keep track of user's votes
-    let replyToId = null; // Track which comment is being replied to
 
     // Inside the onSnapshot function
     onSnapshot(commentsRef, (doc) => {
@@ -41,7 +40,6 @@
         comments.forEach((comment) => {
           const commentElement = document.createElement('div');
           commentElement.className = 'comment';
-          commentElement.dataset.id = comment.id;
 
           const name = comment.name ? comment.name : "Anonymous";
           commentElement.innerHTML = `${name}: ${comment.text}`;
@@ -59,19 +57,6 @@
           commentIdLabel.className = 'comment-id';
           commentIdLabel.innerText = `(${comment.id})`; // Display the comment ID
           commentElement.appendChild(commentIdLabel);
-
-          // Add reply-to ID if exists
-          if (comment.replyToId) {
-            const replyIdLabel = document.createElement('button');
-            replyIdLabel.className = 'reply-id';
-            replyIdLabel.innerText = `| Reply to: ${comment.replyToId}`; // Display reply-to comment ID
-            commentElement.appendChild(replyIdLabel);
-
-            // Scroll and highlight when clicking on the reply-to ID
-            replyIdLabel.addEventListener('click', () => {
-              highlightComment(comment.replyToId);
-            });
-          }
 
           const timestampElement = document.createElement('span');
           const commentDate = new Date(comment.timestamp);
@@ -101,17 +86,6 @@
           voteContainer.appendChild(voteLabel);
           
           commentElement.appendChild(voteContainer);
-
-          // Reply button
-          const replyButton = document.createElement('button');
-          replyButton.className = 'reply-button';
-          replyButton.innerHTML = '↩'; // Reply arrow symbol
-          commentElement.appendChild(replyButton);
-
-          replyButton.addEventListener('click', () => {
-            selectReply(comment.id);
-          });
-
           commentsContainer.appendChild(commentElement);
 
           // Upvote logic
@@ -177,26 +151,6 @@
       return Math.floor(100000 + Math.random() * 900000); // Generates a random 6-digit number
     }
 
-    // Function to select reply
-    function selectReply(commentId) {
-      replyToId = commentId;
-      const replyIndicator = document.getElementById('replyIndicator');
-      replyIndicator.style.display = 'inline-block'; // Show the blue reply indicator
-    }
-
-    // Function to highlight a comment
-    function highlightComment(commentId) {
-      const commentElement = document.querySelector(`.comment[data-id='${commentId}']`);
-      if (commentElement) {
-        commentElement.scrollIntoView({ behavior: 'smooth' });
-        commentElement.style.borderColor = 'blue';
-        setTimeout(() => {
-          commentElement.style.transition = 'border-color 1s ease';
-          commentElement.style.borderColor = '#ddd'; // Light grey border after animation
-        }, 1000);
-      }
-    }
-
     // Function to post a comment
     document.getElementById('postButton').addEventListener('click', async () => {
       const commentInput = document.getElementById('commentInput');
@@ -209,87 +163,117 @@
         return;
       }
 
-      const imageUrlMatch = commentText.match(/https?:\/\/[^\s]+\.(jpg|jpeg|png|gif)/);
-      const imageUrl = imageUrlMatch ? imageUrlMatch[0] : null; // Get the image URL if present in comment
+      const imageUrlMatch = commentText.match(/https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp)/);
+      const imageUrl = imageUrlMatch ? imageUrlMatch[0] : null;
 
-      const newComment = {
-        id: generateCommentId(),
-        text: commentText,
-        name: nameText,
-        imageUrl: imageUrl,
-        votes: 0,
-        timestamp: Date.now(),
-        replyToId: replyToId // Set the replyToId if replying to a comment
-      };
-
-      const commentsDoc = await getDoc(commentsRef);
-      const comments = commentsDoc.data().comments || [];
-      comments.push(newComment);
+      // Generate a unique ID for the comment
+      const commentId = generateCommentId(); // Use the new generateCommentId function
 
       await updateDoc(commentsRef, {
-        comments: arrayUnion(newComment)
+        comments: arrayUnion({
+          id: commentId, // Add unique ID here
+          text: commentText,
+          name: nameText,
+          votes: 0,
+          voteType: null,
+          imageUrl: imageUrl,
+          timestamp: new Date().getTime() // Add timestamp in milliseconds
+        })
+      })
+      .then(() => {
+        console.log("Comment posted successfully!");
+        commentInput.value = "";
+        nameInput.value = "";
+      })
+      .catch((error) => {
+        console.error("Error posting comment:", error);
       });
-
-      commentInput.value = ""; // Clear comment box after posting
-      replyToId = null; // Reset replyToId after posting
-      document.getElementById('replyIndicator').style.display = 'none'; // Hide reply indicator after posting
     });
 
-    // Handle reply indicator button click (to deselect reply)
-    document.getElementById('replyIndicator').addEventListener('click', () => {
-      replyToId = null; // Reset replyToId
-      document.getElementById('replyIndicator').style.display = 'none'; // Hide reply indicator
-    });
   </script>
 
   <style>
-    /* Add your existing CSS styles here */
-
-    /* Styles for reply button */
-    .reply-button {
-      margin-left: 10px;
-      cursor: pointer;
-      padding: 5px;
-      background-color: transparent;
-      border: 1px solid grey;
-      color: grey;
-    }
-    .reply-button:hover {
-      background-color: lightblue;
-    }
-
-    /* Styles for reply indicator (next to comment input box) */
-    #replyIndicator {
-      display: none;
-      width: 30px;
-      height: 30px;
-      background-color: blue;
-      color: white;
+    .container {
       text-align: center;
-      line-height: 30px;
-      margin-left: 10px;
-      cursor: pointer;
+      padding: 20px;
     }
-
-    /* Highlighted comment style */
+    .comments {
+      border: 1px solid #ccc;
+      height: 500px;
+      overflow-y: scroll;
+      margin: 20px 0;
+      padding: 10px;
+      resize: vertical; /* Makes the comment list resizable vertically */
+    }
     .comment {
       border: 1px solid #ddd;
+      border-radius: 5px;
       padding: 10px;
+      margin: 5px 0;
+      background-color: #f9f9f9;
+      display: flex;
+      flex-direction: column; /* Allow column layout */
+      align-items: flex-start; /* Align items to the start */
+      position: relative; /* Required for positioning the ID label */
+    }
+    .comment-id {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      font-size: 12px;
+      color: #666;
+    }
+    .comment-image {
+      max-width: 100%; /* Responsive image size */
+      height: auto; /* Maintain aspect ratio */
+      border-radius: 5px; /* Rounded corners */
+      margin-top: 5px; /* Spacing between text and image */
+    }
+    .comment-box {
+      width: 300px;
+      height: 50px;
+    }
+    .name-box {
+      width: 300px;
+      height: 30px;
       margin-bottom: 10px;
     }
-    .comment[data-id] {
-      border-color: blue;
+    .post-button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
     }
-    .comment.highlight {
-      border-color: blue;
+    .vote-container {
+      display: flex;
+      align-items: center;
     }
-
-    /* Reply ID button */
-    .reply-id {
-      background-color: transparent;
+    .upvote, .downvote {
+      margin-right: 5px;
+      padding: 5px;
       border: none;
-      color: blue;
       cursor: pointer;
+    }
+    .upvote {
+      background-color: green;
+      color: white;
+    }
+    .downvote {
+      background-color: red;
+      color: white;
+    }
+    .upvote:hover {
+      background-color: darkgreen; /* Darker green for hover */
+    }
+    .downvote:hover {
+      background-color: darkred; /* Darker red for hover */
+    }
+    .vote-count {
+      margin-left: 10px;
+    }
+    .timestamp {
+      margin-top: 5px;
+      font-size: 12px;
+      color: #888;
     }
   </style>
 </head>
@@ -306,14 +290,11 @@
     <!-- Comment Input Section -->
     <textarea class="comment-box" id="commentInput" placeholder="Write your comment..."></textarea>
     <button class="post-button" id="postButton">Post Comment</button>
-
-    <!-- Reply Indicator -->
-    <div id="replyIndicator">↩</div>
   </div>
-
-  <!-- Navigation Button to Home Page -->
-  <a href="freds.html" style="position: fixed; top: 10px; left: 10px; z-index: 1000;">
-    <img src="https://www.iconsdb.com/icons/preview/gray/undo-5-xxl.png" alt="Home" style="width: 40px; height: 40px;">
-  </a>
 </body>
 </html>
+
+<!-- Navigation Button to Home Page -->
+<a href="freds.html" style="position: fixed; top: 10px; left: 10px; z-index: 1000;">
+    <img src="https://www.iconsdb.com/icons/preview/gray/undo-5-xxl.png" alt="Home" style="width: 40px; height: 40px;">
+</a>
