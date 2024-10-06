@@ -234,99 +234,137 @@
     });
   </script>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background-color: #f8f9fa;
+<style>
+    .container {
+        text-align: center;
+        padding: 20px;
     }
-
+    .comments {
+        border: 1px solid #ccc;
+        height: 500px;
+        overflow-y: scroll;
+        margin: 20px 0;
+        padding: 10px;
+        resize: vertical; /* Makes the comment list resizable vertically */
+    }
     .comment {
-      border: 1px solid #ddd;
-      padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 5px;
-      background-color: #fff;
-      position: relative;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 10px;
+        margin: 5px 0;
+        background-color: #f9f9f9;
+        display: flex;
+        flex-direction: column; /* Allow column layout */
+        align-items: flex-start; /* Align items to the start */
+        position: relative; /* Required for positioning the ID label */
     }
-
-    .comment-id, .reply-id {
-      font-size: 10px;
-      color: blue;
-      cursor: pointer;
-      margin-left: 5px;
-      display: block;
+    .comment-id {
+        position: absolute;
+        top: 5px;
+        right: 10px;
+        font-size: 12px;
+        color: #666;
     }
-
-    .reply-id {
-      font-size: 10px;
-      color: blue;
-    }
-
-    .reply-id:hover, .reply-button:hover {
-      text-decoration: underline;
-      color: blue;
-    }
-
     .comment-image {
-      display: block;
-      max-width: 100%;
-      margin-top: 10px;
-      border-radius: 5px;
+        max-width: 100%; /* Responsive image size */
+        height: auto; /* Maintain aspect ratio */
+        border-radius: 5px; /* Rounded corners */
+        margin-top: 5px; /* Spacing between text and image */
     }
-
-    .timestamp {
-      display: block;
-      margin-top: 5px;
-      font-size: 12px;
-      color: gray;
+    .comment-box {
+        width: 300px; /* Set fixed width */
+        height: 50px; /* Set fixed height */
     }
-
+    .name-box {
+        width: 300px; /* Set fixed width */
+        height: 30px; /* Set fixed height */
+        margin-bottom: 10px; /* Space below the name input */
+    }
+    .post-button {
+        margin-top: 10px; /* Space above the button */
+        padding: 10px 20px; /* Padding for button */
+        font-size: 16px; /* Font size for button text */
+        display: inline-block; /* Make sure it's block-level for centering */
+    }
     .vote-container {
-      display: flex;
-      align-items: center;
-      margin-top: 10px;
+        display: flex;
+        align-items: center; /* Align items vertically centered */
     }
-
-    .reply-button, .upvote, .downvote {
-      cursor: pointer;
-      border: 1px solid #ddd;
-      padding: 5px;
-      margin-right: 5px;
-      background-color: #f1f1f1;
-      font-size: 12px;
+    .upvote, .downvote {
+        margin-right: 5px; /* Space to the right of buttons */
+        padding: 5px; /* Padding for buttons */
+        border: none; /* No border */
+        cursor: pointer; /* Pointer cursor on hover */
     }
-
+    .upvote {
+        background-color: green; /* Green background */
+        color: white; /* White text */
+    }
+    .downvote {
+        background-color: red; /* Red background */
+        color: white; /* White text */
+    }
+    .upvote:hover {
+        background-color: darkgreen; /* Darker green for hover */
+    }
+    .downvote:hover {
+        background-color: darkred; /* Darker red for hover */
+    }
     .vote-count {
-      margin-left: 10px;
-      font-weight: bold;
-      font-size: 14px;
+        margin-left: 10px; /* Space on the left of the vote count */
     }
-
-    #commentInput, #nameInput {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
+    .timestamp {
+        margin-top: 5px; /* Space above timestamp */
+        font-size: 12px; /* Font size for timestamp */
+        color: #888; /* Gray color for timestamp */
     }
-
-    #postButton {
-      padding: 10px 15px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
+    .reply-button {
+        margin-left: 10px; /* Space on the left of reply button */
+        cursor: pointer; /* Pointer cursor on hover */
+        padding: 5px; /* Padding for reply button */
+        background-color: transparent; /* Transparent background */
+        border: 1px solid grey; /* Border color */
+        color: grey; /* Text color */
     }
-
+    .reply-button:hover {
+        background-color: lightblue; /* Background color on hover */
+    }
+    
+    /* Styles for reply indicator (next to comment input box) */
     #replyIndicator {
-      display: none;
-      color: blue;
-      font-size: 12px;
-      margin-bottom: 10px;
+        display: none; /* Initially hidden */
+        width: 30px; /* Fixed width */
+        height: 30px; /* Fixed height */
+        background-color: blue; /* Blue background */
+        color: white; /* White text */
+        text-align: center; /* Center text */
+        line-height: 30px; /* Centering text vertically */
+        margin-left: 10px; /* Space to the left of reply indicator */
+        cursor: pointer; /* Pointer cursor on hover */
     }
-  </style>
+
+    /* Highlighted comment style */
+    .comment {
+        border: 1px solid #ddd; /* Default border */
+        padding: 10px; /* Padding inside comment */
+        margin-bottom: 10px; /* Space below comment */
+    }
+    .comment[data-id] {
+        border-color: blue; /* Border color for highlighted comments */
+    }
+    .comment.highlight {
+        border-color: blue; /* Highlighted border color */
+    }
+
+    /* Reply ID button */
+    .reply-id {
+        background-color: transparent; /* Transparent background */
+        border: none; /* No border */
+        color: blue; /* Blue text */
+        cursor: pointer; /* Pointer cursor on hover */
+    }
+</style>
+
 </head>
 <body>
   <h1>Epilogue</h1>
