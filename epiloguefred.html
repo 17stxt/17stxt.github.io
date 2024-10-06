@@ -235,132 +235,96 @@
   </script>
 
   <style>
-    .container {
-      text-align: center;
-      padding: 20px;
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f8f9fa;
     }
-    .comments {
-      border: 1px solid #ccc;
-      height: 500px;
-      overflow-y: scroll;
-      margin: 20px 0;
-      padding: 10px;
-      resize: vertical; /* Makes the comment list resizable vertically */
-    }
+
     .comment {
       border: 1px solid #ddd;
-      border-radius: 5px;
       padding: 10px;
-      margin: 5px 0;
-      background-color: #f9f9f9;
-      display: flex;
-      flex-direction: column; /* Allow column layout */
-      align-items: flex-start; /* Align items to the start */
-      position: relative; /* Required for positioning the ID label */
+      margin-bottom: 15px;
+      border-radius: 5px;
+      background-color: #fff;
+      position: relative;
     }
-    .comment-id {
-      position: absolute;
-      top: 5px;
-      right: 10px;
-      font-size: 12px;
-      color: #666;
+
+    .comment-id, .reply-id {
+      font-size: 10px;
+      color: blue;
+      cursor: pointer;
+      margin-left: 5px;
+      display: block;
     }
+
+    .reply-id {
+      font-size: 10px;
+      color: blue;
+    }
+
+    .reply-id:hover, .reply-button:hover {
+      text-decoration: underline;
+      color: blue;
+    }
+
     .comment-image {
-      max-width: 100%; /* Responsive image size */
-      height: auto; /* Maintain aspect ratio */
-      border-radius: 5px; /* Rounded corners */
-      margin-top: 5px; /* Spacing between text and image */
-    }
-    .comment-box {
-      width: 300px;
-      height: 50px;
-    }
-    .name-box {
-      width: 300px;
-      height: 30px;
-      margin-bottom: 10px;
-    }
-    .post-button {
+      display: block;
+      max-width: 100%;
       margin-top: 10px;
-      padding: 10px 20px;
-      font-size: 16px;
+      border-radius: 5px;
     }
+
+    .timestamp {
+      display: block;
+      margin-top: 5px;
+      font-size: 12px;
+      color: gray;
+    }
+
     .vote-container {
       display: flex;
       align-items: center;
+      margin-top: 10px;
     }
-    .upvote, .downvote {
-      margin-right: 5px;
-      padding: 5px;
-      border: none;
+
+    .reply-button, .upvote, .downvote {
       cursor: pointer;
+      border: 1px solid #ddd;
+      padding: 5px;
+      margin-right: 5px;
+      background-color: #f1f1f1;
+      font-size: 12px;
     }
-    .upvote {
-      background-color: green;
-      color: white;
-    }
-    .downvote {
-      background-color: red;
-      color: white;
-    }
-    .upvote:hover {
-      background-color: darkgreen; /* Darker green for hover */
-    }
-    .downvote:hover {
-      background-color: darkred; /* Darker red for hover */
-    }
+
     .vote-count {
       margin-left: 10px;
-    }
-    .timestamp {
-      margin-top: 5px;
-      font-size: 12px;
-      color: #888;
-    }
-    .reply-button {
-      margin-left: 10px;
-      cursor: pointer;
-      padding: 5px;
-      background-color: transparent;
-      border: 1px solid grey;
-      color: grey;
-    }
-    .reply-button:hover {
-      background-color: lightblue;
+      font-weight: bold;
+      font-size: 14px;
     }
 
-    /* Styles for reply indicator (next to comment input box) */
-    #replyIndicator {
-      display: none;
-      width: 30px;
-      height: 30px;
-      background-color: blue;
-      color: white;
-      text-align: center;
-      line-height: 30px;
-      margin-left: 10px;
-      cursor: pointer;
-    }
-
-    /* Highlighted comment style */
-    .comment {
-      border: 1px solid #ddd;
+    #commentInput, #nameInput {
+      width: 100%;
       padding: 10px;
       margin-bottom: 10px;
-    }
-    .comment[data-id] {
-      border-color: blue;
-    }
-    .comment.highlight {
-      border-color: blue;
+      border: 1px solid #ddd;
+      border-radius: 5px;
     }
 
-    /* Reply ID button */
-    .reply-id {
-      background-color: transparent;
+    #postButton {
+      padding: 10px 15px;
+      background-color: #007bff;
+      color: white;
       border: none;
-      color: blue;
+      border-radius: 5px;
       cursor: pointer;
+    }
+
+    #replyIndicator {
+      display: none;
+      color: blue;
+      font-size: 12px;
+      margin-bottom: 10px;
     }
   </style>
 </head>
