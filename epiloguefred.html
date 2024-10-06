@@ -30,6 +30,7 @@
     let userVotes = {}; // Object to keep track of user's votes
     let replyToId = null; // Track which comment is being replied to
 
+    // Inside the onSnapshot function
     onSnapshot(commentsRef, (doc) => {
       const commentsContainer = document.getElementById('comments');
       commentsContainer.innerHTML = ""; // Clear previous comments
@@ -63,8 +64,8 @@
           if (comment.replyToId) {
             const replyIdLabel = document.createElement('button');
             replyIdLabel.className = 'reply-id';
-            replyIdLabel.innerText = `(${comment.replyToId})`; // Display reply-to comment ID
-            commentElement.appendChild(replyIdLabel);
+            replyIdLabel.innerText = `(${comment.replyToId})`; // Display reply-to comment ID right under the comment's own ID
+            commentIdLabel.insertAdjacentElement('afterend', replyIdLabel);
 
             // Scroll and highlight when clicking on the reply-to ID
             replyIdLabel.addEventListener('click', () => {
@@ -79,7 +80,7 @@
           timestampElement.className = 'timestamp';
           commentElement.appendChild(timestampElement);
 
-          // Create the vote section
+          // Create the vote section with reply button to the left
           const voteContainer = document.createElement('div');
           voteContainer.className = 'vote-container';
           
@@ -207,25 +208,29 @@
         return;
       }
 
-      const imageUrlMatch = commentText.match(/https?:\/\/[^\s]+\.(jpg|jpeg|png|gif)/);
-      const imageUrl = imageUrlMatch ? imageUrlMatch[0] : null; // Get the image URL if present in comment
+      const imageUrlMatch = commentText.match(/\bhttps?:\/\/\S+\.(jpg|jpeg|png|gif)\b/i);
+      const imageUrl = imageUrlMatch ? imageUrlMatch[0] : null;
 
       const newComment = {
         id: generateCommentId(),
         text: commentText,
         name: nameText,
-        imageUrl: imageUrl,
         votes: 0,
+        imageUrl: imageUrl,
         timestamp: Date.now(),
-        replyToId: replyToId // Set the replyToId if replying to a comment
+        replyToId: replyToId // Attach the replyToId to the new comment
       };
 
+      // Add new comment to Firestore
       await updateDoc(commentsRef, {
         comments: arrayUnion(newComment)
       });
 
-      commentInput.value = ""; // Clear the input field after posting
+      commentInput.value = ""; // Clear the comment input
+      nameInput.value = ""; // Clear the name input
       replyToId = null; // Reset replyToId after posting
+      const replyIndicator = document.getElementById('replyIndicator');
+      replyIndicator.style.display = 'none'; // Hide the blue reply indicator
     });
   </script>
 
@@ -233,131 +238,103 @@
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
+      background-color: #f8f9fa;
     }
 
     .comment {
       border: 1px solid #ddd;
-      border-radius: 5px;
       padding: 10px;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      background-color: #fff;
       position: relative;
     }
 
-    .comment-id {
-      font-size: 0.75rem;
-      color: grey;
-      font-weight: bold;
+    .comment-id, .reply-id {
+      font-size: 10px;
+      color: blue;
+      cursor: pointer;
       margin-left: 5px;
+      display: block;
     }
 
     .reply-id {
-      font-size: 0.75rem;
-      color: #007bff;
-      font-weight: bold;
-      background: none;
-      border: none;
-      cursor: pointer;
+      font-size: 10px;
+      color: blue;
     }
 
-    .timestamp {
-      font-size: 0.75rem;
-      color: grey;
-      display: block;
-      margin-top: 5px;
-    }
-
-    .vote-container {
-      display: flex;
-      gap: 8px;
-      position: absolute;
-      top: 10px;
-      right: 10px;
-    }
-
-    .vote-container button {
-      background: none;
-      border: none;
-      cursor: pointer;
-    }
-
-    .vote-container button:hover {
-      color: #007bff;
-    }
-
-    .vote-count {
-      font-weight: bold;
+    .reply-id:hover, .reply-button:hover {
+      text-decoration: underline;
+      color: blue;
     }
 
     .comment-image {
       display: block;
+      max-width: 100%;
       margin-top: 10px;
-      max-width: 100px;
-      max-height: 100px;
-      object-fit: cover;
+      border-radius: 5px;
     }
 
-    .reply-button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 3px;
-      padding: 5px;
-      font-size: 0.85rem;
+    .timestamp {
+      display: block;
+      margin-top: 5px;
+      font-size: 12px;
+      color: gray;
+    }
+
+    .vote-container {
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .reply-button, .upvote, .downvote {
       cursor: pointer;
+      border: 1px solid #ddd;
+      padding: 5px;
+      margin-right: 5px;
+      background-color: #f1f1f1;
+      font-size: 12px;
     }
 
-    #comments {
-      margin-top: 20px;
+    .vote-count {
+      margin-left: 10px;
+      font-weight: bold;
+      font-size: 14px;
     }
 
-    #commentInput {
+    #commentInput, #nameInput {
       width: 100%;
       padding: 10px;
-      font-size: 1rem;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
     }
 
     #postButton {
-      padding: 10px 20px;
+      padding: 10px 15px;
       background-color: #007bff;
       color: white;
       border: none;
+      border-radius: 5px;
       cursor: pointer;
-      margin-top: 10px;
-    }
-
-    #nameInput {
-      padding: 10px;
-      font-size: 1rem;
-      margin-bottom: 10px;
-      width: 100%;
     }
 
     #replyIndicator {
       display: none;
       color: blue;
-      font-size: 0.9rem;
+      font-size: 12px;
       margin-bottom: 10px;
     }
-
   </style>
 </head>
-
 <body>
-  <h1>Comment Section</h1>
-
-  <div>
-    <input type="text" id="nameInput" placeholder="Enter your name (optional)">
-  </div>
-  <div>
-    <textarea id="commentInput" placeholder="Write a comment..."></textarea>
-  </div>
-  <div>
-    <button id="postButton">Post Comment</button>
-  </div>
-  
-  <div id="replyIndicator">You are replying to a comment.</div>
+  <h1>Epilogue</h1>
+  <div id="replyIndicator">Replying to a comment...</div>
+  <input type="text" id="nameInput" placeholder="Your Name (optional)">
+  <textarea id="commentInput" rows="4" placeholder="Your comment"></textarea>
+  <button id="postButton">Post Comment</button>
 
   <div id="comments"></div>
-
 </body>
 </html>
