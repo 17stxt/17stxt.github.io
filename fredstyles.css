@@ -1,1 +1,162 @@
+/* Basic body styles */
+body {
+  background-color: #e5e5e5; /* Pale grey-blue background */
+  font-family: Arial, sans-serif;
+  color: #222; /* Default text color */
+}
 
+/* Container for the entire page */
+.container {
+  width: 80%;
+  margin: 0 auto;
+  padding-top: 20px;
+}
+
+/* Title styling */
+h1 {
+  color: #800000; /* Dark red title */
+  text-align: center;
+}
+
+/* Comment section container */
+.comments {
+  border: 1px solid #bbb;
+  height: 500px;
+  overflow-y: scroll;
+  margin: 20px 0;
+  padding: 10px;
+  background-color: #f0f4f8; /* Very light blue background */
+}
+
+/* Individual comment box */
+.comment {
+  border: 1px solid #d3d3d3;
+  border-radius: 3px;
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #d8e6f2; /* Pale blue-grey comment background */
+  position: relative;
+}
+
+/* Comment ID styling (for replies) */
+.comment-id {
+  color: #800000; /* Dark red for comment ID (quoted reply) */
+  font-size: 14px;
+}
+
+/* Reply link */
+.comment .reply-id {
+  color: #800000; /* Dark red for reply links */
+  font-size: 13px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+/* Comment hover effect */
+.comment:hover {
+  background-color: #d0dae7; /* Slightly darker on hover */
+}
+
+/* Image inside comment */
+.comment-image {
+  max-width: 200px;
+  margin-top: 5px;
+  border: 1px solid #bbb;
+}
+
+/* Input box for name */
+.name-box {
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  width: 300px;
+  padding: 5px;
+  font-size: 12px;
+}
+
+/* Input box for comments */
+.comment-box {
+  width: 300px;
+  height: 50px;
+  border: 1px solid #ccc;
+  margin-top: 10px;
+  font-size: 12px;
+  padding: 5px;
+}
+
+/* Post button styling */
+.post-button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  font-size: 14px;
+  border: 1px solid #aaa;
+  background-color: #ddd;
+  cursor: pointer;
+}
+.post-button:hover {
+  background-color: #bbb;
+}
+
+/* Voting and reply section */
+.vote-container {
+  margin-top: 10px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.upvote, .downvote, .reply-button {
+  font-size: 12px;
+  border: none;
+  cursor: pointer;
+}
+
+.upvote {
+  color: #006400;
+}
+
+.downvote {
+  color: #8b0000;
+}
+
+/* Reply button styling */
+.reply-button {
+  margin-left: 5px;
+  background-color: transparent;
+  border: none;
+  color: #666;
+}
+
+/* Vote count display */
+.vote-count {
+  margin-left: 10px;
+  font-size: 12px;
+  color: #555;
+}
+
+/* Timestamp styling */
+.timestamp {
+  display: block;
+  font-size: 10px;
+  color: #888;
+  margin-top: 5px;
+}
+
+/* Reply indicator */
+#replyIndicator {
+  display: none;
+  font-size: 12px;
+  color: #006400; /* Dark green for reply indicator */
+  background-color: lightblue;
+  cursor: pointer;
+  padding: 5px;
+  margin-left: 10px;
+}
+
+/* Navigation button styling */
+a img {
+  filter: grayscale(100%);
+  transition: 0.3s;
+}
+a img:hover {
+  filter: grayscale(0%);
+}
