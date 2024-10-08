@@ -244,139 +244,147 @@
     });
   </script>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Epilogue Fred</title>
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Include Firebase SDKs -->
+  <script type="module">
+    // Firebase SDK code remains the same
+  </script>
+
   <style>
+    body {
+      background-color: #e5e5e5; /* 4chan-like pale grey-blue background */
+      font-family: Arial, sans-serif;
+      color: #222; /* Default text color */
+    }
     .container {
+      width: 80%;
+      margin: 0 auto;
+      padding-top: 20px;
+    }
+    h1 {
+      color: #800000; /* Dark red title */
       text-align: center;
-      padding: 20px;
     }
     .comments {
-      border: 1px solid #ccc;
+      border: 1px solid #bbb;
       height: 500px;
       overflow-y: scroll;
       margin: 20px 0;
       padding: 10px;
-      resize: vertical; /* Makes the comment list resizable vertically */
+      background-color: #f0f4f8; /* Very light blue background */
     }
     .comment {
-      border: 1px solid #ddd;
-      border-radius: 5px;
+      border: 1px solid #d3d3d3;
+      border-radius: 3px;
       padding: 10px;
-      margin: 5px 0;
-      background-color: #f9f9f9;
-      display: flex;
-      flex-direction: column; /* Allow column layout */
-      align-items: flex-start; /* Align items to the start */
-      position: relative; /* Required for positioning the ID label */
+      margin-bottom: 10px;
+      background-color: #d8e6f2; /* Pale blue-grey comment background */
+      position: relative;
     }
     .comment-id {
-      position: absolute;
-      top: 5px;
-      right: 10px;
-      font-size: 12px;
-      color: #666;
+      color: #800000; /* Dark red for comment ID (quoted reply) */
+      font-size: 14px;
+    }
+    .comment .reply-id {
+      color: #800000; /* Same dark red for reply links */
+      font-size: 13px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+    .comment:hover {
+      background-color: #d0dae7; /* Slightly darker on hover */
     }
     .comment-image {
-      max-width: 100%; /* Responsive image size */
-      height: auto; /* Maintain aspect ratio */
-      border-radius: 5px; /* Rounded corners */
-      margin-top: 5px; /* Spacing between text and image */
+      max-width: 200px;
+      margin-top: 5px;
+      border: 1px solid #bbb;
+    }
+    .name-box {
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      width: 300px;
+      padding: 5px;
+      font-size: 12px;
     }
     .comment-box {
       width: 300px;
       height: 50px;
-    }
-    .name-box {
-      width: 300px;
-      height: 30px;
-      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      margin-top: 10px;
+      font-size: 12px;
+      padding: 5px;
     }
     .post-button {
       margin-top: 10px;
       padding: 10px 20px;
-      font-size: 16px;
+      font-size: 14px;
+      border: 1px solid #aaa;
+      background-color: #ddd;
+      cursor: pointer;
+    }
+    .post-button:hover {
+      background-color: #bbb;
     }
     .vote-container {
+      margin-top: 10px;
+      font-size: 12px;
       display: flex;
       align-items: center;
     }
     .upvote, .downvote, .reply-button {
-      margin-right: 5px;
-      padding: 5px;
+      font-size: 12px;
       border: none;
       cursor: pointer;
     }
     .upvote {
-                              border: 1px black;
-              margin-left: 3px;
-      background-color: green;
-      color: white;
+      color: #006400;
     }
     .downvote {
-                      margin-left: 2px;
-      background-color: red;
-      color: white;
-    }
-    .upvote:hover {
-      background-color: darkgreen; /* Darker green for hover */
-    }
-    .downvote:hover {
-      background-color: darkred; /* Darker red for hover */
-    }
-    .vote-count {
-      margin-left: 5px;
-    }
-    .timestamp {
-      margin-bottom: 3px;
-      font-size: 12px;
-      color: #888;
+      color: #8b0000;
     }
     .reply-button {
-        
-    width: 30px;
-    height: 26px;
-      cursor: pointer;
-      background-color: transparent;
-      border: 1px solid grey;
-      color: grey;
-    }
-    .reply-button:hover {
-      background-color: lightblue;
-    }
-
-    /* Styles for reply indicator (next to comment input box) */
-    #replyIndicator {
-      display: none;
-      width: 30px;
-      height: 30px;
-      background-color: blue;
-      color: white;
-      text-align: center;
-      line-height: 30px;
-      margin-left: 10px;
-      cursor: pointer;
-    }
-
-    /* Highlighted comment style */
-    .comment {
-      border: 1px solid #ddd;
-      padding: 10px;
-      margin-bottom: 10px;
-    }
-    .comment[data-id] {
-      border-color: light grey;
-    }
-    .comment.highlight {
-      border-color: blue;
-    }
-
-    /* Reply ID button */
-    .reply-id {
-              font-size: 11px;
-              margin-left: 482px;
+      margin-left: 5px;
       background-color: transparent;
       border: none;
-      color: blue;
+      color: #666;
+    }
+    .vote-count {
+      margin-left: 10px;
+      font-size: 12px;
+      color: #555;
+    }
+    .timestamp {
+      display: block;
+      font-size: 10px;
+      color: #888;
+      margin-top: 5px;
+    }
+
+    /* Reply indicator */
+    #replyIndicator {
+      display: none;
+      font-size: 12px;
+      color: #006400; /* Dark green for reply indicator */
+      background-color: lightblue;
       cursor: pointer;
+      padding: 5px;
+      margin-left: 10px;
+    }
+
+    /* Navigation button */
+    a img {
+      filter: grayscale(100%);
+      transition: 0.3s;
+    }
+    a img:hover {
+      filter: grayscale(0%);
     }
   </style>
 </head>
@@ -395,7 +403,7 @@
     <button class="post-button" id="postButton">Post Comment</button>
 
     <!-- Reply Indicator -->
-    <div id="replyIndicator">↩</div>
+    <div id="replyIndicator">Replying...</div>
   </div>
 
   <!-- Navigation Button to Home Page -->
@@ -404,3 +412,4 @@
   </a>
 </body>
 </html>
+
