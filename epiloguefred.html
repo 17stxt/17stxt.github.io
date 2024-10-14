@@ -35,42 +35,65 @@
   let userVotes = {}; // Object to keep track of user's votes
   let replyToId = null; // Track which comment is being replied to
 
-    // Inside the onSnapshot function
-    onSnapshot(commentsRef, (doc) => {
-      const commentsContainer = document.getElementById('comments');
-      commentsContainer.innerHTML = ""; // Clear previous comments
-      if (doc.exists()) {
-        let comments = doc.data().comments || [];
-        comments = comments.sort((a, b) => b.timestamp - a.timestamp); // Sort by timestamp, newest first
+onSnapshot(commentsRef, (doc) => {
+  const commentsContainer = document.getElementById('comments');
+  commentsContainer.innerHTML = ""; // Clear previous comments
+  if (doc.exists()) {
+    let comments = doc.data().comments || [];
+    comments = comments.sort((a, b) => b.timestamp - a.timestamp); // Sort by timestamp, newest first
 
-        comments.forEach((comment) => {
-          const commentElement = document.createElement('div');
-          commentElement.className = 'comment';
-          commentElement.dataset.id = comment.id;
+    comments.forEach((comment) => {
+      const commentElement = document.createElement('div');
+      commentElement.className = 'comment';
+      commentElement.dataset.id = comment.id;
 
-          const name = comment.name ? comment.name : "Anonymous";
-          commentElement.innerHTML = `${name}: ${comment.text}`;
+            // Apply background color if specified
+      if (comment.Bgclr) {
+        commentElement.style.backgroundColor = comment.Bgclr;
+      }
+      
+      const name = comment.name ? comment.name : "Anonymous";
+      commentElement.innerHTML = `${name}: ${comment.text}`;
 
-          const timestampElement = document.createElement('span');
-          const commentDate = new Date(comment.timestamp);
-          const options = { timeZone: 'America/New_York', hour12: true, hour: 'numeric', minute: 'numeric', second: 'numeric' };
+            // Apply text color if specified
+      if (comment.Txtclr) {
+        commentElement.style.color = comment.Txtclr;
+      }
+
+      const timestampElement = document.createElement('span');
+      const commentDate = new Date(comment.timestamp);
+      const options = { timeZone: 'America/New_York', hour12: true, hour: 'numeric', minute: 'numeric', second: 'numeric' };
+
+      // Check if mmddyyyy exists
+      if (comment.mmddyyyy) {
+        const currentDate = formatDateToMMDDYYYY(new Date()); // Current date in MM/DD/YYYY format
+        if (comment.mmddyyyy === currentDate) {
+          // If the comment was made today, show the time
           timestampElement.innerText = commentDate.toLocaleString('en-US', options);
-          timestampElement.className = 'timestamp';
-          commentElement.appendChild(timestampElement);
-          
-          const imageUrl = comment.imageUrl;
-          if (imageUrl) {
-            const imgElement = document.createElement('img');
-            imgElement.src = imageUrl;
-            imgElement.className = 'comment-image';
-            commentElement.appendChild(imgElement);
-          }
+        } else {
+          // Otherwise, show the date in MM/DD/YYYY format
+          timestampElement.innerText = comment.mmddyyyy;
+        }
+      } else {
+        // If mmddyyyy is missing, show "Invalid"
+        timestampElement.innerText = "Invalid";
+      }
 
-          // Create a span for the comment ID
-          const commentIdLabel = document.createElement('span');
-          commentIdLabel.className = 'comment-id';
-          commentIdLabel.innerText = `(${comment.id})`; // Display the comment ID
-          commentElement.appendChild(commentIdLabel);
+      timestampElement.className = 'timestamp';
+      commentElement.appendChild(timestampElement);
+      
+      const imageUrl = comment.imageUrl;
+      if (imageUrl) {
+        const imgElement = document.createElement('img');
+        imgElement.src = imageUrl;
+        imgElement.className = 'comment-image';
+        commentElement.appendChild(imgElement);
+      }
+
+      const commentIdLabel = document.createElement('span');
+      commentIdLabel.className = 'comment-id';
+      commentIdLabel.innerText = `(${comment.id})`;
+      commentElement.appendChild(commentIdLabel);
 
           // Add reply-to ID if exists
           if (comment.replyToId) {
@@ -216,75 +239,102 @@ document.getElementById('postButton').addEventListener('click', () => {
 // Reference to Firebase Storage
 const storageRef = ref(storage);
 
-  document.getElementById('postCommentPanelButton').addEventListener('click', async () => {
-    const commentInput = document.getElementById('commentText');
-    const nameInput = document.getElementById('nameText');
-    const fileInput = document.getElementById('fileInput'); // File input element
-    const commentText = commentInput.value.trim();
-    const nameText = nameInput.value.trim() || "Anonymous";
-    const file = fileInput.files[0]; // Get the file selected by the user
+// Function to format date in MM/DD/YYYY
+function formatDateToMMDDYYYY(date) {
+  const month = ('0' + (date.getMonth() + 1)).slice(-2); // Add leading zero
+  const day = ('0' + date.getDate()).slice(-2); // Add leading zero
+  const year = date.getFullYear();
+  return `${month}/${day}/${year}`;
+}
 
-    if (commentText === "") {
-      alert("Comment cannot be empty!");
+document.getElementById('postCommentPanelButton').addEventListener('click', async () => {
+  const commentInput = document.getElementById('commentText');
+  const nameInput = document.getElementById('nameText');
+  const fileInput = document.getElementById('fileInput');
+  const optionsInput = document.getElementById('optionsText'); // Added reference for options input
+  const commentText = commentInput.value.trim();
+  const nameText = nameInput.value.trim() || "Anonymous";
+  const file = fileInput.files[0];
+  const optionsText = optionsInput.value.trim(); // Get options text
+
+  if (commentText === "") {
+    alert("Comment cannot be empty!");
+    return;
+  }
+
+  let imageUrl = null;
+
+    // Process options input for commands
+  let bgColor = null;
+  let textColor = null;
+  const commands = optionsText.split(',').map(cmd => cmd.trim());
+
+  if (commands.length > 0) {
+    commands.forEach((command, index) => {
+      if (index === 0 && (command.startsWith("#") || /^[0-9A-Fa-f]{3}$/.test(command))) {
+        bgColor = command.startsWith("#") ? command : `#${command}`; // Ensure the background color has a hashtag
+      } else if (index === 1 && (command.startsWith("#") || /^[0-9A-Fa-f]{3}$/.test(command))) {
+        textColor = command.startsWith("#") ? command : `#${command}`; // Ensure the text color has a hashtag
+      } else {
+        alert(`Invalid command "${command}". Please use the format "#B66, #B67".`);
+        return; // Stop processing further commands
+      }
+    });
+  }
+
+  if (file) {
+    const fileRef = ref(storage, `comment_images/${Date.now()}_${file.name}`);
+    try {
+      const snapshot = await uploadBytes(fileRef, file);
+      imageUrl = await getDownloadURL(snapshot.ref);
+    } catch (error) {
+      console.error("Error uploading the image: ", error);
+      alert("Error uploading image. Please try again.");
       return;
     }
+  }
 
-    let imageUrl = null;
+  const timestamp = Date.now();
+  const currentDate = new Date(timestamp);
+  const mmddyyyy = formatDateToMMDDYYYY(currentDate); // Format to MM/DD/YYYY
 
-    if (file) {
-      // If a file was selected, upload it to Firebase Storage
-      const fileRef = ref(storage, `comment_images/${Date.now()}_${file.name}`);
-      
-      try {
-        // Upload the file
-        const snapshot = await uploadBytes(fileRef, file);
-        // Get the file's URL after the upload is complete
-        imageUrl = await getDownloadURL(snapshot.ref);
-      } catch (error) {
-        console.error("Error uploading the image: ", error);
-        alert("Error uploading image. Please try again.");
-        return;
-      }
-    }
+  // Create a new comment object
+  const newComment = {
+    id: generateCommentId(),
+    text: commentText,
+    name: nameText,
+    imageUrl: imageUrl,
+    votes: 0,
+    timestamp: timestamp,
+    mmddyyyy: mmddyyyy,
+    replyToId: replyToId,
+    Bgclr: bgColor, // Add background color property
+    Txtclr: textColor // Add text color property
+  };
 
-    // Create a new comment object, with the imageUrl if an image was uploaded
-    const newComment = {
-      id: generateCommentId(),
-      text: commentText,
-      name: nameText,
-      imageUrl: imageUrl,  // Add imageUrl to the comment object
-      votes: 0,
-      timestamp: Date.now(),
-      replyToId: replyToId // Set the replyToId if replying to a comment
-    };
+  try {
+    const commentsDoc = await getDoc(commentsRef);
+    const comments = commentsDoc.data().comments || [];
+    comments.push(newComment);
 
-    try {
-      // Get existing comments, add the new comment, and update the document
-      const commentsDoc = await getDoc(commentsRef);
-      const comments = commentsDoc.data().comments || [];
-      comments.push(newComment);
+    await updateDoc(commentsRef, {
+      comments: arrayUnion(newComment)
+    });
 
-      await updateDoc(commentsRef, {
-        comments: arrayUnion(newComment)
-      });
+    commentInput.value = "";
+    nameInput.value = "";
+    fileInput.value = "";
+    optionsInput.value = ""; // Clear options input
+    document.getElementById('commentPanel').style.display = 'none';
+    document.getElementById('postButton').style.display = 'block';
+    replyToId = null;
+    document.getElementById('replyIndicator').style.display = 'none';
 
-      // Clear input fields after successful submission
-      commentInput.value = "";
-      nameInput.value = "";
-      fileInput.value = "";  // Clear file input
-
-      // Hide the panel and bring back the "Post comment" button
-      document.getElementById('commentPanel').style.display = 'none';
-      document.getElementById('postButton').style.display = 'block';
-      replyToId = null; // Reset replyToId after posting
-      document.getElementById('replyIndicator').style.display = 'none'; // Hide reply indicator after posting
-
-    } catch (error) {
-      console.error("Error posting comment: ", error);
-      alert("Error posting comment. Please try again.");
-    }
-  });
-
+  } catch (error) {
+    console.error("Error posting comment: ", error);
+    alert("Error posting comment. Please try again.");
+  }
+});
 
   </script>
 
@@ -478,4 +528,3 @@ const storageRef = ref(storage);
   </a>
 </body>
 </html>
-
