@@ -8,9 +8,10 @@
   
   <!-- Include Firebase SDKs -->
   <script type="module">
-    import { getDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-    import { getFirestore, doc, onSnapshot, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+  import { getDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+  import { getFirestore, doc, onSnapshot, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-storage.js";  // Import Firebase Storage
     
     // Firebase configuration
     const firebaseConfig = {
@@ -22,13 +23,17 @@
       appId: "1:1092738842373:web:8bb210d9fb815cc5ae016c"
     };
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const commentsRef = doc(db, 'epilogue', 'comments'); // Firestore reference to the comments document
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-    let userVotes = {}; // Object to keep track of user's votes
-    let replyToId = null; // Track which comment is being replied to
+  // Initialize Firebase Storage
+  const storage = getStorage(app);
+
+  const commentsRef = doc(db, 'epilogue', 'comments'); // Firestore reference to the comments document
+
+  let userVotes = {}; // Object to keep track of user's votes
+  let replyToId = null; // Track which comment is being replied to
 
     // Inside the onSnapshot function
     onSnapshot(commentsRef, (doc) => {
@@ -46,6 +51,13 @@
           const name = comment.name ? comment.name : "Anonymous";
           commentElement.innerHTML = `${name}: ${comment.text}`;
 
+          const timestampElement = document.createElement('span');
+          const commentDate = new Date(comment.timestamp);
+          const options = { timeZone: 'America/New_York', hour12: true, hour: 'numeric', minute: 'numeric', second: 'numeric' };
+          timestampElement.innerText = commentDate.toLocaleString('en-US', options);
+          timestampElement.className = 'timestamp';
+          commentElement.appendChild(timestampElement);
+          
           const imageUrl = comment.imageUrl;
           if (imageUrl) {
             const imgElement = document.createElement('img');
@@ -72,13 +84,6 @@
               highlightComment(comment.replyToId);
             });
           }
-
-          const timestampElement = document.createElement('span');
-          const commentDate = new Date(comment.timestamp);
-          const options = { timeZone: 'America/New_York', hour12: true, hour: 'numeric', minute: 'numeric', second: 'numeric' };
-          timestampElement.innerText = commentDate.toLocaleString('en-US', options);
-          timestampElement.className = 'timestamp';
-          commentElement.appendChild(timestampElement);
 
           // Create the vote section
           const voteContainer = document.createElement('div');
@@ -199,31 +204,62 @@
       }
     }
 
-    // Function to post a comment
-    document.getElementById('postButton').addEventListener('click', async () => {
-      const commentInput = document.getElementById('commentInput');
-      const nameInput = document.getElementById('nameInput');
-      const commentText = commentInput.value.trim();
-      const nameText = nameInput.value.trim() || "Anonymous";
+// Toggle the comment panel
+document.getElementById('postButton').addEventListener('click', () => {
+  // Hide the "Post comment" button
+  document.getElementById('postButton').style.display = 'none';
 
-      if (commentText === "") {
-        alert("Comment cannot be empty!");
+  // Show the comment panel
+  document.getElementById('commentPanel').style.display = 'block';
+});
+
+// Reference to Firebase Storage
+const storageRef = ref(storage);
+
+  document.getElementById('postCommentPanelButton').addEventListener('click', async () => {
+    const commentInput = document.getElementById('commentText');
+    const nameInput = document.getElementById('nameText');
+    const fileInput = document.getElementById('fileInput'); // File input element
+    const commentText = commentInput.value.trim();
+    const nameText = nameInput.value.trim() || "Anonymous";
+    const file = fileInput.files[0]; // Get the file selected by the user
+
+    if (commentText === "") {
+      alert("Comment cannot be empty!");
+      return;
+    }
+
+    let imageUrl = null;
+
+    if (file) {
+      // If a file was selected, upload it to Firebase Storage
+      const fileRef = ref(storage, `comment_images/${Date.now()}_${file.name}`);
+      
+      try {
+        // Upload the file
+        const snapshot = await uploadBytes(fileRef, file);
+        // Get the file's URL after the upload is complete
+        imageUrl = await getDownloadURL(snapshot.ref);
+      } catch (error) {
+        console.error("Error uploading the image: ", error);
+        alert("Error uploading image. Please try again.");
         return;
       }
+    }
 
-      const imageUrlMatch = commentText.match(/https?:\/\/[^\s]+\.(jpg|jpeg|png|gif)/);
-      const imageUrl = imageUrlMatch ? imageUrlMatch[0] : null; // Get the image URL if present in comment
+    // Create a new comment object, with the imageUrl if an image was uploaded
+    const newComment = {
+      id: generateCommentId(),
+      text: commentText,
+      name: nameText,
+      imageUrl: imageUrl,  // Add imageUrl to the comment object
+      votes: 0,
+      timestamp: Date.now(),
+      replyToId: replyToId // Set the replyToId if replying to a comment
+    };
 
-      const newComment = {
-        id: generateCommentId(),
-        text: commentText,
-        name: nameText,
-        imageUrl: imageUrl,
-        votes: 0,
-        timestamp: Date.now(),
-        replyToId: replyToId // Set the replyToId if replying to a comment
-      };
-
+    try {
+      // Get existing comments, add the new comment, and update the document
       const commentsDoc = await getDoc(commentsRef);
       const comments = commentsDoc.data().comments || [];
       comments.push(newComment);
@@ -232,16 +268,24 @@
         comments: arrayUnion(newComment)
       });
 
-      commentInput.value = ""; // Clear comment box after posting
+      // Clear input fields after successful submission
+      commentInput.value = "";
+      nameInput.value = "";
+      fileInput.value = "";  // Clear file input
+
+      // Hide the panel and bring back the "Post comment" button
+      document.getElementById('commentPanel').style.display = 'none';
+      document.getElementById('postButton').style.display = 'block';
       replyToId = null; // Reset replyToId after posting
       document.getElementById('replyIndicator').style.display = 'none'; // Hide reply indicator after posting
-    });
 
-    // Handle reply indicator button click (to deselect reply)
-    document.getElementById('replyIndicator').addEventListener('click', () => {
-      replyToId = null; // Reset replyToId
-      document.getElementById('replyIndicator').style.display = 'none'; // Hide reply indicator
-    });
+    } catch (error) {
+      console.error("Error posting comment: ", error);
+      alert("Error posting comment. Please try again.");
+    }
+  });
+
+
   </script>
 
 <!DOCTYPE html>
@@ -301,11 +345,13 @@
     .comment:hover {
       background-color: #d0dae7; /* Slightly darker on hover */
     }
-    .comment-image {
-      max-width: 200px;
-      margin-top: 5px;
-      border: 1px solid #bbb;
-    }
+.comment-image {
+  display: block; /* Ensure the image takes up its own line */
+  max-width: 200px; /* Maintain the max-width */
+  margin-top: 10px; /* Add some space between the text and image */
+  border: 1px solid #bbb; /* Keep the border */
+}
+
     .name-box {
       margin-bottom: 10px;
       border: 1px solid #ccc;
@@ -392,15 +438,34 @@
 <body>
   <div class="container">
     <h1>Epilogue Fred</h1>
-    
-    <!-- Name Input Section -->
-    <input type="text" class="name-box" id="nameInput" placeholder="Enter your name (optional)" />
 
     <!-- Comments Section -->
     <div class="comments" id="comments"></div>
 
-    <!-- Comment Input Section -->
-    <textarea class="comment-box" id="commentInput" placeholder="Write your comment..."></textarea>
+    <!-- Hidden comment panel, initially not visible -->
+<div id="commentPanel" style="display: none;">
+  <table>
+    <tr>
+      <td>Name</td>
+      <td><input type="text" id="nameText" placeholder="Anonymous" /></td>
+    </tr>
+    <tr>
+      <td>Options</td>
+      <td><input type="text" id="optionsText" placeholder="Options" /></td>
+      <td><button id="postCommentPanelButton">Post</button></td>
+    </tr>
+    <tr>
+      <td>Comment</td>
+      <td colspan="2"><textarea id="commentText" placeholder="Write your comment..."></textarea></td>
+    </tr>
+<tr>
+  <td>File</td>
+  <td><input type="file" id="fileInput" accept="image/*" /></td> <!-- Allow only image files -->
+</tr>
+
+  </table>
+</div>
+
     <button class="post-button" id="postButton">Post Comment</button>
 
     <!-- Reply Indicator -->
