@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 2 Fred</title>
+  <link rel="stylesheet" href="fredstyles.css">
+  
+  <!-- Include Firebase SDKs -->
+  <script type="module">
+  import { getDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+  import { getFirestore, doc, onSnapshot, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-storage.js";  // Import Firebase Storage
+    
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBCzabBMFxms9HfX0N411uJQYjEzspSnVk",
+      authDomain: "the-virgin-games.firebaseapp.com",
+      projectId: "the-virgin-games",
+      storageBucket: "the-virgin-games.appspot.com",
+      messagingSenderId: "1092738842373",
+      appId: "1:1092738842373:web:8bb210d9fb815cc5ae016c"
+    };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Initialize Firebase Storage
+  const storage = getStorage(app);
+
+  const commentsRef = doc(db, 'chapter2', 'comments'); // Firestore reference to the comments document
+
+  let userVotes = {}; // Object to keep track of user's votes
+  let replyToId = null; // Track which comment is being replied to
+
+onSnapshot(commentsRef, (doc) => {
+  const commentsContainer = document.getElementById('comments');
+  commentsContainer.innerHTML = ""; // Clear previous comments
+  if (doc.exists()) {
+    let comments = doc.data().comments || [];
+    comments = comments.sort((a, b) => b.timestamp - a.timestamp); // Sort by timestamp, newest first
+
+    comments.forEach((comment) => {
+      const commentElement = document.createElement('div');
+      commentElement.className = 'comment';
+      commentElement.dataset.id = comment.id;
+
+            // Apply background color if specified
+      if (comment.Bgclr) {
+        commentElement.style.backgroundColor = comment.Bgclr;
+      }
+      
+      const name = comment.name ? comment.name : "Anonymous";
+      commentElement.innerHTML = `${name}: ${comment.text}`;
+
+            // Apply text color if specified
+      if (comment.Txtclr) {
+        commentElement.style.color = comment.Txtclr;
+      }
+
+      const timestampElement = document.createElement('span');
+      const commentDate = new Date(comment.timestamp);
+      const options = { timeZone: 'America/New_York', hour12: true, hour: 'numeric', minute: 'numeric', second: 'numeric' };
+
+      // Check if mmddyyyy exists
+      if (comment.mmddyyyy) {
+        const currentDate = formatDateToMMDDYYYY(new Date()); // Current date in MM/DD/YYYY format
+        if (comment.mmddyyyy === currentDate) {
+          // If the comment was made today, show the time
+          timestampElement.innerText = commentDate.toLocaleString('en-US', options);
+        } else {
+          // Otherwise, show the date in MM/DD/YYYY format
+          timestampElement.innerText = comment.mmddyyyy;
+        }
+      } else {
+        // If mmddyyyy is missing, show "Invalid"
+        timestampElement.innerText = "Invalid";
+      }
+
+      timestampElement.className = 'timestamp';
+      commentElement.appendChild(timestampElement);
+      
+      const imageUrl = comment.imageUrl;
+      if (imageUrl) {
+        const imgElement = document.createElement('img');
+        imgElement.src = imageUrl;
+        imgElement.className = 'comment-image';
+        commentElement.appendChild(imgElement);
+      }
+
+      const commentIdLabel = document.createElement('span');
+      commentIdLabel.className = 'comment-id';
+      commentIdLabel.innerText = `(${comment.id})`;
+      commentElement.appendChild(commentIdLabel);
+
+          // Add reply-to ID if exists
+          if (comment.replyToId) {
+            const replyIdLabel = document.createElement('button');
+            replyIdLabel.className = 'reply-id';
+            replyIdLabel.innerText = `(${comment.replyToId})`; // Display reply-to comment ID
+            commentElement.appendChild(replyIdLabel);
+
+            // Scroll and highlight when clicking on the reply-to ID
+            replyIdLabel.addEventListener('click', () => {
+              highlightComment(comment.replyToId);
+            });
+          }
+
+          // Create the vote section
+          const voteContainer = document.createElement('div');
+          voteContainer.className = 'vote-container';
+          
+          const upvoteButton = document.createElement('button');
+          upvoteButton.className = 'upvote';
+          upvoteButton.innerText = '↑';
+          
+          const downvoteButton = document.createElement('button');
+          downvoteButton.className = 'downvote';
+          downvoteButton.innerText = '↓';
+          
+                    // Reply button
+                    
+          const replyButton = document.createElement('button');
+          replyButton.className = 'reply-button';
+          replyButton.innerHTML = '↩'; // Reply arrow symbol
+          commentElement.appendChild(replyButton);
+
+          const voteLabel = document.createElement('span');
+          voteLabel.className = 'vote-count';
+          voteLabel.innerText = comment.votes || 0; // Default to 0 votes
+
+        voteContainer.appendChild(replyButton);
+          voteContainer.appendChild(upvoteButton);
+          voteContainer.appendChild(downvoteButton);
+          voteContainer.appendChild(voteLabel);
+          
+          commentElement.appendChild(voteContainer);
+
+          replyButton.addEventListener('click', () => {
+            selectReply(comment.id);
+          });
+
+          commentsContainer.appendChild(commentElement);
+
+          // Upvote logic
+          upvoteButton.addEventListener('click', async () => {
+            const commentId = comment.id;
+            if (userVotes[commentId] === 'upvote') {
+              // Remove upvote
+              comment.votes -= 1;
+              userVotes[commentId] = null; // Reset user vote
+            } else {
+              if (userVotes[commentId] === 'downvote') {
+                // Remove downvote and add upvote
+                comment.votes += 2; // Neutralize the downvote and add an upvote
+              } else {
+                // Add upvote
+                comment.votes += 1;
+              }
+              userVotes[commentId] = 'upvote'; // Set user's vote to upvote
+            }
+            await updateVotes(commentId, comment);
+          });
+
+          // Downvote logic
+          downvoteButton.addEventListener('click', async () => {
+            const commentId = comment.id;
+            if (userVotes[commentId] === 'downvote') {
+              // Remove downvote
+              comment.votes += 1;
+              userVotes[commentId] = null; // Reset user vote
+            } else {
+              if (userVotes[commentId] === 'upvote') {
+                // Remove upvote and add downvote
+                comment.votes -= 2; // Neutralize the upvote and add a downvote
+              } else {
+                // Add downvote
+                comment.votes -= 1;
+              }
+              userVotes[commentId] = 'downvote'; // Set user's vote to downvote
+            }
+            await updateVotes(commentId, comment);
+          });
+        });
+      }
+    });
+
+    // Update votes function remains unchanged
+    async function updateVotes(commentId, updatedComment) {
+      const commentsDoc = await getDoc(commentsRef);
+      const comments = commentsDoc.data().comments || [];
+
+      const commentIndex = comments.findIndex(comment => comment.id === commentId);
+      if (commentIndex !== -1) {
+        comments[commentIndex] = updatedComment;
+      }
+
+      await updateDoc(commentsRef, {
+        comments: comments
+      });
+    }
+
+    // Function to generate a random 6-digit ID
+    function generateCommentId() {
+      return Math.floor(100000 + Math.random() * 900000); // Generates a random 6-digit number
+    }
+
+    // Function to select reply
+    function selectReply(commentId) {
+      replyToId = commentId;
+      const replyIndicator = document.getElementById('replyIndicator');
+      replyIndicator.style.display = 'inline-block'; // Show the blue reply indicator
+    }
+
+    // Function to highlight a comment
+    function highlightComment(commentId) {
+      const commentElement = document.querySelector(`.comment[data-id='${commentId}']`);
+      if (commentElement) {
+        commentElement.scrollIntoView({ behavior: 'smooth' });
+        commentElement.style.borderColor = 'blue';
+        setTimeout(() => {
+          commentElement.style.transition = 'border-color 1s ease';
+          commentElement.style.borderColor = '#ddd'; // Light grey border after animation
+        }, 1000);
+      }
+    }
+
+// Toggle the comment panel
+document.getElementById('postButton').addEventListener('click', () => {
+  // Hide the "Post comment" button
+  document.getElementById('postButton').style.display = 'none';
+
+  // Show the comment panel
+  document.getElementById('commentPanel').style.display = 'block';
+});
+
+// Reference to Firebase Storage
+const storageRef = ref(storage);
+
+// Function to format date in MM/DD/YYYY
+function formatDateToMMDDYYYY(date) {
+  const month = ('0' + (date.getMonth() + 1)).slice(-2); // Add leading zero
+  const day = ('0' + date.getDate()).slice(-2); // Add leading zero
+  const year = date.getFullYear();
+  return `${month}/${day}/${year}`;
+}
+
+document.getElementById('postCommentPanelButton').addEventListener('click', async () => {
+  const commentInput = document.getElementById('commentText');
+  const nameInput = document.getElementById('nameText');
+  const fileInput = document.getElementById('fileInput');
+  const optionsInput = document.getElementById('optionsText'); // Added reference for options input
+  const commentText = commentInput.value.trim();
+  const nameText = nameInput.value.trim() || "Anonymous";
+  const file = fileInput.files[0];
+  const optionsText = optionsInput.value.trim(); // Get options text
+
+  if (commentText === "") {
+    alert("Comment cannot be empty!");
+    return;
+  }
+
+  let imageUrl = null;
+
+    // Process options input for commands
+  let bgColor = null;
+  let textColor = null;
+  const commands = optionsText.split(',').map(cmd => cmd.trim());
+
+  if (commands.length > 0) {
+    commands.forEach((command, index) => {
+      if (index === 0 && (command.startsWith("#") || /^[0-9A-Fa-f]{3}$/.test(command))) {
+        bgColor = command.startsWith("#") ? command : `#${command}`; // Ensure the background color has a hashtag
+      } else if (index === 1 && (command.startsWith("#") || /^[0-9A-Fa-f]{3}$/.test(command))) {
+        textColor = command.startsWith("#") ? command : `#${command}`; // Ensure the text color has a hashtag
+      } else {
+        alert(`Invalid command "${command}". Please use the format "#B66, #B67".`);
+        return; // Stop processing further commands
+      }
+    });
+  }
+
+  if (file) {
+    const fileRef = ref(storage, `comment_images/${Date.now()}_${file.name}`);
+    try {
+      const snapshot = await uploadBytes(fileRef, file);
+      imageUrl = await getDownloadURL(snapshot.ref);
+    } catch (error) {
+      console.error("Error uploading the image: ", error);
+      alert("Error uploading image. Please try again.");
+      return;
+    }
+  }
+
+  const timestamp = Date.now();
+  const currentDate = new Date(timestamp);
+  const mmddyyyy = formatDateToMMDDYYYY(currentDate); // Format to MM/DD/YYYY
+
+  // Create a new comment object
+  const newComment = {
+    id: generateCommentId(),
+    text: commentText,
+    name: nameText,
+    imageUrl: imageUrl,
+    votes: 0,
+    timestamp: timestamp,
+    mmddyyyy: mmddyyyy,
+    replyToId: replyToId,
+    Bgclr: bgColor, // Add background color property
+    Txtclr: textColor // Add text color property
+  };
+
+  try {
+    const commentsDoc = await getDoc(commentsRef);
+    const comments = commentsDoc.data().comments || [];
+    comments.push(newComment);
+
+    await updateDoc(commentsRef, {
+      comments: arrayUnion(newComment)
+    });
+
+    commentInput.value = "";
+    nameInput.value = "";
+    fileInput.value = "";
+    optionsInput.value = ""; // Clear options input
+    document.getElementById('commentPanel').style.display = 'none';
+    document.getElementById('postButton').style.display = 'block';
+    replyToId = null;
+    document.getElementById('replyIndicator').style.display = 'none';
+
+  } catch (error) {
+    console.error("Error posting comment: ", error);
+    alert("Error posting comment. Please try again.");
+  }
+});
+
+  </script>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chapter 2 Fred</title>
+  <link rel="stylesheet" href="fredstyles.css">
+  
+  <!-- Include Firebase SDKs -->
+  <script type="module">
+    // Firebase SDK code remains the same
+  </script>
+
+  <style>
+    body {
+      background-color: #e5e5e5; /* 4chan-like pale grey-blue background */
+      font-family: Arial, sans-serif;
+      color: #222; /* Default text color */
+    }
+    .container {
+      width: 80%;
+      margin: 0 auto;
+      padding-top: 20px;
+    }
+    h1 {
+      color: #800000; /* Dark red title */
+      text-align: center;
+    }
+    .comments {
+      border: 1px solid #bbb;
+      height: 600px;
+      overflow-y: scroll;
+      margin: 20px 0;
+      padding: 10px;
+      background-color: #f0f4f8; /* Very light blue background */
+    }
+    .comment {
+      border: 1px solid #d3d3d3;
+      border-radius: 3px;
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #d8e6f2; /* Pale blue-grey comment background */
+      position: relative;
+    }
+    .comment-id {
+      color: #800000; /* Dark red for comment ID (quoted reply) */
+      font-size: 14px;
+    }
+    .comment .reply-id {
+      color: #800000; /* Same dark red for reply links */
+      font-size: 13px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+    .comment:hover {
+      background-color: #d0dae7; /* Slightly darker on hover */
+    }
+.comment-image {
+  display: block; /* Ensure the image takes up its own line */
+  max-width: 200px; /* Maintain the max-width */
+  margin-top: 10px; /* Add some space between the text and image */
+  border: 1px solid #bbb; /* Keep the border */
+}
+
+    .name-box {
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      width: 300px;
+      padding: 5px;
+      font-size: 12px;
+    }
+    .comment-box {
+      width: 300px;
+      height: 50px;
+      border: 1px solid #ccc;
+      margin-top: 10px;
+      font-size: 12px;
+      padding: 5px;
+    }
+    .post-button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 14px;
+      border: 1px solid #aaa;
+      background-color: #ddd;
+      cursor: pointer;
+    }
+    .post-button:hover {
+      background-color: #bbb;
+    }
+    .vote-container {
+      margin-top: 10px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+    }
+    .upvote, .downvote, .reply-button {
+      font-size: 12px;
+      border: none;
+      cursor: pointer;
+    }
+    .upvote {
+      color: #006400;
+    }
+    .downvote {
+      color: #8b0000;
+    }
+    .reply-button {
+      margin-left: 5px;
+      background-color: transparent;
+      border: none;
+      color: #666;
+    }
+    .vote-count {
+      margin-left: 10px;
+      font-size: 12px;
+      color: #555;
+    }
+    .timestamp {
+      display: block;
+      font-size: 10px;
+      color: #888;
+      margin-top: 5px;
+    }
+
+    /* Reply indicator */
+    #replyIndicator {
+      display: none;
+      font-size: 12px;
+      color: #006400; /* Dark green for reply indicator */
+      background-color: lightblue;
+      cursor: pointer;
+      padding: 5px;
+      margin-left: 10px;
+    border: 1px solid #aaa;
+    }
+
+    /* Navigation button */
+    a img {
+      filter: grayscale(100%);
+      transition: 0.3s;
+    }
+    a img:hover {
+      filter: grayscale(0%);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Chapter 2 Fred</h1>
+
+    <!-- Comments Section -->
+    <div class="comments" id="comments"></div>
+
+    <!-- Hidden comment panel, initially not visible -->
+<div id="commentPanel" style="display: none;">
+  <table>
+    <tr>
+      <td>Name</td>
+      <td><input type="text" id="nameText" placeholder="Anonymous" /></td>
+    </tr>
+    <tr>
+      <td>Options</td>
+      <td><input type="text" id="optionsText" placeholder="Options" /></td>
+      <td><button id="postCommentPanelButton">Post</button></td>
+    </tr>
+    <tr>
+      <td>Comment</td>
+      <td colspan="2"><textarea id="commentText" placeholder="Write your comment..."></textarea></td>
+    </tr>
+<tr>
+  <td>File</td>
+  <td><input type="file" id="fileInput" accept="image/*" /></td> <!-- Allow only image files -->
+</tr>
+
+  </table>
+</div>
+
+    <button class="post-button" id="postButton">Post Comment</button>
+
+    <!-- Reply Indicator -->
+    <div id="replyIndicator">↩</div>
+  </div>
+
+  <!-- Navigation Button to Home Page -->
+  <a href="freds.html" style="position: fixed; top: 10px; left: 10px; z-index: 1000;">
+    <img src="https://www.iconsdb.com/icons/preview/gray/undo-5-xxl.png" alt="Home" style="width: 40px; height: 40px;">
+  </a>
+</body>
+</html>
+
