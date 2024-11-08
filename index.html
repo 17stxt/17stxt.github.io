@@ -1,278 +1,435 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Virgin Games</title>
-  <link rel="stylesheet" href="styles.css">
-  <style>
-    .container {
-      text-align: center;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Virgin Games</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Basic Font and Layout Styles */
 
-    /* Wiggle animation for the thumbnail */
-    .title-image {
-      display: block;
-      margin: 0 auto;
-      animation: wiggle 0.25s ease-in-out infinite;
-    }
+        body {
+            font-family: Arial, sans-serif;
+        }
 
-    /* Wiggle keyframes */
-    @keyframes wiggle {
-      0%, 100% {
-        transform: rotate(0deg) scale(1);
-      }
-      20% {
-        transform: rotate(3deg) scale(1.05);
-      }
-      40% {
-        transform: rotate(-3deg) scale(1.03);
-      }
-      60% {
-        transform: rotate(2deg) scale(1.04);
-      }
-      80% {
-        transform: rotate(-1deg) scale(1.02);
-      }
-    }
+        .container {
+            text-align: center;
+        }
 
-    /* Typewriter effect */
-    .subheading {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 20px;
-      border-right: 2px solid black;
-      white-space: nowrap;
-      overflow: hidden;
-      display: inline-block;
-    }
+        /* Wiggle animation for the thumbnail */
 
-    /* Styling for the download buttons */
-    .download-button {
-      border: none;
-      background-color: transparent;
-      cursor: pointer;
-      margin-left: 10px;
-      vertical-align: middle;
-    }
-    .download-button img {
-      width: 20px;
-      height: 20px;
-    }
+        .title-image {
+            display: block;
+            margin: 0 auto;
+            animation: wiggle 0.25s ease-in-out infinite;
+        }
 
-    /* Styling for the chapter buttons */
-    .chapter-button {
-      margin-top: 20px;
-      padding: 10px;
-      background-color: transparent;
-      border: none;
-      cursor: pointer;
-      font-size: 16px;
-      width: 40px; /* Square button */
-      height: 40px; /* Square button */
-      transition: background-color 0.3s; /* Smooth background color transition */
-    }
-    .chapter-button:hover {
-      background-color: #f0f0f0; /* Background color on hover */
-    }
-    .chapter-button img {
-      width: 20px; /* Adjust image size */
-      height: 20px; /* Adjust image size */
-    }
+        /* Wiggle keyframes */
 
-    /* Styling for the freds button */
-    .freds-button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background-color: #3498db;
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    .freds-button:hover {
-      background-color: #2980b9;
-    }
-  </style>
+        @keyframes wiggle {
+            0%,
+            100% {
+                transform: rotate(0deg) scale(1);
+            }
+            20% {
+                transform: rotate(3deg) scale(1.05);
+            }
+            40% {
+                transform: rotate(-3deg) scale(1.03);
+            }
+            60% {
+                transform: rotate(2deg) scale(1.04);
+            }
+            80% {
+                transform: rotate(-1deg) scale(1.02);
+            }
+        }
+
+        /* Typewriter effect */
+
+        .subheading {
+            font-size: 18px;
+            margin-bottom: 20px;
+            border-right: 2px solid black;
+            white-space: nowrap;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        /* Chapter Section Styles */
+
+        .chapters {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chapter-row {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .chapter-box {
+            flex: none;
+            background-color: #fff;
+            border: 1.8px solid #000;
+            border-radius: 7px;
+            margin: 0 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.15s;
+            width: 210px;
+            height: 135px;
+            position: relative;
+        }
+
+        .chapter-box:hover {
+            transform: scale(1.02);
+        }
+
+        .chapter-image {
+            width: 94%;
+            height: 76%;
+            border-radius: 1px;
+            border: 1.8px solid #000;
+            margin-top: 4px;
+        }
+
+        .chapter-text {
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: -0.5px;
+        }
+
+        /* Fred and Frend Buttons */
+
+        .button-container {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            display: flex;
+            gap: 5px;
+            z-index: 1;
+        }
+
+        .fred-button,
+        .frend-button {
+            background: transparent;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+        }
+
+        .fred-button img,
+        .frend-button img {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Style adjustments for credits section */
+
+        hr {
+            width: 80%;
+            border: 0.1px solid #000;
+            margin: 20px auto;
+        }
+
+        .credits {
+            text-align: center;
+            font-size: 0.85em;
+            /* Smaller font size for credits */
+        }
+
+        /* Fade Out Effect */
+
+        .fade-out {
+            opacity: 0;
+            transition: opacity 1s ease-out;
+        }
+
+        /* Background Video */
+
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+            /* Behind all other content */
+        }
+
+        #bg-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
 </head>
+
 <body>
-  <div class="container">
-    <!-- Header Image (The Virgin Games Thumbnail) -->
-    <img src="https://i.imgur.com/gMYDs9s.png" alt="The Virgin Games" class="title-image">
 
-    <!-- Subheading Text (Random Text Area) -->
-    <p class="subheading" id="randomText">The ground is fake you are simply floating</p>
+    <div class="video-background">
+        <video id="bg-video" autoplay muted loop></video>
+    </div>
 
-    <!-- Chapter Navigation Section -->
-    <section class="chapters">
-      <h2>Chapters</h2>
-      <table>
-        <tr>
-          <td>
-            <button onclick="window.location.href='markdowns/chapter1.md.html'">Consume Chapter 1</button>
-            <button class="download-button" onclick="window.location.href='pdfs/mueve tu chap1.pdf'">
-              <img src="https://win98icons.alexmeub.com/icons/png/cable-1.png" alt="Download Chapter 1">
-            </button>
-            <button class="chapter-button" onclick="window.location.href='freds/chapter1fred.html'">
-              <img src="https://win98icons.alexmeub.com/icons/png/address_book_card_copy-0.png" alt="Fred Chapter 1">
-            </button>
-          </td>
-          <td>
-            <button onclick="window.location.href='markdowns/chapter2.md.html'">Consume Chapter 2</button>
-            <button class="download-button" onclick="window.location.href='pdfs/mueve tu chap2.pdf'">
-              <img src="https://win98icons.alexmeub.com/icons/png/cable-1.png" alt="Download Chapter 2">
-            </button>
-            <button class="chapter-button" onclick="window.location.href='freds/chapter2fred.html'">
-              <img src="https://win98icons.alexmeub.com/icons/png/address_book_card_copy-0.png" alt="Fred Chapter 2">
-            </button>
-          </td>
-          <td>
-            <button onclick="window.location.href='markdowns/chapter3.md.html'">Consume Chapter 3</button>
-            <button class="download-button" onclick="window.location.href='pdfs/mueve tu chap3.pdf'">
-              <img src="https://win98icons.alexmeub.com/icons/png/cable-1.png" alt="Download Chapter 3">
-            </button>
-            <button class="chapter-button" onclick="window.location.href='freds/chapter3fred.html'">
-              <img src="https://win98icons.alexmeub.com/icons/png/address_book_card_copy-0.png" alt="Fred Chapter 3">
-            </button>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <button onclick="window.location.href='markdowns/chapter4.md.html'">Consume Chapter 4</button>
-            <button class="download-button" onclick="window.location.href='pdfs/mueve tu chap4.pdf'">
-              <img src="https://win98icons.alexmeub.com/icons/png/cable-1.png" alt="Download Chapter 4">
-            </button>
-            <button class="chapter-button" onclick="window.location.href='freds/chapter4fred.html'">
-              <img src="https://win98icons.alexmeub.com/icons/png/address_book_card_copy-0.png" alt="Fred Chapter 4">
-            </button>
-          </td>
-          <td>
-            <button onclick="window.location.href='markdowns/chapter5.md.html'">Consume Chapter 5</button>
-            <button class="download-button" onclick="window.location.href='pdfs/mueve tu chap5.pdf'">
-              <img src="https://win98icons.alexmeub.com/icons/png/cable-1.png" alt="Download Chapter 5">
-            </button>
-            <button class="chapter-button" onclick="window.location.href='freds/chapter5fred.html'">
-              <img src="https://win98icons.alexmeub.com/icons/png/address_book_card_copy-0.png" alt="Fred Chapter 5">
-            </button>
-          </td>
-          <td>
-            <button onclick="window.location.href='markdowns/epilogue.md.html'">Consume Epilogue</button>
-            <button class="download-button" onclick="window.location.href='pdfs/THE EPILOGUE OAT.pdf'">
-              <img src="https://win98icons.alexmeub.com/icons/png/cable-1.png" alt="Download Epilogue">
-            </button>
-            <button class="chapter-button" onclick="window.location.href='freds/epiloguefred.html'">
-              <img src="https://win98icons.alexmeub.com/icons/png/address_book_card_copy-0.png" alt="Fred Epilogue">
-            </button>
-          </td>
-        </tr>
-      </table>
-    </section>
+    <div class="container">
+        <!-- Header Image -->
+        <img src="https://i.imgur.com/gMYDs29s.png" alt="The Virgin Games" class="title-image">
 
-    <!-- freds Button -->
-    <button class="freds-button" onclick="window.location.href='freds.html'">Go to freds</button>
+        <!-- Subheading Text -->
+        <p class="subheading" id="randomText">The ground is fake you are simply floating</p>
 
-    <!-- Credits Section -->
-    <hr>
-    <section class="credits">
-      <h3>Credits</h3>
-      <p>Email: Awesomecatsandpuppies@gmail.com</p>
-      <p>Server: discord.gg/r4hBkmd5Yq</p>
-      <p>Team: @7teens, @redmilfed, @yuyuuser</p>
-    </section>
-  </div>
+        <!-- Chapter Navigation Section -->
+        <section class="chapters">
+            <div class="chapter-row">
+                <!-- Chapter 1 -->
+                <div class="chapter-box" onclick="window.location.href='pdfs/mueve tu chap1.pdf'">
+                    <div class="button-container">
+                        <button class="fred-button" onclick="event.stopPropagation(); window.location.href='freds/chapter1fred.html'">
+                            <img src="https://www.shareicon.net/data/128x128/2015/09/02/94953_thread_512x512.png" alt="Fred Icon">
+                        </button>
+                        <button class="frend-button" onclick="event.stopPropagation(); window.location.href=''">
+                            <img src="https://png.pngtree.com/png-vector/20230225/ourmid/pngtree-youtube-icon-social-media-png-image_6618458.png" alt="Frend Icon">
+                        </button>
+                    </div>
+                    <img src="https://i.imgur.com/gMYDs9s.png" alt="Chapter 1" class="chapter-image">
+                    <div class="chapter-text">Chapter 1</div>
+                </div>
 
-  <script>
-    // List of sentences
-    const sentences = [
-      "The ground is fake you are simply floating",
-      "And Mer left because....",
-      "you're tits..their small",
-      "this is what bon does when he imagines mia big fat juicy ass",
-      "no vbucks? forreal?",
-      "Imagine listening to Taylor Swift",
-      "I thought I was a fool for noone",
-      "ALLL II WANTED WAS YOUUUUUUUUU",
-      "Ohhh I won't let you goo",
-      "Coca cola la ight, coca cola no our ma al, y coca colea zeeeroooooooooooooo",
-      "Hello Juju I'm very up close :)",
-      "Incredibly uncomfortable after all i've done for you.",
-      "How it feels to be in the dubai tram:"
-    ];
+                <!-- Chapter 2 -->
+                <div class="chapter-box" onclick="window.location.href='pdfs/mueve tu chap2.pdf'">
+                    <div class="button-container">
+                        <button class="fred-button" onclick="event.stopPropagation(); window.location.href='freds/chapter2fred.html'">
+                            <img src="https://www.shareicon.net/data/128x128/2015/09/02/94953_thread_512x512.png" alt="Fred Icon">
+                        </button>
+                        <button class="frend-button" onclick="event.stopPropagation(); window.location.href='https://www.youtube.com/watch?v=QbmTm-x2piE'">
+                            <img src="https://png.pngtree.com/png-vector/20230225/ourmid/pngtree-youtube-icon-social-media-png-image_6618458.png" alt="Frend Icon">
+                        </button>
+                    </div>
+                    <img src="https://i.imgur.com/gMYDs9s.png" alt="Chapter 2" class="chapter-image">
+                    <div class="chapter-text">Chapter 2</div>
+                </div>
 
-    const randomTextElement = document.getElementById("randomText");
-    let lastPicked = []; // Array to hold the last 3 picked sentences
+                <!-- Chapter 3 -->
+                <div class="chapter-box" onclick="window.location.href='pdfs/chapter3.pdf'">
+                    <div class="button-container">
+                        <button class="fred-button" onclick="event.stopPropagation(); window.location.href='freds/chapter3fred.html'">
+                            <img src="https://www.shareicon.net/data/128x128/2015/09/02/94953_thread_512x512.png" alt="Fred Icon">
+                        </button>
+                        <button class="frend-button" onclick="event.stopPropagation(); window.location.href=''">
+                            <img src="https://png.pngtree.com/png-vector/20230225/ourmid/pngtree-youtube-icon-social-media-png-image_6618458.png" alt="Frend Icon">
+                        </button>
+                    </div>
+                    <img src="https://i.imgur.com/gMYDs9s.png" alt="Chapter 3" class="chapter-image">
+                    <div class="chapter-text">Chapter 3</div>
+                </div>
+            </div>
 
-    function typeWriterEffect(text, callback) {
-      let i = 0;
-      randomTextElement.innerHTML = ""; // Clear current text
-      const typing = setInterval(() => {
-        if (i < text.length) {
-          randomTextElement.innerHTML += text.charAt(i);
-          i++;
-        } else {
-          clearInterval(typing);
-          if (callback) callback();
+            <div class="chapter-row">
+                <!-- Chapter 4 -->
+                <div class="chapter-box" onclick="window.location.href='pdfs/chapter4.pdf'">
+                    <div class="button-container">
+                        <button class="fred-button" onclick="event.stopPropagation(); window.location.href='freds/chapter4fred.html'">
+                            <img src="https://www.shareicon.net/data/128x128/2015/09/02/94953_thread_512x512.png" alt="Fred Icon">
+                        </button>
+                        <button class="frend-button" onclick="event.stopPropagation(); window.location.href=''">
+                            <img src="https://png.pngtree.com/png-vector/20230225/ourmid/pngtree-youtube-icon-social-media-png-image_6618458.png" alt="Frend Icon">
+                        </button>
+                    </div>
+                    <img src="https://i.imgur.com/gMYDs9s.png" alt="Chapter 4" class="chapter-image">
+                    <div class="chapter-text">Chapter 4</div>
+                </div>
+
+                <!-- Chapter 5 -->
+                <div class="chapter-box" onclick="window.location.href='pdfs/chapter5.pdf'">
+                    <div class="button-container">
+                        <button class="fred-button" onclick="event.stopPropagation(); window.location.href='freds/chapter5fred.html'">
+                            <img src="https://www.shareicon.net/data/128x128/2015/09/02/94953_thread_512x512.png" alt="Fred Icon">
+                        </button>
+                        <button class="frend-button" onclick="event.stopPropagation(); window.location.href=''">
+                            <img src="https://png.pngtree.com/png-vector/20230225/ourmid/pngtree-youtube-icon-social-media-png-image_6618458.png" alt="Frend Icon">
+                        </button>
+                    </div>
+                    <img src="https://i.imgur.com/gMYDs9s.png" alt="Chapter 5" class="chapter-image">
+                    <div class="chapter-text">Chapter 5</div>
+                </div>
+
+                <!-- Chapter 6 -->
+                <div class="chapter-box" onclick="window.location.href='pdfs/chapter6.pdf'">
+                    <div class="button-container">
+                        <button class="fred-button" onclick="event.stopPropagation(); window.location.href='freds/chapter6fred.html'">
+                            <img src="https://www.shareicon.net/data/128x128/2015/09/02/94953_thread_512x512.png" alt="Fred Icon">
+                        </button>
+                        <button class="frend-button" onclick="event.stopPropagation(); window.location.href=''">
+                            <img src="https://png.pngtree.com/png-vector/20230225/ourmid/pngtree-youtube-icon-social-media-png-image_6618458.png" alt="Frend Icon">
+                        </button>
+                    </div>
+                    <img src="https://i.imgur.com/gMYDs9s.png" alt="Chapter 6" class="chapter-image">
+                    <div class="chapter-text">Chapter 6</div>
+                </div>
+            </div>
+
+            <div class="chapter-row">
+                <!-- Epilogue -->
+                <div class="chapter-box" onclick="window.location.href='pdfs/THE EPILOGUE OAT.pdf'">
+                    <div class="button-container">
+                        <button class="fred-button" onclick="event.stopPropagation(); window.location.href='freds/epiloguefred.html'">
+                            <img src="https://www.shareicon.net/data/128x128/2015/09/02/94953_thread_512x512.png" alt="Fred Icon">
+                        </button>
+                        <button class="frend-button" onclick="event.stopPropagation(); window.location.href=''">
+                            <img src="https://png.pngtree.com/png-vector/20230225/ourmid/pngtree-youtube-icon-social-media-png-image_6618458.png" alt="Frend Icon">
+                        </button>
+                    </div>
+                    <img src="https://i.imgur.com/aDb54P0.png" alt="Epilogue" class="chapter-image">
+                    <div class="chapter-text">Epilogue</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Credits Section -->
+        <hr>
+        <section class="credits">
+            <p>Awesomecatsandpuppies@gmail.com</p>
+            <p>https://www.youtube.com/@AwesomeCatsAndPuppies</p>
+            <p>https://discord.gg/r4hBkmd5Yq</p>
+            <p>@7teens, @redsilvore, @yuyuuser</p>
+        </section>
+    </div>
+
+    <script>
+        // List of sentences
+        const sentences = [
+            "The ground is fake you are simply floating",
+            "And Mer left because....",
+            "you're tits..their small",
+            "this is what bon does when he imagines mia big fat juicy ass",
+            "no vbucks? forreal?",
+            "Imagine listening to Taylor Swift",
+            "I thought I was a fool for noone",
+            "ALLL II WANTED WAS YOUUUUUUUUU",
+            "Ohhh I won't let you goo",
+            "Coca cola la ight, coca cola no our ma al, y coca colea zeeeroooooooooooooo",
+            "Hello Juju I'm very up close :)",
+            "Incredibly uncomfortable after all i've done for you.",
+            "How it feels to be in the dubai tram:"
+        ];
+
+        const randomTextElement = document.getElementById("randomText");
+        let lastPicked = []; // Array to hold the last 3 picked sentences
+
+        function typeWriterEffect(text, callback) {
+            let i = 0;
+            randomTextElement.innerHTML = "";
+            clearInterval(randomTextElement.typing); // Clear any previous intervals
+            randomTextElement.typing = setInterval(() => {
+                if (i < text.length) {
+                    randomTextElement.innerHTML += text.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(randomTextElement.typing);
+                    if (callback) callback();
+                }
+            }, 100);
         }
-      }, 100); // Speed of typing (can be customized)
-    }
 
-    function deleteTextEffect(callback) {
-      let length = randomTextElement.innerHTML.length;
-      const deleting = setInterval(() => {
-        if (length > 0) {
-          randomTextElement.innerHTML = randomTextElement.innerHTML.substring(0, length - 1);
-          length--;
-        } else {
-          clearInterval(deleting);
-          if (callback) callback();
+        function deleteTextEffect(callback) {
+            clearInterval(randomTextElement.typing); // Clear previous interval
+            let length = randomTextElement.innerHTML.length;
+            randomTextElement.typing = setInterval(() => {
+                if (length > 0) {
+                    randomTextElement.innerHTML = randomTextElement.innerHTML.substring(0, length - 1);
+                    length--;
+                } else {
+                    clearInterval(randomTextElement.typing);
+                    if (callback) callback();
+                }
+            }, 50);
         }
-      }, 50); // Speed of deletion (can be customized)
-    }
 
-    function pickRandomSentence() {
-      let availableSentences = sentences.filter(sentence => !lastPicked.includes(sentence));
 
-      // If availableSentences is empty (in rare cases), reset lastPicked and make all available again
-      if (availableSentences.length === 0) {
-        availableSentences = sentences;
-      }
+        function pickRandomSentence() {
+            let availableSentences = sentences.filter(sentence => !lastPicked.includes(sentence));
 
-      const randomIndex = Math.floor(Math.random() * availableSentences.length);
-      const newText = availableSentences[randomIndex];
+            // If availableSentences is empty (in rare cases), reset lastPicked and make all available again
+            if (availableSentences.length === 0) {
+                availableSentences = sentences;
+            }
 
-      // Update the lastPicked queue
-      lastPicked.push(newText);
-      if (lastPicked.length > 3) {
-        lastPicked.shift(); // Keep only the last 3 selections
-      }
+            const randomIndex = Math.floor(Math.random() * availableSentences.length);
+            const newText = availableSentences[randomIndex];
 
-      return newText;
-    }
+            // Update the lastPicked queue
+            lastPicked.push(newText);
+            if (lastPicked.length > 3) {
+                lastPicked.shift(); // Keep only the last 3 selections
+            }
 
-    function changeText() {
-      const newText = pickRandomSentence();
+            return newText;
+        }
 
-      deleteTextEffect(() => {
-        typeWriterEffect(newText);
-      });
-    }
+        function changeText() {
+            const newText = pickRandomSentence();
 
-    function randomInterval(min, max) {
-      return Math.random() * (max - min) + min;
-    }
+            deleteTextEffect(() => {
+                typeWriterEffect(newText);
+            });
+        }
 
-    // Initial random sentence on page load
-    window.onload = () => {
-      const initialIndex = Math.floor(Math.random() * sentences.length);
-      const initialText = sentences[initialIndex];
-      lastPicked.push(initialText); // Add the first picked text to the lastPicked queue
-      typeWriterEffect(initialText);
-    };
+        function randomInterval(min, max) {
+            return Math.random() * (max - min) + min;
+        }
 
-    // Change the text every 10-15 seconds with typewriter effect
-    setInterval(() => {
-      changeText();
-    }, randomInterval(10000, 15000)); // Interval between 10 to 15 seconds
-  </script>
+        // Initial random sentence on page load
+        window.onload = () => {
+            const initialIndex = Math.floor(Math.random() * sentences.length);
+            const initialText = sentences[initialIndex];
+            lastPicked.push(initialText); // Add the first picked text to the lastPicked queue
+            typeWriterEffect(initialText);
+        };
+
+        // Change the text every 10-15 seconds with typewriter effect
+        setInterval(() => {
+            changeText();
+        }, randomInterval(10000, 15000)); // Interval between 10 to 15 seconds
+
+        const videoElement = document.getElementById("bg-video");
+        const videoPaths = [
+            "media/videos/video1.mp4",
+            "media/videos/video2.mp4",
+            "media/videos/video3.mp4"
+        ]; // Add paths to your videos here
+
+        let currentVideoIndex = Math.floor(Math.random() * videoPaths.length);
+
+        function playNextVideo() {
+            // Choose a different video than the current one
+            let nextVideoIndex;
+            do {
+                nextVideoIndex = Math.floor(Math.random() * videoPaths.length);
+            } while (nextVideoIndex === currentVideoIndex);
+
+            currentVideoIndex = nextVideoIndex;
+            videoElement.src = videoPaths[currentVideoIndex];
+            videoElement.play();
+        }
+
+        // Add fade effect between videos
+        videoElement.addEventListener("ended", () => {
+            videoElement.classList.add("fade-out");
+            setTimeout(() => {
+                playNextVideo();
+                videoElement.classList.remove("fade-out");
+            }, 1000); // Adjust fade duration if needed
+        });
+
+        // Initial load
+        playNextVideo();
+    </script>
 </body>
+
 </html>
